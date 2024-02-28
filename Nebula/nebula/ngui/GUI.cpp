@@ -132,12 +132,11 @@ namespace Nebula::ngui
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
         init_info.Allocator = nullptr;
         init_info.CheckVkResultFn = nullptr;
-        ImGui_ImplVulkan_Init(&init_info, m_render_pass);
+        init_info.RenderPass = m_render_pass;
+        ImGui_ImplVulkan_Init(&init_info);
 
-        m_context->command_pool()->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
-            ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
-        });
-        ImGui_ImplVulkan_DestroyFontUploadObjects();
+        ImGui_ImplVulkan_CreateFontsTexture();
+        //ImGui_ImplVulkan_DestroyFontUploadObjects();
 
         ImNodes::CreateContext();
         ImNodes::StyleColorsDark();

@@ -21,6 +21,8 @@ namespace Nebula::ngui
             const std::shared_ptr<nvk::Context>& context,
             const std::shared_ptr<nvk::Swapchain>& swapchain);
 
+        ~GUI() = default;
+
         void render(const vk::CommandBuffer& command_buffer,
                     const std::function<void()>& lambda);
 

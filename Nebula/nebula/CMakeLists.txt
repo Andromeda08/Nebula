@@ -53,7 +53,6 @@ target_include_directories(${Nebula_main} PRIVATE
     "${IMNODES_DIR}")
 target_compile_definitions (${Nebula_main} PRIVATE
     NBL_DEBUG
-    GLM_ENABLE_EXPERIMENTAL
     GLFW_INCLUDE_VULKAN
     IMGUI_DEFINE_MATH_OPERATORS
     -DImTextureID=ImU64)
