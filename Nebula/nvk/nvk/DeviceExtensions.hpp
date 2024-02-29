@@ -61,8 +61,8 @@ namespace Nebula::nvk
 
             mesh_shader
                 .setMeshShader(true)
-                .setTaskShader(true)
-                .setPNext(&nv_optical_flow);
+                .setTaskShader(true);
+                //.setPNext(&nv_optical_flow);
 
             nv_optical_flow
                 .setOpticalFlow(true);
@@ -76,7 +76,7 @@ namespace Nebula::nvk
                 VK_KHR_RAY_QUERY_EXTENSION_NAME,
                 VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
                 VK_EXT_MESH_SHADER_EXTENSION_NAME,
-                VK_NV_OPTICAL_FLOW_EXTENSION_NAME,
+                //VK_NV_OPTICAL_FLOW_EXTENSION_NAME,
                 VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
             });
         }

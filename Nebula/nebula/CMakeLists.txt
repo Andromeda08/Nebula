@@ -12,6 +12,7 @@ set("IMGUI_DIR" "${3RD}/imgui")
 set("IMNODES_DIR" "${3RD}/imnodes")
 
 add_library(${Nebula_main}
+    ${3RD}/cy/cyCore.h ${3RD}/cy/cyHairFile.h
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
     ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui.h ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp
@@ -40,6 +41,10 @@ add_library(${Nebula_main}
     nscene/geometry/Mesh.hpp nscene/geometry/Mesh.cpp
     nscene/geometry/primitives/Cube.hpp nscene/geometry/primitives/Cube.cpp
     nscene/geometry/primitives/Sphere.hpp nscene/geometry/primitives/Sphere.cpp
+
+    nhair/HairRenderer.hpp
+    nhair/HairModel.hpp
+    nhair/HairModel.cpp
 )
 
 target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw)
@@ -48,11 +53,13 @@ target_include_directories(${Nebula_main} PRIVATE
     "../nvk"
     "${3RD}/glm"
     "${3RD}/glfw"
+    "${3RD}/cy"
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
     "${IMNODES_DIR}")
 target_compile_definitions (${Nebula_main} PRIVATE
     NBL_DEBUG
+    VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
     GLFW_INCLUDE_VULKAN
     IMGUI_DEFINE_MATH_OPERATORS
     -DImTextureID=ImU64)

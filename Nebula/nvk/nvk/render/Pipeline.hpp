@@ -19,6 +19,10 @@ namespace Nebula::nvk
 
         void bind(const vk::CommandBuffer& command_buffer);
 
+        const vk::Pipeline& handle() const { return m_pipeline; }
+
+        const vk::PipelineLayout& layout() const { return m_pipeline_layout; }
+
         ~Pipeline();
 
     private:

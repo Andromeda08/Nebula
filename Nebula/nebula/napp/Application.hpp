@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <chrono>
 #include <memory>
 #include <string>
@@ -8,11 +9,19 @@
 #include <nscene/Scene.hpp>
 #include <nvk/Command.hpp>
 #include <nvk/Context.hpp>
+#include <nvk/Descriptor.hpp>
 #include <nvk/Swapchain.hpp>
 #include <wsi/Window.hpp>
 
+#include <glm/glm.hpp>
+
 namespace Nebula
 {
+    struct HairConstants
+    {
+        uint64_t vertex_buffer;
+    };
+
     class Application
     {
     public:
@@ -39,6 +48,9 @@ namespace Nebula
         std::shared_ptr<ngui::GUI>                      m_gui;
         std::vector<std::shared_ptr<ns::Scene>>         m_scenes;
         std::shared_ptr<ns::Scene>                      m_active_scene;
+
+        std::shared_ptr<nvk::Descriptor>                m_descriptor;
+        std::vector<std::shared_ptr<nvk::Buffer>>       m_uniform_buffers;
 
         std::chrono::high_resolution_clock::time_point  m_last_time;
         const AppConfig                                 m_config {};

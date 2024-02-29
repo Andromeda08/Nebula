@@ -79,7 +79,7 @@ namespace Nebula::ns
         uint32_t                                        m_active_camera {0};
         std::vector<std::shared_ptr<Camera>>            m_cameras;
         Size2D                                          m_camera_size;
-        std::vector<std::shared_ptr<Light>>             m_lights;
+        std::vector<Light>                              m_lights;
         std::map<std::string, std::shared_ptr<Mesh>>    m_meshes;
         std::vector<Object>                             m_objects;
         std::shared_ptr<nvk::Buffer>                    m_object_descriptions_buffer;

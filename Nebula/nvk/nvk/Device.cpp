@@ -193,7 +193,9 @@ namespace Nebula::nvk
         if (const vk::Result result = m_physical_device.createDevice(&create_info, nullptr, &m_device);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create vk::Device ({})", to_string(result)));
+            auto message = std::format("Failed to create vk::Device ({})", to_string(result));
+            std::cerr << message << std::endl;
+            throw std::runtime_error(message);
         }
 
         #ifdef NVK_VERBOSE

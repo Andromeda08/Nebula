@@ -1,0 +1,88 @@
+#version 460
+
+#extension GL_EXT_mesh_shader                            : require
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+#extension GL_EXT_buffer_reference2                      : require
+#extension GL_EXT_scalar_block_layout                    : enable
+#extension GL_GOOGLE_include_directive                   : enable
+
+#include "hair_common.glsl"
+
+layout (local_size_x = 32) in;
+layout (triangles, max_vertices = 96, max_primitives = 84) out;
+
+// taskPayloadSharedEXT TaskOut payload;
+
+layout (push_constant) uniform HairConstants {
+    mat4     model;
+    uint64_t vertex_buffer;
+    uint64_t strand_desc_buffer;
+} hair_constants;
+
+layout (binding = 0) uniform CameraData {
+    mat4 view;
+    mat4 proj;
+    mat4 view_inverse;
+    mat4 proj_inverse;
+    vec4 eye;
+} camera;
+
+layout (buffer_reference, scalar) buffer Vertices { Vertex vertices[]; };
+layout (buffer_reference, scalar) buffer Strands  { StrandDescription strands[]; };
+
+layout (location = 0) out MeshOut m_out[];
+
+Vertex[4] generate_quad(uint offset) {
+    Vertices v = Vertices(hair_constants.vertex_buffer);
+    Vertex result[4];
+
+    result[0] = v.vertices[offset + 0];
+    result[1] = v.vertices[offset + 0];
+    result[2] = v.vertices[offset + 1];
+    result[3] = v.vertices[offset + 1];
+
+    result[1].position += result[0].thickness;
+    result[2].position += result[3].thickness;
+
+    return result;
+}
+
+StrandDescription get_current_strand(uint offset) {
+    Strands s = Strands(hair_constants.strand_desc_buffer);
+    return s.strands[offset];
+}
+
+void main() {
+    const uint ID = gl_LocalInvocationID.x;
+
+    StrandDescription current_strand = get_current_strand(ID);
+    const uint strand_length         = current_strand.point_count;
+
+    if (ID > strand_length) {
+        return;
+    }
+
+    const uint quads         = strand_length - 1;
+    const uint vtx_count     = quads * 4;
+    const uint tri_count     = quads * 2;
+
+    SetMeshOutputsEXT(vtx_count, tri_count);
+
+    const uint vb_offset = ID;
+    Vertex output_vertices[4] = generate_quad(vb_offset);
+
+    const uint out_i_offset = ID * 2;
+    const uint out_v_offset = ID * 4;
+    const mat4 mvp          = camera.proj * camera.view * hair_constants.model;
+    for (uint i = 0; i < 4; i++) {
+        gl_MeshVerticesEXT[out_v_offset + i].gl_Position = mvp * output_vertices[i].position;
+    }
+
+    m_out[out_v_offset + 0].color = vec3(0, 1, 1);
+    m_out[out_v_offset + 1].color = vec3(1, 1, 1);
+    m_out[out_v_offset + 2].color = vec3(1, 1, 1);
+    m_out[out_v_offset + 3].color = vec3(1, 0, 1);
+
+    gl_PrimitiveTriangleIndicesEXT[out_i_offset + 0] = uvec3(2, 1, 0) + out_v_offset;
+    gl_PrimitiveTriangleIndicesEXT[out_i_offset + 1] = uvec3(3, 2, 0) + out_v_offset;
+}

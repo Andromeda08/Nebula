@@ -2,6 +2,11 @@
 
 namespace Nebula::ns
 {
+    Mesh::Mesh(const std::string& name)
+    : m_name(name)
+    {
+    }
+
     Mesh::Mesh(const MeshCreateInfo& create_info,
                const std::shared_ptr<nvk::Device>& device,
                const std::shared_ptr<nvk::CommandPool>& command_pool)

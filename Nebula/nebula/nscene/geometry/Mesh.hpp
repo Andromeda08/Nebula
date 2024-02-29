@@ -54,6 +54,8 @@ namespace Nebula::ns
     class Mesh
     {
     public:
+        Mesh(const std::string& name);
+
         Mesh(const MeshCreateInfo& create_info,
              const std::shared_ptr<nvk::Device>& device,
              const std::shared_ptr<nvk::CommandPool>& command_pool);
@@ -76,7 +78,7 @@ namespace Nebula::ns
             };
         }
 
-    private:
+    protected:
         const std::string               m_name;
         std::shared_ptr<nvk::Buffer>    m_vertex_buffer;
         uint32_t                        m_index_count {0};

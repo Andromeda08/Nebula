@@ -14,7 +14,7 @@ def collect_shaders():
         shaders_in_dir = glob.glob(f"{shader_sources}/*")
         for sh in shaders_in_dir:
             sh_file = sh.rsplit("\\")[-1]
-            if (".glsl" not in sh) and ("." in sh):
+            if ("common.glsl" not in sh) and ("." in sh):
                 shaders.append(f"{shader_sources}/{sh_file}")
 
 
@@ -38,7 +38,7 @@ def compile_shaders():
 def copy_shaders():
     compiled_shaders = glob.glob(f"bin/*")
     for shader in compiled_shaders:
-        shutil.copy2(shader, "../cmake-build-debug")
+        shutil.copy2(shader, "../cmake-build-debug/Nebula/samples")
     if os.path.exists("../out"):
         for shader in compiled_shaders:
             shutil.copy2(shader, "../out")

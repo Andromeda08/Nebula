@@ -55,12 +55,14 @@ namespace Nebula::ns
             .position = glm::vec4(-12.0f, 10, 5.0f, 1.0f),
             .color = glm::vec4(1.0f),
         };
+        m_lights.push_back(light);
 
         // Default objects [n = 1024 + 1]
         Object plane {};
         plane.mesh = m_meshes["cube"];
         plane.name = std::format("Object {}", m_objects.size() + 1);
         plane.transform.scale = { 192.0f, 0.05f, 192.0f};
+        m_objects.push_back(plane);
 
         std::vector<glm::vec4> color_pool = {
             {1.0f, 1.0f, 0.0f,  1.0f}, {0.0f, 0.8f, 1.0f,  1.0f},
