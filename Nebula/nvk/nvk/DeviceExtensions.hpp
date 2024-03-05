@@ -78,6 +78,7 @@ namespace Nebula::nvk
                 VK_EXT_MESH_SHADER_EXTENSION_NAME,
                 //VK_NV_OPTICAL_FLOW_EXTENSION_NAME,
                 VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
+                VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
             });
         }
 

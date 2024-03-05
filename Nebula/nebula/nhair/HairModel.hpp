@@ -17,7 +17,6 @@ namespace Nebula::nhair
     struct Vertex
     {
         glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-        //glm::vec4 thickness = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
     };
 
     // CPU Only
@@ -41,9 +40,10 @@ namespace Nebula::nhair
 
     struct StrandDescription
     {
-        int32_t                 id;
-        int32_t                 point_count;
-        int32_t                 strandlet_count;
+        int32_t strand_id {0};
+        int32_t point_count {0};
+        int32_t strandlet_count {0};
+        int32_t vertex_offset {0};
     };
 
     struct HairBufferAddresses
@@ -70,6 +70,10 @@ class HairModel// : public ns::Mesh
         void draw(const vk::CommandBuffer& command_buffer) const;
 
         void update(const vk::CommandBuffer& command_buffer);
+
+        int32_t vertex_count() const { return m_vertices.size(); }
+
+        int32_t strand_count() const { return m_strands.size(); }
 
         ~HairModel() = default;
 

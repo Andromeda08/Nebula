@@ -3,6 +3,7 @@
 
 #include <format>
 #include <iostream>
+#include <numeric>
 
 namespace Nebula::nhair
 {
@@ -73,9 +74,11 @@ namespace Nebula::nhair
 
             // 3. Strand Description
             StrandDescription strand_description {
-                .id = i,
+                .strand_id = i,
                 .point_count = strand.point_count,
                 .strandlet_count = strandlet_count,
+                .vertex_offset = std::accumulate(std::begin(m_strand_descriptions), std::end(m_strand_descriptions),
+                                                 0, [](int32_t c, const StrandDescription& sd){ return c + sd.point_count; }),
             };
             m_strand_descriptions.push_back(strand_description);
 

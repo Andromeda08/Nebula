@@ -7,6 +7,7 @@ import subprocess
 shaders = []
 bin_dir = "bin"
 target_env = "vulkan1.3"
+target_dir = "Nebula/samples"
 
 
 def collect_shaders():
@@ -14,7 +15,7 @@ def collect_shaders():
         shaders_in_dir = glob.glob(f"{shader_sources}/*")
         for sh in shaders_in_dir:
             sh_file = sh.rsplit("\\")[-1]
-            if ("common.glsl" not in sh) and ("." in sh):
+            if ("common.glsl" not in sh) and (".h" not in sh) and ("." in sh):
                 shaders.append(f"{shader_sources}/{sh_file}")
 
 
@@ -38,10 +39,12 @@ def compile_shaders():
 def copy_shaders():
     compiled_shaders = glob.glob(f"bin/*")
     for shader in compiled_shaders:
-        shutil.copy2(shader, "../cmake-build-debug/Nebula/samples")
-    if os.path.exists("../out"):
+        shutil.copy2(shader, f"../cmake-build-debug/{target_dir}")
+    
+    msvc_build_exists = os.path.exists(f"../out/build/x64-debug/{target_dir}")
+    if msvc_build_exists:
         for shader in compiled_shaders:
-            shutil.copy2(shader, "../out")
+            shutil.copy2(shader, f"../out/build/x64-debug/{target_dir}")
     print(f"Copied {len(compiled_shaders)} shader(s) to build directory")
 
 

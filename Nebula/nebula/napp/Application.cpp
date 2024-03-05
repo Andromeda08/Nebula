@@ -70,11 +70,11 @@ namespace Nebula
 
         nvk::PipelineCreateInfo pipeline_create_info;
         pipeline_create_info
-            .add_push_constant({ vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants) })
+            .add_push_constant({ vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants) })
             .add_descriptor_set_layout(m_descriptor->layout())
             .set_pipeline_type(nvk::PipelineType::eGraphics)
-            .add_shader("hair.task.spv", vk::ShaderStageFlagBits::eTaskEXT)
-            .add_shader("old_hair.mesh.spv", vk::ShaderStageFlagBits::eMeshEXT)
+            .add_shader("hair.task.glsl.spv", vk::ShaderStageFlagBits::eTaskEXT)
+            .add_shader("hair.mesh.glsl.spv", vk::ShaderStageFlagBits::eMeshEXT)
             .add_shader("hair.frag.spv", vk::ShaderStageFlagBits::eFragment)
             .set_attachment_count(1)
             .set_cull_mode(vk::CullModeFlagBits::eNone)
@@ -96,10 +96,8 @@ namespace Nebula
     void Application::run()
     {
         try {
-            while (!m_window->will_close())
-            {
-                loop();
-            }
+            while (!m_window->will_close()) { loop(); }
+            // loop();
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
         }
@@ -147,12 +145,16 @@ namespace Nebula
 
                 auto buffer_addresses = g_hair->get_hair_buffer_addresses();
                 const HairConstants push_constant {
+                    .model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)),
+                    .buffer_lengths = glm::ivec4(g_hair->vertex_count(), g_hair->strand_count(), 0, 0),
                     .vertex_buffer = buffer_addresses.vertex_buffer,
+                    .strand_descriptions_buffers = buffer_addresses.strand_descriptions_buffer,
                 };
 
-                cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
+                cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
 
-                cmd.drawMeshTasksEXT(1, 1, 1);
+                uint32_t gx = (g_hair->strand_count() + 31) / 32;
+                cmd.drawMeshTasksEXT(4096, 1, 1);
 
             });
 

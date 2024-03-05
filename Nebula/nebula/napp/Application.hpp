@@ -4,6 +4,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <glm/glm.hpp>
 #include <napp/AppConfig.hpp>
 #include <ngui/GUI.hpp>
 #include <nscene/Scene.hpp>
@@ -19,7 +20,10 @@ namespace Nebula
 {
     struct HairConstants
     {
+        glm::mat4 model;
+        glm::ivec4 buffer_lengths;
         uint64_t vertex_buffer;
+        uint64_t strand_descriptions_buffers;
     };
 
     class Application
