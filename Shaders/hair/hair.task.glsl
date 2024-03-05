@@ -61,13 +61,5 @@ void main()
     }
     OUT.baseID = baseID;
 
-#ifdef DEBUG
-    if (laneID > 30) {
-        debugPrintfEXT(
-            "Hello from Task WG #%d Lane #%d\n\tout_strandlet_count = %d\n\tWorking on strand #%d, will spawn %d Mesh Shader work groups\n",
-            baseID, laneID, out_strandlet_count, strand_global, n_strandlets);
-    }
-#endif
-
     EmitMeshTasksEXT(out_strandlet_count, 1, 1);
 }

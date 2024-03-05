@@ -155,7 +155,6 @@ namespace Nebula
 
                 uint32_t gx = (g_hair->strand_count() + 31) / 32;
                 cmd.drawMeshTasksEXT(8192, 1, 1);
-
             });
 
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);
