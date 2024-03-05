@@ -2,6 +2,9 @@
 #extension GL_EXT_mesh_shader : require
 #extension GL_EXT_buffer_reference2 : require
 #extension GL_EXT_scalar_block_layout : enable
+#extension GL_KHR_shader_subgroup_basic : require
+#extension GL_KHR_shader_subgroup_ballot : require
+#extension GL_KHR_shader_subgroup_vote : require
 #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
 
 #extension GL_EXT_debug_printf : enable
@@ -117,6 +120,16 @@ void main()
     SetMeshOutputsEXT(n_vtx, n_tri);
 
     uint vertex_buffer_offset = n_prev_vtxs + clamp((int(strandlet_id) - 1) * WORKGROUP_SIZE, 0, WORKGROUP_SIZE) + laneID;
+
+    if (laneID > 20 && laneID <= vtx_in_slet) { 
+        debugPrintfEXT(
+            "Hello from Mesh WG #%d Lane #%d\n\tWorking on SID #%d, SletID %d (of %d)\n\tCurrent Slet Vtx Count = %d - (%d * (%d - 1)) = %d\n\tQuad count: %d -> V: %d, T %d\n\tVBOffset = %d + clamp((%d - 1) * %d, 0, %d) + %d = %d\n",
+            workGroupID, laneID,
+            strand_id, strandlet_id, n_strandlets,
+            n_vertices, WORKGROUP_SIZE, strandlet_id, vtx_in_slet,
+            n_quads, n_vtx, n_tri,
+            n_prev_vtxs, strandlet_id, WORKGROUP_SIZE, WORKGROUP_SIZE, laneID, vertex_buffer_offset);
+    }
 
     const Vertex quad[4] = build_quad(vertex_buffer_offset);
 

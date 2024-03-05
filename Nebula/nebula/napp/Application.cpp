@@ -154,7 +154,7 @@ namespace Nebula
                 cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
 
                 uint32_t gx = (g_hair->strand_count() + 31) / 32;
-                cmd.drawMeshTasksEXT(4096, 1, 1);
+                cmd.drawMeshTasksEXT(8192, 1, 1);
 
             });
 
