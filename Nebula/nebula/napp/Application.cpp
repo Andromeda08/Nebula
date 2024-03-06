@@ -96,8 +96,8 @@ namespace Nebula
     void Application::run()
     {
         try {
-           //while (!m_window->will_close()) { loop(); }
-           loop();
+           while (!m_window->will_close()) { loop(); }
+           // loop();
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
         }

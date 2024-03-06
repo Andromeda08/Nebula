@@ -74,6 +74,7 @@ vec4 getVertexColor(uint id, uint sid) {
         return vec4(0, 1, 1, 1);
     }
     if (id == 1 || id == 2) {
+        if (laneID == 0) return vec4(1, 1, 1, 1);
         return get_meshlet_color(sid);
     }
     if (id == 3) {
@@ -86,18 +87,14 @@ uint getStrandletVertexCount(uint strandletID, uint totalVertexCount) {
     return min(totalVertexCount - (WORKGROUP_SIZE * strandletID), WORKGROUP_SIZE);
 }
 
-uint getGlobalVertexBufferOffset(uint baseOffset, uint strandletID, uint quadID) {
-    // baseOffset + max{ previousStrandletsVertexSum, 0 } + currentQuad
-    uint result = baseOffset + max(strandletID * WORKGROUP_SIZE, 0) + quadID;
-    if (strandletID != 0) result--;
-    // if (IN.baseID > 0) result++;
-    return result;
+uint getGlobalVertexBufferOffset(uint baseOffset, uint strandletID) {
+    return baseOffset + strandletID * (WORKGROUP_SIZE) + laneID;
 }
 
 void main()
 {
-    uint deltaID = 0;
-    uint k = 0;
+    uint deltaID = 0;   // Strandlet offset
+    uint k = 0;         // Strand    offset
     for (uint i = 0; i < WORKGROUP_SIZE; i++) {
         if (workGroupID < uint(IN.deltaID[i])) break;
         deltaID = uint(IN.deltaID[i]);
@@ -107,37 +104,27 @@ void main()
     // Current [Strand] information
     // baseID:           first strand processed by this Workgroup   | [0, 32, 64, ... n*32]
     // baseID + deltaID: current strand processed by this Workgroup | deltaID[i] in [0, 31]
-    uint       current_strandID    = IN.baseID + k;                             // 32 + k
+    uint       current_strandID    = IN.baseID + k;                                             // 32 + k
     StrandDesc strand_description  = getStrandDescription(current_strandID);
     uint       strand_vertex_count = strand_description.vertex_count;
     uint       base_vertex_offset  = strand_description.vertex_offset;
 
     // Current [Strandlet] information
-    uint strandletID        = /*IN.baseID + */ workGroupID - deltaID;                // 32 + WG - deltaID, 24th wg: 56 +
-    uint strandlet_vertices = getStrandletVertexCount(strandletID, strand_vertex_count); 
-
-    // Do no work if current workgroup must process less than 32 vertices
-    if (laneID > strandlet_vertices) return;
+    uint strandletID        = workGroupID - deltaID;
+    uint strandlet_vertices = getStrandletVertexCount(strandletID, strand_vertex_count);
     
     // Calculate output parameters
     uint n_quads = strandlet_vertices - 1;
     uint n_vtx   = n_quads * 4;
     uint n_tri   = n_quads * 2;
 
+    // Do no work if current lane exceeds quad count
+    if (laneID > n_quads) return;
+
     SetMeshOutputsEXT(n_vtx, n_tri);
 
     // Calculate global offset into the vertex buffer
-    uint vertex_buffer_offset = getGlobalVertexBufferOffset(base_vertex_offset, strandletID, laneID);
-
-    if (laneID == 0 && workGroupID > 56) {
-        debugPrintfEXT(
-            "[MS|wg %d|b %d] SD: %d, %d, %d, %d | k: %d | S: %d | Slet: %d | %d vtx | %d offset | %d q | %d v | %d t\n",
-            workGroupID, IN.baseID,
-            strand_description.strand_id, strand_description.vertex_count, strand_description.strandlet_count, strand_description.vertex_offset,
-            k, current_strandID, strandletID,
-            strandlet_vertices, vertex_buffer_offset,
-            n_quads, n_vtx, n_tri);
-    }
+    uint vertex_buffer_offset = base_vertex_offset + (strandletID * WORKGROUP_SIZE) + laneID - strandletID;
 
     const Vertex quad[4] = build_quad(vertex_buffer_offset);
 

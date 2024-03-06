@@ -52,7 +52,7 @@ namespace Nebula::nhair
         {
             auto strand_vertex_count = static_cast<int32_t>((m_strand_vertex_counts.empty())
                 ? m_hair_file.GetHeader().d_segments + 1
-                : m_strand_vertex_counts[i]);
+                : m_strand_vertex_counts[i] + 1);
 
             // 1. Strand
             Strand strand {
