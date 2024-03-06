@@ -41,7 +41,7 @@ namespace Nebula::nvk
     std::shared_ptr<Framebuffer> Framebuffer::Builder::create(const std::shared_ptr<Device>& device)
     {
         return _attachments.empty()
-               ? std::make_shared<Framebuffer>(_per_fb_attachments, _render_pass, _size, _count, device, _name)
+               ? std::make_shared<Framebuffer>(_per_fb_attachments, _attachments, _render_pass, _size, _count, device, _name)
                : std::make_shared<Framebuffer>(_attachments, _render_pass, _size, _count, device, _name);
     }
 
@@ -79,7 +79,8 @@ namespace Nebula::nvk
 //        }
     }
 
-    Framebuffer::Framebuffer(std::map<uint32_t, vk::ImageView>& attachments,
+    Framebuffer::Framebuffer(std::map<uint32_t, vk::ImageView>& per_frame_attachments,
+                             const std::vector<vk::ImageView>& attachments,
                              const vk::RenderPass& render_pass,
                              const vk::Extent2D& size,
                              uint32_t count,
@@ -87,7 +88,6 @@ namespace Nebula::nvk
                              const std::string& name)
     {
         vk::FramebufferCreateInfo create_info;
-        create_info.setAttachmentCount(1);
         create_info.setLayers(1);
         create_info.setRenderPass(render_pass);
         create_info.setHeight(size.height);
@@ -96,8 +96,13 @@ namespace Nebula::nvk
         m_framebuffers.resize(count);
         for (uint32_t i = 0; i < count; i++)
         {
-            const auto& image_view = attachments[i];
-            create_info.setPAttachments(&image_view);
+            std::vector<vk::ImageView> att = attachments;
+            att.push_back(per_frame_attachments[i]);
+
+            create_info
+                .setPAttachments(att.data())
+                .setAttachmentCount(att.size());
+
             vk::Result result = device->handle().createFramebuffer(&create_info, nullptr, &m_framebuffers[i]);
             if (result != vk::Result::eSuccess)
             {

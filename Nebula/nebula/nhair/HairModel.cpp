@@ -3,7 +3,7 @@
 
 #include <format>
 #include <iostream>
-#include <numeric>
+#include <sstream>
 
 namespace Nebula::nhair
 {
@@ -38,7 +38,11 @@ namespace Nebula::nhair
     {
         if (m_hair_file.GetSegmentsArray() != nullptr)
         {
-            throw std::runtime_error("Sounds like a problem for future me :D");
+            std::cout << "HairModel has segments array." << std::endl;
+            uint16_t* segments_array = m_hair_file.GetSegmentsArray();
+            for (int32_t i = 0; i < m_hair_file.GetHeader().hair_count; i++) {
+                m_strand_vertex_counts.push_back(segments_array[i]);
+            }
         }
 
         std::span vertex_span { m_vertices };
@@ -46,7 +50,9 @@ namespace Nebula::nhair
         int32_t vtx_offset = 0;
         for (int32_t i = 0; i < m_hair_file.GetHeader().hair_count; i++)
         {
-            int32_t strand_vertex_count = m_hair_file.GetHeader().d_segments + 1;
+            auto strand_vertex_count = static_cast<int32_t>((m_strand_vertex_counts.empty())
+                ? m_hair_file.GetHeader().d_segments + 1
+                : m_strand_vertex_counts[i]);
 
             // 1. Strand
             Strand strand {
@@ -77,9 +83,18 @@ namespace Nebula::nhair
                 .strand_id = i,
                 .point_count = strand.point_count,
                 .strandlet_count = strandlet_count,
-                .vertex_offset = std::accumulate(std::begin(m_strand_descriptions), std::end(m_strand_descriptions),
-                                                 0, [](int32_t c, const StrandDescription& sd){ return c + sd.point_count; }),
+                .vertex_offset = vtx_offset,
             };
+            if (i < 8) {
+                std::stringstream slet;
+                for (int32_t x = 0; x < strandlets.size(); x++) {
+                    if (x != 0) {
+                        slet << " | ";
+                    }
+                    slet << strandlets[x].point_count;
+                }
+                std::cout << std::format("Strand #{} : {} Strandlets [{}]", i, strandlet_count, slet.str()) << std::endl;
+            }
             m_strand_descriptions.push_back(strand_description);
 
             vtx_offset += strand_vertex_count;

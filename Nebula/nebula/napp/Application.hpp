@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 #include <memory>
+#include <optional>
 #include <string>
 #include <glm/glm.hpp>
 #include <napp/AppConfig.hpp>
@@ -29,7 +30,7 @@ namespace Nebula
     class Application
     {
     public:
-        explicit Application(const std::string& config_json = "");
+        Application(std::optional<std::string> hair_file = std::nullopt, const std::string& config_json = "");
 
         void run();
 

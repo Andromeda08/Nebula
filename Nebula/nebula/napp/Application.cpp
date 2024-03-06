@@ -16,7 +16,7 @@ namespace Nebula
     uint32_t Application::s_current_frame = 0;
     Size2D   Application::s_extent = {};
 
-    Application::Application(const std::string& config_json)
+    Application::Application(std::optional<std::string> hair_file, const std::string& config_json)
     {
         auto wnd_create_info = wsi::WindowCreateInfo()
             .set_size({ m_config.wnd_width, m_config.wnd_height })
@@ -45,7 +45,7 @@ namespace Nebula
 
         g_clear_value[0].setColor(std::array{ 0.0f, 0.0f, 0.0f, 1.0f });
 
-        g_hair = std::make_shared<nhair::HairModel>("wStraight.hair", m_context->device(), m_context->command_pool());
+        g_hair = std::make_shared<nhair::HairModel>((hair_file.has_value() ? hair_file.value() : "wWavy.hair"), m_context->device(), m_context->command_pool());
 
         nvk::DescriptorCreateInfo descriptor_create_info;
         descriptor_create_info
@@ -96,8 +96,8 @@ namespace Nebula
     void Application::run()
     {
         try {
-            while (!m_window->will_close()) { loop(); }
-            // loop();
+           //while (!m_window->will_close()) { loop(); }
+           loop();
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
         }
@@ -154,7 +154,7 @@ namespace Nebula
                 cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
 
                 uint32_t gx = (g_hair->strand_count() + 31) / 32;
-                cmd.drawMeshTasksEXT(8192, 1, 1);
+                cmd.drawMeshTasksEXT(32, 1, 1);
             });
 
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);

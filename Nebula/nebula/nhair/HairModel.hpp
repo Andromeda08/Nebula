@@ -71,9 +71,9 @@ class HairModel// : public ns::Mesh
 
         void update(const vk::CommandBuffer& command_buffer);
 
-        int32_t vertex_count() const { return m_vertices.size(); }
+        int32_t vertex_count() const { return static_cast<int32_t>(m_vertices.size()); }
 
-        int32_t strand_count() const { return m_strands.size(); }
+        int32_t strand_count() const { return static_cast<int32_t>(m_strands.size()); }
 
         ~HairModel() = default;
 
@@ -89,6 +89,7 @@ class HairModel// : public ns::Mesh
         std::string                         m_file_path;
         cyHairFile                          m_hair_file;
         std::vector<Vertex>                 m_vertices;
+        std::vector<int32_t>                m_strand_vertex_counts;
         std::vector<Strand>                 m_strands;
         std::vector<Strandlet>              m_strandlets;
         std::vector<StrandDescription>      m_strand_descriptions;

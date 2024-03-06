@@ -48,7 +48,8 @@ namespace Nebula::nvk
                     const std::shared_ptr<Device>& device,
                     const std::string& name = "Framebuffer");
 
-        Framebuffer(std::map<uint32_t, vk::ImageView>& attachments,
+        Framebuffer(std::map<uint32_t, vk::ImageView>& per_frame_attachments,
+                    const std::vector<vk::ImageView>& attachments,
                     const vk::RenderPass& render_pass,
                     const vk::Extent2D& size,
                     uint32_t count,

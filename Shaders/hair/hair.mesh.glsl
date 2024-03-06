@@ -37,6 +37,7 @@ layout (binding = 0) uniform CameraData {
 
 // Input --------------------------------
 taskPayloadSharedEXT Task IN;
+
 uint workGroupID = gl_WorkGroupID.x;
 uint laneID      = gl_LocalInvocationID.x;
 
@@ -46,10 +47,9 @@ layout (location = 0) out Mesh m_out[];
 // Functions ----------------------------
 int getStrandCount() { return hair_constants.buffer_lengths.y; }
 
-// Description: [ ID, Vertex Count, Strandlet Count, Vertex_Offset ]
-ivec4 getStrandDescription(uint id) {
+StrandDesc getStrandDescription(uint id) {
     StrandDescriptions sds = StrandDescriptions(hair_constants.sdesc_address);
-    return sds.descriptions[id].desc;
+    return sds.descriptions[id];
 }
 
 Vertex[4] build_quad(uint offset) {
@@ -69,12 +69,12 @@ Vertex[4] build_quad(uint offset) {
     return result;
 }
 
-vec4 getVertexColor(uint id) {
+vec4 getVertexColor(uint id, uint sid) {
     if (id == 0) {
         return vec4(0, 1, 1, 1);
     }
     if (id == 1 || id == 2) {
-        return vec4(1, 1, 1, 1);
+        return get_meshlet_color(sid);
     }
     if (id == 3) {
         return vec4(1, 0, 1, 1);
@@ -82,41 +82,62 @@ vec4 getVertexColor(uint id) {
     return vec4(0, 0, 0, 1);
 }
 
-uint currentStrandletVertexCount(uint i, uint vtx_count) {
-    if (vtx_count < 32) {
-        if (i == 0) return vtx_count;
-        else        return 0;
-    }
-    return clamp(vtx_count - (WORKGROUP_SIZE * (i - 1)), 0, WORKGROUP_SIZE);
+uint getStrandletVertexCount(uint strandletID, uint totalVertexCount) {
+    return min(totalVertexCount - (WORKGROUP_SIZE * strandletID), WORKGROUP_SIZE);
+}
+
+uint getGlobalVertexBufferOffset(uint baseOffset, uint strandletID, uint quadID) {
+    // baseOffset + max{ previousStrandletsVertexSum, 0 } + currentQuad
+    uint result = baseOffset + max(strandletID * WORKGROUP_SIZE, 0) + quadID;
+    if (strandletID != 0) result--;
+    // if (IN.baseID > 0) result++;
+    return result;
 }
 
 void main()
 {
     uint deltaID = 0;
+    uint k = 0;
     for (uint i = 0; i < WORKGROUP_SIZE; i++) {
         if (workGroupID < uint(IN.deltaID[i])) break;
         deltaID = uint(IN.deltaID[i]);
-    } 
-
-    uint  strand_id    = IN.baseID + deltaID;
-    ivec4 strand_desc  = getStrandDescription(strand_id);
-    uint  n_strandlets = strand_desc.z;
-    uint  n_vertices   = strand_desc.y;
-    uint  n_prev_vtxs  = strand_desc.w;
-    uint  strandlet_id = deltaID - workGroupID;
-    uint  vtx_in_slet  = currentStrandletVertexCount(strandlet_id, n_vertices);
-
-    if (laneID > vtx_in_slet) {
-        return;
+        k = i;
     }
+
+    // Current [Strand] information
+    // baseID:           first strand processed by this Workgroup   | [0, 32, 64, ... n*32]
+    // baseID + deltaID: current strand processed by this Workgroup | deltaID[i] in [0, 31]
+    uint       current_strandID    = IN.baseID + k;                             // 32 + k
+    StrandDesc strand_description  = getStrandDescription(current_strandID);
+    uint       strand_vertex_count = strand_description.vertex_count;
+    uint       base_vertex_offset  = strand_description.vertex_offset;
+
+    // Current [Strandlet] information
+    uint strandletID        = /*IN.baseID + */ workGroupID - deltaID;                // 32 + WG - deltaID, 24th wg: 56 +
+    uint strandlet_vertices = getStrandletVertexCount(strandletID, strand_vertex_count); 
+
+    // Do no work if current workgroup must process less than 32 vertices
+    if (laneID > strandlet_vertices) return;
     
-    uint n_quads = vtx_in_slet - 1;
+    // Calculate output parameters
+    uint n_quads = strandlet_vertices - 1;
     uint n_vtx   = n_quads * 4;
     uint n_tri   = n_quads * 2;
 
     SetMeshOutputsEXT(n_vtx, n_tri);
 
-    uint vertex_buffer_offset = n_prev_vtxs + clamp((int(strandlet_id) - 1) * WORKGROUP_SIZE, 0, WORKGROUP_SIZE) + laneID;
+    // Calculate global offset into the vertex buffer
+    uint vertex_buffer_offset = getGlobalVertexBufferOffset(base_vertex_offset, strandletID, laneID);
+
+    if (laneID == 0 && workGroupID > 56) {
+        debugPrintfEXT(
+            "[MS|wg %d|b %d] SD: %d, %d, %d, %d | k: %d | S: %d | Slet: %d | %d vtx | %d offset | %d q | %d v | %d t\n",
+            workGroupID, IN.baseID,
+            strand_description.strand_id, strand_description.vertex_count, strand_description.strandlet_count, strand_description.vertex_offset,
+            k, current_strandID, strandletID,
+            strandlet_vertices, vertex_buffer_offset,
+            n_quads, n_vtx, n_tri);
+    }
 
     const Vertex quad[4] = build_quad(vertex_buffer_offset);
 
@@ -126,7 +147,7 @@ void main()
     const mat4 MVP = camera.proj * camera.view * hair_constants.model;
     for (uint i = 0; i < 4; i++) {
         gl_MeshVerticesEXT[vtx_out_offset + i].gl_Position = MVP * quad[i].position;
-        m_out[vtx_out_offset + i].color = getVertexColor(i);
+        m_out[vtx_out_offset + i].color = getVertexColor(i, current_strandID);
     }
 
     gl_PrimitiveTriangleIndicesEXT[tri_out_offset + 0] = uvec3(2, 1, 0) + vtx_out_offset;

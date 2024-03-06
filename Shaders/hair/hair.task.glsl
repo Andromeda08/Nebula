@@ -1,6 +1,7 @@
 #version 460
 #extension GL_EXT_mesh_shader : require
 #extension GL_EXT_buffer_reference2 : require
+#extension GL_KHR_shader_subgroup_ballot : require
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_KHR_shader_subgroup_arithmetic : enable
 #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
@@ -33,33 +34,38 @@ taskPayloadSharedEXT Task OUT;
 // Functions ----------------------------
 int getStrandCount() { return hair_constants.buffer_lengths.y; }
 
-// Description: [ ID, Vertex Count, Strandlet Count, Vertex_Offset ]
-ivec4 getStrandDescription(uint id) {
+StrandDesc getStrandDescription(uint id) {
     StrandDescriptions sds = StrandDescriptions(hair_constants.sdesc_address);
-    return sds.descriptions[id].desc;
+    return sds.descriptions[id];
 }
 
 void main()
 {
-    uint out_strandlet_count = 0;
+    uint l_strandID = laneID;                      // Relative to Workgroup (Local) Strand ID
+    uint g_strandID = baseID + l_strandID;        // Global Strand ID
 
-    uint strand_local  = laneID;
-    uint strand_global = baseID + strand_local;
-    
-    if (strand_global >= getStrandCount()) {
+    if (g_strandID >= getStrandCount()) {
         return;
     }
 
-    ivec4 strand_desc  = getStrandDescription(strand_global);
-    int   n_strandlets = strand_desc.z;
+    StrandDesc strand_description = getStrandDescription(g_strandID);
+    int        strandlet_count    = strand_description.strandlet_count;
+    uint       strand_wg_offset   = subgroupExclusiveAdd(strandlet_count);
 
-    out_strandlet_count += n_strandlets;
-
-    uint strand_work_group_offset = subgroupExclusiveAdd(n_strandlets);
     if (laneID != 0) {
-        OUT.deltaID[laneID - 1] = uint8_t(strand_work_group_offset);
+        OUT.deltaID[laneID] = uint8_t(strand_wg_offset);
     }
     OUT.baseID = baseID;
 
-    EmitMeshTasksEXT(out_strandlet_count, 1, 1);
+    // Task WG local
+    uint sum_strandlet_count = subgroupBroadcast(strand_wg_offset + strandlet_count, 31);
+
+    // if (laneID == 0) {
+    //     debugPrintfEXT(
+    //         "[TS|%d] Launched %d Mesh workgroups. (baseID: %d)\n",
+    //         gl_WorkGroupID.x, sum_strandlet_count, baseID);
+    // }
+
+    // Launch (Local Strandlet Count) number of Mesh Shader Workgroups
+    EmitMeshTasksEXT(sum_strandlet_count, 1, 1);
 }
