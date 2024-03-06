@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include <iostream>
 #include <nhair/HairModel.hpp>
+#include <nvk/Image.hpp>
 #include <nvk/render/Framebuffer.hpp>
 #include <nvk/render/Pipeline.hpp>
 #include <nvk/render/RenderPass.hpp>
@@ -10,8 +11,10 @@ namespace Nebula
     vk::RenderPass g_render_pass;
     std::shared_ptr<nvk::Pipeline> g_pipeline;
     std::shared_ptr<nvk::Framebuffer> g_framebuffers;
-    std::array<vk::ClearValue, 1> g_clear_value {};
+    std::array<vk::ClearValue, 2> g_clear_value {};
     std::shared_ptr<nhair::HairModel> g_hair;
+    std::array<vk::Framebuffer, 2> g_fbs;
+    std::shared_ptr<nvk::Image> g_depth;
 
     uint32_t Application::s_current_frame = 0;
     Size2D   Application::s_extent = {};
@@ -37,13 +40,23 @@ namespace Nebula
                                                      true);
         m_scenes.push_back(m_active_scene);
 
+        auto depth_info = nvk::ImageCreateInfo()
+            .set_aspect_flags(vk::ImageAspectFlagBits::eDepth)
+            .set_extent(m_swapchain->extent())
+            .set_format(vk::Format::eD32Sfloat)
+            .set_usage_flags(vk::ImageUsageFlagBits::eDepthStencilAttachment)
+            .set_name("Depth Buffer");
+        g_depth = std::make_shared<nvk::Image>(depth_info, m_context->device());
+
         g_render_pass = nvk::RenderPass::Builder()
             .add_color_attachment(m_swapchain->format(), vk::ImageLayout::ePresentSrcKHR)
+            .set_depth_attachment(g_depth->properties().format)
             .make_subpass()
             .with_name("Hair")
             .create(m_context->device());
 
         g_clear_value[0].setColor(std::array{ 0.0f, 0.0f, 0.0f, 1.0f });
+        g_clear_value[1].setDepthStencil({ 1.0f, 0 });
 
         g_hair = std::make_shared<nhair::HairModel>((hair_file.has_value() ? hair_file.value() : "wWavy.hair"), m_context->device(), m_context->command_pool());
 
@@ -83,14 +96,23 @@ namespace Nebula
 
         g_pipeline = std::make_shared<nvk::Pipeline>(pipeline_create_info, m_context->device());
 
-        g_framebuffers = nvk::Framebuffer::Builder()
-            .add_attachment_for_index(0, m_swapchain->image_view(0))
-            .add_attachment_for_index(1, m_swapchain->image_view(1))
-            .set_render_pass(g_render_pass)
-            .set_size(m_swapchain->extent())
-            .set_count(m_swapchain->image_count())
-            .set_name("Present Framebuffer")
-            .create(m_context->device());
+        auto fbci = vk::FramebufferCreateInfo()
+            .setRenderPass(g_render_pass)
+            .setHeight(m_swapchain->extent().height)
+            .setWidth(m_swapchain->extent().width)
+            .setLayers(1)
+            .setAttachmentCount(2);
+        std::vector<vk::ImageView> attachments { m_swapchain->image_view(0), g_depth->image_view() };
+        for (int32_t i = 0; i < 2; i++) {
+            attachments[0] = m_swapchain->image_view(i);
+            fbci.setPAttachments(attachments.data());
+
+            vk::Result result = m_context->device()->handle().createFramebuffer(&fbci, nullptr, &g_fbs[i]);
+            if (result != vk::Result::eSuccess)
+            {
+                throw std::runtime_error("[Error] Framebuffer creation failed.");
+            }
+        }
     }
 
     void Application::run()
@@ -135,8 +157,8 @@ namespace Nebula
         m_swapchain->set_viewport_scissor(command_buffer);
 
         nvk::RenderPass::Execute()
-            .with_clear_values<1>(g_clear_value)
-            .with_framebuffer(g_framebuffers->get(s_current_frame))
+            .with_clear_values<2>(g_clear_value)
+            .with_framebuffer(g_fbs[s_current_frame])
             .with_render_area({ {0, 0}, m_swapchain->extent() })
             .with_render_pass(g_render_pass)
             .execute(command_buffer, [&](const vk::CommandBuffer& cmd) {
@@ -154,7 +176,7 @@ namespace Nebula
                 cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
 
                 uint32_t gx = (g_hair->strand_count() + 31) / 32;
-                cmd.drawMeshTasksEXT(32, 1, 1);
+                cmd.drawMeshTasksEXT(1024, 1, 1);
             });
 
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);
