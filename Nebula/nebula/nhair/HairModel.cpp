@@ -3,7 +3,6 @@
 
 #include <format>
 #include <iostream>
-#include <sstream>
 
 namespace Nebula::nhair
 {
@@ -38,7 +37,6 @@ namespace Nebula::nhair
     {
         if (m_hair_file.GetSegmentsArray() != nullptr)
         {
-            std::cout << "HairModel has segments array." << std::endl;
             uint16_t* segments_array = m_hair_file.GetSegmentsArray();
             for (int32_t i = 0; i < m_hair_file.GetHeader().hair_count; i++) {
                 m_strand_vertex_counts.push_back(segments_array[i]);
@@ -85,16 +83,6 @@ namespace Nebula::nhair
                 .strandlet_count = strandlet_count,
                 .vertex_offset = vtx_offset,
             };
-            if (i < 8) {
-                std::stringstream slet;
-                for (int32_t x = 0; x < strandlets.size(); x++) {
-                    if (x != 0) {
-                        slet << " | ";
-                    }
-                    slet << strandlets[x].point_count;
-                }
-                std::cout << std::format("Strand #{} : {} Strandlets [{}]", i, strandlet_count, slet.str()) << std::endl;
-            }
             m_strand_descriptions.push_back(strand_description);
 
             vtx_offset += strand_vertex_count;
