@@ -62,7 +62,7 @@ namespace Nebula
 
         nvk::DescriptorCreateInfo descriptor_create_info;
         descriptor_create_info
-            .add(Nebula::nvk::DescriptorType::eUniformBuffer, 0, vk::ShaderStageFlagBits::eMeshEXT)
+            .add(Nebula::nvk::DescriptorType::eUniformBuffer, 0, vk::ShaderStageFlagBits::eMeshEXT | vk::ShaderStageFlagBits::eFragment)
             .set_count(2)
             .set_name("Camera")
             .enable_ring_mode();
@@ -176,7 +176,7 @@ namespace Nebula
                 cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
 
                 uint32_t gx = (g_hair->strand_count() + 31) / 32;
-                cmd.drawMeshTasksEXT(1024, 1, 1);
+                cmd.drawMeshTasksEXT(1562, 1, 1);
             });
 
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);

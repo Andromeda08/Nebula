@@ -88,11 +88,13 @@ class HairModel// : public ns::Mesh
 
         std::string                         m_file_path;
         cyHairFile                          m_hair_file;
+
         std::vector<Vertex>                 m_vertices;
         std::vector<int32_t>                m_strand_vertex_counts;
         std::vector<Strand>                 m_strands;
         std::vector<Strandlet>              m_strandlets;
         std::vector<StrandDescription>      m_strand_descriptions;
+
         std::shared_ptr<nvk::Buffer>        m_strand_descriptions_buffer;
         std::shared_ptr<nvk::Buffer>        m_vertex_buffer;
 

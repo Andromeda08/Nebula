@@ -15,6 +15,9 @@ struct Task {
 
 struct Mesh {
     vec4 color;
+    vec4 world_position;
+    vec4 world_tangent;
+    vec2 uv;
 };
 
 struct Vertex {

@@ -57,14 +57,13 @@ Vertex[4] build_quad(uint offset) {
     Vertex result[4];
 
     result[0] = v.vertices[offset + 0];
-
     result[1] = v.vertices[offset + 0];
-    result[1].position += vec4(1, 0, 0, 0);
-
     result[2] = v.vertices[offset + 1];
-    result[2].position += vec4(1, 0, 0, 0);
-
     result[3] = v.vertices[offset + 1];
+
+    float t = 0.15;
+    result[1].position += vec4(t, 0, 0, 0);
+    result[2].position += vec4(t, 0, 0, 0);
 
     return result;
 }
@@ -93,8 +92,8 @@ uint getGlobalVertexBufferOffset(uint baseOffset, uint strandletID) {
 
 void main()
 {
-    uint deltaID = 0;   // Strandlet offset
-    uint k = 0;         // Strand    offset
+    uint deltaID = 0;
+    uint k = 0;
     for (uint i = 0; i < WORKGROUP_SIZE; i++) {
         if (workGroupID < uint(IN.deltaID[i])) break;
         deltaID = uint(IN.deltaID[i]);
@@ -102,9 +101,7 @@ void main()
     }
 
     // Current [Strand] information
-    // baseID:           first strand processed by this Workgroup   | [0, 32, 64, ... n*32]
-    // baseID + deltaID: current strand processed by this Workgroup | deltaID[i] in [0, 31]
-    uint       current_strandID    = IN.baseID + k;                                             // 32 + k
+    uint       current_strandID    = IN.baseID + k;
     StrandDesc strand_description  = getStrandDescription(current_strandID);
     uint       strand_vertex_count = strand_description.vertex_count;
     uint       base_vertex_offset  = strand_description.vertex_offset;
@@ -128,13 +125,21 @@ void main()
 
     const Vertex quad[4] = build_quad(vertex_buffer_offset);
 
+    const vec4 world_tangent = hair_constants.model * vec4((quad[3].position - quad[0].position).xyz, 0);
+
     const uint vtx_out_offset = laneID * 4;
     const uint tri_out_offset = laneID * 2;
 
-    const mat4 MVP = camera.proj * camera.view * hair_constants.model;
+    const mat4 VP = camera.proj * camera.view;
     for (uint i = 0; i < 4; i++) {
-        gl_MeshVerticesEXT[vtx_out_offset + i].gl_Position = MVP * quad[i].position;
-        m_out[vtx_out_offset + i].color = getVertexColor(i, current_strandID);
+        vec4 world_position = hair_constants.model * quad[i].position;
+
+        gl_MeshVerticesEXT[vtx_out_offset + i].gl_Position = VP * world_position;
+
+        m_out[vtx_out_offset + i].color          = getVertexColor(i, current_strandID);
+        m_out[vtx_out_offset + i].world_position = world_position;
+        m_out[vtx_out_offset + i].world_tangent  = world_tangent;
+        m_out[vtx_out_offset + i].uv             = vec2((i << 1) & 2, i & 2);
     }
 
     gl_PrimitiveTriangleIndicesEXT[tri_out_offset + 0] = uvec3(2, 1, 0) + vtx_out_offset;

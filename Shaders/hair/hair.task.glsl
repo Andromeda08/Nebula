@@ -41,8 +41,8 @@ StrandDesc getStrandDescription(uint id) {
 
 void main()
 {
-    uint l_strandID = laneID;                      // Relative to Workgroup (Local) Strand ID
-    uint g_strandID = baseID + l_strandID;        // Global Strand ID
+    uint l_strandID = laneID;                       // Relative to Workgroup (Local) Strand ID
+    uint g_strandID = baseID + l_strandID;          // Global Strand ID
 
     if (g_strandID >= getStrandCount()) {
         return;
@@ -59,12 +59,6 @@ void main()
 
     // Task WG local
     uint sum_strandlet_count = subgroupBroadcast(strand_wg_offset + strandlet_count, 31);
-
-    // if (laneID == 0) {
-    //     debugPrintfEXT(
-    //         "[TS|%d] Launched %d Mesh workgroups. (baseID: %d)\n",
-    //         gl_WorkGroupID.x, sum_strandlet_count, baseID);
-    // }
 
     // Launch (Local Strandlet Count) number of Mesh Shader Workgroups
     EmitMeshTasksEXT(sum_strandlet_count, 1, 1);
