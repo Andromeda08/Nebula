@@ -9,6 +9,8 @@
 #include <napp/AppConfig.hpp>
 #include <ngui/GUI.hpp>
 #include <nscene/Scene.hpp>
+#include <nrg/common/Context.hpp>
+#include <nrg/editor/GraphEditor.hpp>
 #include <nvk/Command.hpp>
 #include <nvk/Context.hpp>
 #include <nvk/Descriptor.hpp>
@@ -30,7 +32,7 @@ namespace Nebula
     class Application
     {
     public:
-        Application(std::optional<std::string> hair_file = std::nullopt, const std::string& config_json = "");
+        explicit Application(std::optional<std::string> hair_file = std::nullopt, const std::string& config_json = "");
 
         void run();
 
@@ -53,6 +55,10 @@ namespace Nebula
         std::shared_ptr<ngui::GUI>                      m_gui;
         std::vector<std::shared_ptr<ns::Scene>>         m_scenes;
         std::shared_ptr<ns::Scene>                      m_active_scene;
+
+        // Render Graph -------------------------------------------------------
+        std::shared_ptr<nrg::Context>                   m_rg_context;
+        std::shared_ptr<nrg::GraphEditor>               m_rg_editor;
 
         std::shared_ptr<nvk::Descriptor>                m_descriptor;
         std::vector<std::shared_ptr<nvk::Buffer>>       m_uniform_buffers;

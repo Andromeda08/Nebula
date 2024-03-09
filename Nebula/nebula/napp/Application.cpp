@@ -40,6 +40,12 @@ namespace Nebula
                                                      true);
         m_scenes.push_back(m_active_scene);
 
+        m_rg_context = std::make_shared<nrg::Context>(m_scenes, *m_context->device(),
+                                                      *m_context->command_pool(), *m_swapchain);
+
+        m_rg_editor = std::make_shared<nrg::GraphEditor>(m_rg_context);
+
+#pragma region hair renderer
         auto depth_info = nvk::ImageCreateInfo()
             .set_aspect_flags(vk::ImageAspectFlagBits::eDepth)
             .set_extent(m_swapchain->extent())
@@ -113,6 +119,7 @@ namespace Nebula
                 throw std::runtime_error("[Error] Framebuffer creation failed.");
             }
         }
+#pragma endregion
     }
 
     void Application::run()
@@ -182,7 +189,9 @@ namespace Nebula
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);
         if (m_config.gui_enabled)
         {
-            m_gui->render(command_buffer, [&](){});
+            m_gui->render(command_buffer, [&](){
+                m_rg_editor->render();
+            });
         }
 
         command_buffer.end();

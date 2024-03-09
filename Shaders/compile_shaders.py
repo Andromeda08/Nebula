@@ -7,7 +7,7 @@ import subprocess
 shaders = []
 bin_dir = "bin"
 target_env = "vulkan1.3"
-target_dir = "Nebula/samples"
+target_dir = "Nebula/nebula"
 
 
 def collect_shaders():

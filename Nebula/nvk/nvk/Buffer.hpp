@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vulkan/vulkan.hpp>
+#include "Command.hpp"
 #include "Device.hpp"
 #include "Image.hpp"
 #include "Utility.hpp"
@@ -72,6 +73,25 @@ namespace Nebula::nvk
         Buffer(const BufferCreateInfo& create_info, const std::shared_ptr<Device>& device);
 
         ~Buffer();
+
+        template <typename T>
+        static std::shared_ptr<Buffer> create_with_data(const BufferCreateInfo& create_info,
+                                                        T* p_data,
+                                                        const std::shared_ptr<Device>& device,
+                                                        const std::shared_ptr<CommandPool>& command_pool)
+        {
+            auto buffer = std::make_shared<Buffer>(create_info, device);
+            auto staging_create_info = BufferCreateInfo()
+                .set_buffer_type(BufferType::eStaging)
+                .set_name(create_info.name)
+                .set_size(create_info.size);
+            auto staging = std::make_shared<Buffer>(staging_create_info, device);
+            staging->set_data(p_data);
+            command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
+                staging->copy_to_buffer(*buffer, command_buffer);
+            });
+            return buffer;
+        }
 
         template <typename T>
         void set_data(T* p_data)

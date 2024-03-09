@@ -10,3 +10,6 @@
 [submodule "ThirdParty/imnodes"]
 	path = ThirdParty/imnodes
 	url = https://github.com/Nelarius/imnodes
+[submodule "ThirdParty/stduuid"]
+	path = ThirdParty/stduuid
+	url = https://github.com/mariusbancila/stduuid.git

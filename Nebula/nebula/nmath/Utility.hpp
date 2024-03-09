@@ -9,7 +9,13 @@ namespace Nebula::nmath
     public:
         static std::default_random_engine               s_generator;
         static std::uniform_real_distribution<float>    s_float_distribution;
+        static std::uniform_int_distribution<int>       s_integer;
     };
+
+    inline static int rand()
+    {
+        return Random::s_integer(Random::s_generator);
+    }
 
     // Generate a random float in [0; 1]
     inline static float randf()

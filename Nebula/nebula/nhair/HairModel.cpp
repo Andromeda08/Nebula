@@ -96,32 +96,13 @@ namespace Nebula::nhair
             .set_buffer_type(nvk::BufferType::eVertex)
             .set_name(name)
             .set_size(sizeof(Vertex) * m_vertices.size());
-        m_vertex_buffer = std::make_shared<nvk::Buffer>(vb_create_info, m_device);
-
-        auto vbstgci = nvk::BufferCreateInfo()
-            .set_buffer_type(nvk::BufferType::eStaging)
-            .set_name(name)
-            .set_size(vb_create_info.size);
-        auto vb_staging = std::make_shared<nvk::Buffer>(vbstgci, m_device);
-        vb_staging->set_data(m_vertices.data());
+        m_vertex_buffer = nvk::Buffer::create_with_data(vb_create_info, m_vertices.data(), m_device, m_command_pool);
 
         auto sdb_create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
             .set_name(name)
             .set_size(sizeof(StrandDescription) * m_strand_descriptions.size());
-        m_strand_descriptions_buffer = std::make_shared<nvk::Buffer>(sdb_create_info, m_device);
-
-        auto sdbstgci = nvk::BufferCreateInfo()
-            .set_buffer_type(nvk::BufferType::eStaging)
-            .set_name(name)
-            .set_size(sdb_create_info.size);
-        auto sdb_staging = std::make_shared<nvk::Buffer>(sdbstgci, m_device);
-        sdb_staging->set_data(m_strand_descriptions.data());
-
-        m_command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
-            vb_staging->copy_to_buffer(*m_vertex_buffer, command_buffer);
-            sdb_staging->copy_to_buffer(*m_strand_descriptions_buffer, command_buffer);
-        });
+        m_strand_descriptions_buffer = nvk::Buffer::create_with_data(sdb_create_info, m_strand_descriptions.data(), m_device, m_command_pool);
     }
 
     void HairModel::draw(const vk::CommandBuffer& command_buffer) const
