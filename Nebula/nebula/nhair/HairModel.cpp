@@ -1,8 +1,6 @@
 #include "HairModel.hpp"
-#include <stdexcept>
-
 #include <format>
-#include <iostream>
+#include <stdexcept>
 
 namespace Nebula::nhair
 {
@@ -15,9 +13,6 @@ namespace Nebula::nhair
         process_vertices();
         process_strands();
         create_buffers();
-
-        std::cout << std::format("Loaded HairModel: {}\n\tProcessed {} vertices\n\tProcessed {} strands\n\tGenerated {} strandlets",
-                                 m_file_path, m_vertices.size(), m_strands.size(), m_strandlets.size()) << std::endl;
     }
 
     void HairModel::load_file()
