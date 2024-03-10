@@ -76,21 +76,21 @@ namespace Nebula::nlog
     // Logging constants ----------------------------------------------
     #pragma region
     #ifdef NLOG_COLORED
-    constexpr const char* p_info    = "\x1b[36mI\x1b[0m";
-    constexpr const char* p_success = "\x1b[32mW\x1b[0m";
-    constexpr const char* p_warning = "\x1b[33mW\x1b[0m";
-    constexpr const char* p_error   = "\x1b[31mE\x1b[0m";
-    constexpr const char* p_verbose = "\x1b[35mV\x1b[0m";
+    constexpr const char* p_info        = "\x1b[36mI\x1b[0m";
+    constexpr const char* p_success     = "\x1b[32mW\x1b[0m";
+    constexpr const char* p_warning     = "\x1b[33mW\x1b[0m";
+    constexpr const char* p_error       = "\x1b[31mE\x1b[0m";
+    constexpr const char* p_verbose     = "\x1b[35mV\x1b[0m";
 
-    constexpr const char* p_nvk     = "\x1b[36mnvk\x1b[0m";
+    constexpr const char* p_validation  = "\x1b[36mValidation\x1b[0m";
     #else
-    constexpr const char* p_info    = "I";
-    constexpr const char* p_success = "W";
-    constexpr const char* p_warning = "W";
-    constexpr const char* p_error   = "E";
-    constexpr const char* p_verbose = "V";
+    constexpr const char* p_info        = "I";
+    constexpr const char* p_success     = "W";
+    constexpr const char* p_warning     = "W";
+    constexpr const char* p_error       = "E";
+    constexpr const char* p_verbose     = "V";
 
-    constexpr const char* p_nvk     = "nvk";
+    constexpr const char* p_validation  = "Validation";
     #endif
 
     constexpr const char* p_open    = "[";
@@ -104,7 +104,7 @@ namespace Nebula::nlog
     LOGGER_FMT_METHOD(warning)
     LOGGER_FMT_METHOD(error)
     LOGGER_FMT_METHOD(verbose)
-    LOGGER_FMT_METHOD(nvk)
+    LOGGER_FMT_METHOD(validation)
     #pragma endregion
 
     // Exceptions
