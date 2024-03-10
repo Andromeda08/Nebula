@@ -1,7 +1,7 @@
 #include "Instance.hpp"
-#include <format>
 #include <set>
 #include <stdexcept>
+#include <nlog/nlog.hpp>
 
 #ifdef NVK_VERBOSE
 #include <iostream>
@@ -57,7 +57,7 @@ namespace Nebula::nvk
         if (const vk::Result result = vk::createInstance(&create_info, nullptr, &m_instance);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create nvk::Instance ({})", to_string(result)));
+            throw nlog::make_exception("Failed to create {} ({})", nlog::cyan("nvk::Instance"), to_string(result));
         }
 
         for (const auto& layer : supported_layers)
@@ -75,15 +75,17 @@ namespace Nebula::nvk
         {
             layers_ss << layer << ", ";
         }
+
         std::stringstream exts_ss;
         for (const auto& ext : m_extensions)
         {
             exts_ss << ext << ", ";
         }
-        std::cout << std::format("[V] Created nvk::Instance with {}/{} layers and {}/{} extensions\n\tLayers: {}\n\tExtensions: {}",
-                                 m_layers.size(), requested_layers.size(),
-                                 m_extensions.size(), requested_extensions.size(),
-                                 layers_ss.str(), exts_ss.str()) << std::endl;
+
+        std::cout << nlog::fmt_info("Created {} with {}/{} layers and {}/{} extensions\n\tLayers: {}\n\tExtensions: {}",
+                                    nlog::cyan("nvk::Instance"), m_layers.size(), requested_layers.size(),
+                                    m_extensions.size(), requested_extensions.size(),
+                                    layers_ss.str(), exts_ss.str()) << std::endl;
         #endif
     }
 }

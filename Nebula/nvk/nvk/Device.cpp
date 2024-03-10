@@ -2,6 +2,7 @@
 #include <format>
 #include <stdexcept>
 #include <vector>
+#include <nlog/nlog.hpp>
 
 #if defined(NVK_VERBOSE) || defined(NVK_VERBOSE_EXTRA)
 #include <iostream>
@@ -31,7 +32,7 @@ namespace Nebula::nvk
             m_device.bindImageMemory(image, memory, offset);
             return;
         }
-        throw std::runtime_error("Failed to bind memory");
+        throw nlog::make_exception("Failed to bind memory");
     }
 
     void* Allocation::map()
@@ -40,7 +41,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device.mapMemory(memory, offset, size, {}, &mapped_memory);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to map memory for Allocation ID: {}", m_id));
+            throw nlog::make_exception("Failed to map memory for Allocation ID: {}", m_id);
         }
         return mapped_memory;
     }
@@ -94,11 +95,11 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device.allocateMemory(&allocate_info, nullptr, &allocation->memory);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to allocate memory"));
+            throw nlog::make_exception("Failed to allocate memory");
         }
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << std::format("[V++] Allocated memory of size {}", allocation->size) << std::endl;
+        std::cout << nlog::fmt_verbose("Allocated memory of size {}", allocation->size) << std::endl;
         #endif
 
         m_allocations.push_back(allocation);
@@ -116,8 +117,8 @@ namespace Nebula::nvk
             result != vk::Result::eSuccess)
         {
             #ifdef NVK_VERBOSE
-            throw std::runtime_error(std::format("Failed to name Vulkan Object {} of type {} as \"{}\"",
-                                                 handle, to_string(type), name));
+            throw nlog::make_exception("Failed to name Vulkan Object {} of type {} as \"{}\"",
+                                       handle, to_string(type), name);
             #endif
         }
     }
@@ -151,14 +152,14 @@ namespace Nebula::nvk
 
         if (candidate == std::end(devices))
         {
-            throw std::runtime_error(std::format("Failed to find a suitable PhysicalDevice"));
+            throw nlog::make_exception("Failed to find a suitable PhysicalDevice");
         }
 
         m_physical_device = *candidate;
         m_physical_device_properties = m_physical_device.getProperties();
 
         #ifdef NVK_VERBOSE
-        std::cout << std::format("[V] Selected PhysicalDevice : {}", m_physical_device_properties.deviceName.data()) << std::endl;
+        std::cout << nlog::fmt_info("Selected PhysicalDevice : {}", m_physical_device_properties.deviceName.data()) << std::endl;
         #endif
     }
 
@@ -193,13 +194,11 @@ namespace Nebula::nvk
         if (const vk::Result result = m_physical_device.createDevice(&create_info, nullptr, &m_device);
             result != vk::Result::eSuccess)
         {
-            auto message = std::format("Failed to create vk::Device ({})", to_string(result));
-            std::cerr << message << std::endl;
-            throw std::runtime_error(message);
+            throw nlog::make_exception("Failed to create vk::Device ({})", to_string(result));
         }
 
         #ifdef NVK_VERBOSE
-        std::cout << "[V] Created vk::Device" << std::endl;
+        std::cout << nlog::fmt_info("Created vk::Device") << std::endl;
         #endif
 
         auto q0 = QueueCreateInfo()
@@ -228,7 +227,7 @@ namespace Nebula::nvk
             }
         }
 
-        throw std::runtime_error("Failed to find suitable memory heap");
+        throw nlog::make_exception("Failed to find suitable memory heap");
     }
 
     MemoryUsage Device::get_memory_usage() const

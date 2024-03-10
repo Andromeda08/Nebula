@@ -1,5 +1,6 @@
 #include "Context.hpp"
 #include <iostream>
+#include <nlog/nlog.hpp>
 #include "DeviceExtensions.hpp"
 #include "Instance.hpp"
 
@@ -53,11 +54,11 @@ namespace Nebula::nvk
         if (const vk::Result result = m_instance->handle().createDebugUtilsMessengerEXT(&create_info, nullptr, &m_debug_messenger);
             result != vk::Result::eSuccess)
         {
-            std::cerr << std::format("Failed to setup vk::DebugUtilsMessengerEXT ({})", to_string(result)) << std::endl;
+            std::cerr << nlog::fmt_error("Failed to setup vk::DebugUtilsMessengerEXT ({})", to_string(result)) << std::endl;
         }
 
         #ifdef NVK_VERBOSE
-        std::cout << "[V] Created vk::DebugUtilsMessengerEXT" << std::endl;
+        std::cout << nlog::fmt_info("Created vk::DebugUtilsMessengerEXT") << std::endl;
         #endif
     }
 }

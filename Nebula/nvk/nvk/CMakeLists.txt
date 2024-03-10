@@ -4,6 +4,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Vulkan REQUIRED)
 
+set("NLOG" "../../nlog")
+
 # nvk
 set (Nebula_nvk "nvk")
 add_library(${Nebula_nvk}
@@ -37,5 +39,7 @@ add_library(${Nebula_nvk}
 )
 
 target_link_libraries(${Nebula_nvk} PRIVATE ${Vulkan_LIBRARIES})
-target_include_directories(${Nebula_nvk} PRIVATE ${Vulkan_INCLUDE_DIRS})
-target_compile_definitions (${Nebula_nvk} PRIVATE VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1 NVK_DEBUG NVK_VERBOSE NVK_VERBOSE_EXTRA)
+target_include_directories(${Nebula_nvk} PRIVATE ${Vulkan_INCLUDE_DIRS} ${NLOG})
+target_compile_definitions (${Nebula_nvk} PRIVATE VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
+    NVK_DEBUG NVK_VERBOSE
+    NLOG_COLORED NLOG_PRINT_EXCEPTIONS)

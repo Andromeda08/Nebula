@@ -1,8 +1,8 @@
 #include "Queue.hpp"
-#include <format>
-#include <stdexcept>
+#include <optional>
+#include <nlog/nlog.hpp>
 
-#ifdef NVK_VERBOSE
+#if defined(NVK_VERBOSE) || defined(NVK_VERBOSE_EXTRA)
 #include <iostream>
 #endif
 
@@ -24,16 +24,16 @@ namespace Nebula::nvk
         const bool has_queue = (it != std::end(queue_families));
         if (required && !has_queue)
         {
-            throw std::runtime_error(std::format("No Queue Family found with required flags [{}] and excluded flags [{}]",
-                                                 to_string(required_flags), to_string(excluded_flags)));
+            throw nlog::make_exception("No Queue Family found with required flags [{}] and excluded flags [{}]",
+                                       to_string(required_flags), to_string(excluded_flags));
         }
         const uint32_t family_index = static_cast<uint32_t>(it - std::begin(queue_families));
 
-        #ifdef NVK_VERBOSE
+        #ifdef NVK_VERBOSE_EXTRA
         if (required)
         {
-            std::cout << std::format("[V] Found Queue Family [Index: {}] with required flags [{}] and excluded flags [{}]",
-                                     family_index, to_string(required_flags), to_string(excluded_flags)) << std::endl;
+            std::cout << nlog::fmt_verbose("Found Queue Family [Index: {}] with required flags [{}] and excluded flags [{}]",
+                                           family_index, to_string(required_flags), to_string(excluded_flags)) << std::endl;
         }
         #endif
 
@@ -55,7 +55,7 @@ namespace Nebula::nvk
         device.getQueue(family_index, index, &queue);
 
         #ifdef NVK_VERBOSE
-        std::cout << std::format("[V] Created Queue with name \"{}\", #{} on Queue Family {} ", name, index, family_index) << std::endl;
+        std::cout << nlog::fmt_info("Created Queue with name \"{}\", #{} on Queue Family {} ", name, index, family_index) << std::endl;
         #endif
     }
 }

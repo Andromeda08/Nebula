@@ -1,6 +1,5 @@
 #include "RenderPass.hpp"
-#include <format>
-#include <stdexcept>
+#include <nlog/nlog.hpp>
 
 #ifdef NVK_VERBOSE_EXTRA
 #include <iostream>
@@ -110,8 +109,7 @@ namespace Nebula::nvk
         if (const vk::Result result = device->handle().createRenderPass(&create_info, nullptr, &_render_pass);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create vk::RenderPass {}: {}",
-                                                 _name, to_string(result)));
+            throw nlog::make_exception("Failed to create vk::RenderPass {}: {}", _name, to_string(result));
         }
 
         device->name_object(std::format("{} RenderPass", _name),
@@ -119,7 +117,7 @@ namespace Nebula::nvk
                             vk::ObjectType::eRenderPass);
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << "[V++] Created vk::RenderPass " << _name << std::endl;
+        std::cout << nlog::fmt_verbose("Created vk::RenderPass {}", _name) << std::endl;
         #endif
 
         return _render_pass;

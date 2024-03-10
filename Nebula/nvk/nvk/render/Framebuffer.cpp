@@ -1,4 +1,5 @@
 #include "Framebuffer.hpp"
+#include <nlog/nlog.hpp>
 
 namespace Nebula::nvk
 {
@@ -66,7 +67,7 @@ namespace Nebula::nvk
             vk::Result result = device->handle().createFramebuffer(&create_info, nullptr, &framebuffer);
             if (result != vk::Result::eSuccess)
             {
-                throw std::runtime_error("[Error] Framebuffer creation failed.");
+                throw nlog::make_exception("Framebuffer creation failed.");
             }
         }
 
@@ -106,7 +107,7 @@ namespace Nebula::nvk
             vk::Result result = device->handle().createFramebuffer(&create_info, nullptr, &m_framebuffers[i]);
             if (result != vk::Result::eSuccess)
             {
-                throw std::runtime_error("[Error] Framebuffer creation failed.");
+                throw nlog::make_exception("Framebuffer creation failed.");
             }
         }
 
@@ -123,7 +124,7 @@ namespace Nebula::nvk
     {
         if (index > static_cast<uint32_t>(m_framebuffers.size()))
         {
-            throw std::out_of_range("[Error] Index out of range for framebuffer array.");
+            throw nlog::make_exception<std::out_of_range>("Index out of range for framebuffer array.");
         }
 
         return m_framebuffers[index];

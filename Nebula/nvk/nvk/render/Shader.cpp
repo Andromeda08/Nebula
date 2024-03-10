@@ -1,7 +1,6 @@
 #include "Shader.hpp"
-#include <format>
 #include <fstream>
-#include <stdexcept>
+#include <nlog/nlog.hpp>
 
 #ifdef NVK_VERBOSE_EXTRA
 #include <iostream>
@@ -21,11 +20,11 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createShaderModule(&sh_create_info, nullptr, &m_shader);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create Shader from file: {} ()", create_info.file_path, to_string(result)));
+            throw nlog::make_exception("Failed to create Shader from file: {} ()", create_info.file_path, to_string(result));
         }
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << std::format("[V++] Created Shader \"{}\" (Stage: {})", create_info.file_path, to_string(m_stage)) << std::endl;
+        std::cout << nlog::fmt_verbose("Created Shader \"{}\" (Stage: {})", create_info.file_path, to_string(m_stage)) << std::endl;
         #endif
     }
 
@@ -43,7 +42,7 @@ namespace Nebula::nvk
 
         if (!file.is_open())
         {
-            throw std::runtime_error("Failed to open file: " + file_path + "!");
+            throw nlog::make_exception("Failed to open file: {}!", file_path);
         }
 
         size_t file_size = static_cast<size_t> (file.tellg());

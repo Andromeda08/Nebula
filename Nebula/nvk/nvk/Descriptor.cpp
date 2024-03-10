@@ -1,6 +1,5 @@
 #include "Descriptor.hpp"
-#include <format>
-#include <stdexcept>
+#include <nlog/nlog.hpp>
 
 #ifdef NVK_VERBOSE_EXTRA
 #include <iostream>
@@ -29,7 +28,7 @@ namespace Nebula::nvk
             case DescriptorType::eAccelerationStructure:
                 return vk::DescriptorType::eAccelerationStructureKHR;
             default:
-                throw std::runtime_error("Unknown descriptor type.");
+                throw nlog::make_exception("Unknown descriptor type.");
         }
     }
 
@@ -56,8 +55,8 @@ namespace Nebula::nvk
         }
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << std::format("[V++] Created Descriptor: {} | # of Sets: {} | Ring Mode : {}",
-                                 m_name, m_set_count, (m_set_ring ? "enabled" : "disabled")) << std::endl;
+        std::cout << nlog::fmt_verbose("Created Descriptor: {} | # of Sets: {} | Ring Mode : {}",
+                                       m_name, m_set_count, (m_set_ring ? "enabled" : "disabled")) << std::endl;
         #endif
     }
 
@@ -67,7 +66,7 @@ namespace Nebula::nvk
         m_device->handle().destroy(m_layout);
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << std::format("[V++] Destroyed Descriptor: {} | # of Sets {}", m_name, m_set_count) << std::endl;
+        std::cout << nlog::fmt_verbose("Destroyed Descriptor: {} | # of Sets {}", m_name, m_set_count) << std::endl;
         #endif
     }
 
@@ -88,7 +87,7 @@ namespace Nebula::nvk
     {
         if (index > m_sets.size())
         {
-            throw std::out_of_range(std::format("Index {} out of range for descriptor sets", index));
+            throw nlog::make_exception<std::out_of_range>("Index {} out of range for descriptor sets", index);
         }
 
         return m_sets[index];
@@ -116,8 +115,8 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createDescriptorPool(&pool_create_info, nullptr, &m_pool);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create vk::DescriptorPool for nvK::Descriptor \"{}\" ({})",
-                                                 m_name, to_string(result)));
+            throw nlog::make_exception("Failed to create vk::DescriptorPool for nvk::Descriptor \"{}\" ({})",
+                                       m_name, to_string(result));
         }
 
         m_device->name_object(
@@ -135,8 +134,8 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createDescriptorSetLayout(&create_info, nullptr, &m_layout);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create vk::DescriptorSetLayout for nvK::Descriptor \"{}\" ({})",
-                                                 m_name, to_string(result)));
+            throw nlog::make_exception("Failed to create vk::DescriptorSetLayout for nvk::Descriptor \"{}\" ({})",
+                                       m_name, to_string(result));
         }
 
         m_device->name_object(
@@ -158,8 +157,8 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().allocateDescriptorSets(&alloc_info, m_sets.data());
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to allocate {} vk::DescriptorSet(s) for nvk::Descriptor \"{}\" ({})",
-                                                 m_set_count, m_name, to_string(result)));
+            throw nlog::make_exception("Failed to allocate {} vk::DescriptorSet(s) for nvk::Descriptor \"{}\" ({})",
+                                       m_set_count, m_name, to_string(result));
         }
 
         for (size_t i = 0; i < m_sets.size(); i++)

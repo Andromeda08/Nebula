@@ -1,6 +1,5 @@
 #include "Buffer.hpp"
-#include <format>
-#include <stdexcept>
+#include <nlog/nlog.hpp>
 
 #ifdef NVK_VERBOSE_EXTRA
 #include <iostream>
@@ -37,7 +36,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createBuffer(&buffer_create_info, nullptr, &m_buffer);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create Buffer \"{}\" ({})", m_name, to_string(result)));
+            throw nlog::make_exception("Failed to create Buffer \"{}\" ({})", m_name, to_string(result));
         }
 
         auto allocation_info = AllocationInfo()
@@ -56,8 +55,8 @@ namespace Nebula::nvk
 
         #ifdef NVK_VERBOSE_EXTRA
         if (m_type != BufferType::eStaging) {
-            std::cout << std::format("[V++] Created {} Buffer: {} with size {}",
-                                     to_string(m_type), m_name, size()) << std::endl;
+            std::cout << nlog::fmt_verbose("Created {} Buffer: {} with size {}",
+                                           to_string(m_type), m_name, size()) << std::endl;
         }
         #endif
     }
@@ -69,7 +68,8 @@ namespace Nebula::nvk
 
         #ifdef NVK_VERBOSE_EXTRA
         if (m_type != BufferType::eStaging) {
-            std::cout << std::format("[V++] Destroyed {} Buffer: {}", to_string(m_type), m_name) << std::endl;
+            std::cout << nlog::fmt_verbose("Destroyed {} Buffer: {}",
+                                           to_string(m_type), m_name) << std::endl;
         }
         #endif
     }
@@ -145,7 +145,7 @@ namespace Nebula::nvk
                 break;
             }
             default:
-                throw std::invalid_argument("Invalid BufferType");
+                throw nlog::make_exception<std::invalid_argument>("Invalid BufferType");
         }
         return result;
     }

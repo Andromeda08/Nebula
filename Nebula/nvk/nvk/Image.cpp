@@ -1,6 +1,7 @@
 #include "Image.hpp"
 #include <format>
 #include <stdexcept>
+#include <nlog/nlog.hpp>
 
 #ifdef NVK_VERBOSE_EXTRA
 #include <iostream>
@@ -28,7 +29,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createImage(&img_create_info, nullptr, &m_image);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create Image \"{}\" ({})", m_name, to_string(result)));
+            throw nlog::make_exception("Failed to create Image \"{}\" ({})", m_name, to_string(result));
         }
 
         m_device->name_object(std::format("{}: Image", m_name),
@@ -51,7 +52,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createImageView(&view_create_info, nullptr, &m_image_view);
             result != vk::Result::eSuccess)
         {
-            throw std::runtime_error(std::format("Failed to create ImageView \"{}\" ({})", m_name, to_string(result)));
+            throw nlog::make_exception("Failed to create ImageView \"{}\" ({})", m_name, to_string(result));
         }
 
         m_device->name_object(std::format("{}: ImageView", m_name),
@@ -59,7 +60,7 @@ namespace Nebula::nvk
                               vk::ObjectType::eImageView);
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << std::format("[V++] Created Image and ImageView: {}\n\tExtent: [{}x{}] | Format: {}",
+        std::cout << nlog::fmt_verbose("[V++] Created Image and ImageView: {}\n\tExtent: [{}x{}] | Format: {}",
                                  m_name, m_properties.extent.width, m_properties.extent.height,
                                  to_string(m_properties.format)) << std::endl;
         #endif
@@ -83,7 +84,7 @@ namespace Nebula::nvk
         m_allocation->free();
 
         #ifdef NVK_VERBOSE_EXTRA
-        std::cout << std::format("[V++] Destroyed Image and ImageView: {}",m_name) << std::endl;
+        std::cout << nlog::fmt_verbose("Destroyed Image and ImageView: {}", m_name) << std::endl;
         #endif
     }
 }
