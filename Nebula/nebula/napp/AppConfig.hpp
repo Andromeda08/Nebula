@@ -7,7 +7,7 @@ namespace Nebula
 {
     struct AppConfig
     {
-        const std::string   name            = "Unknown Nebula Application";
+        const std::string   name            = "Nebula Application";
         const std::string   gui_font        = "JetBrainsMono-Regular.ttf";
         const bool          ray_tracing     = true;
         const bool          debug_mode      = true;
