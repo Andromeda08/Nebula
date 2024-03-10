@@ -22,7 +22,7 @@ add_library(${Nebula_nvk}
     IWindow.hpp
     Queue.hpp Queue.cpp
     Swapchain.hpp Swapchain.cpp
-    Utility.hpp
+    Utility.hpp Utility.cpp
 
     render/Framebuffer.hpp render/Framebuffer.cpp
     render/Pipeline.hpp render/Pipeline.cpp
@@ -32,10 +32,6 @@ add_library(${Nebula_nvk}
     render/RenderPass.hpp render/RenderPass.cpp
     render/Shader.hpp render/Shader.cpp
     render/VertexInput.hpp
-
-    # rt/BLAS.hpp
-    # rt/ShaderBindingTable.hpp
-    # rt/TLAS.hpp
 )
 
 target_link_libraries(${Nebula_nvk} PRIVATE ${Vulkan_LIBRARIES})

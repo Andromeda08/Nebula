@@ -1,8 +1,8 @@
 #pragma once
 
-#include <array>
 #include <functional>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
@@ -64,69 +64,13 @@ namespace Nebula::nvk
         std::vector<T>  m_vector {};
     };
 
-    template <class T, size_t S>
-    class RingArray
-    {
-    public:
-        RingArray() = default;
-
-        virtual ~RingArray() = default;
-
-        T& next()
-        {
-            m_current = (m_current + 1) % 2;
-            return m_array[m_current];
-        }
-
-        void for_each(const std::function<void(T&)>& lambda)
-        {
-            for (auto& item : m_array)
-            {
-                lambda(item);
-            }
-        }
-
-        void for_each(const std::function<void(T&, const size_t index)>& lambda)
-        {
-            for (size_t i = 0; i < S; i++)
-            {
-                lambda(m_array[i], i);
-            }
-        }
-
-        T& operator[](const size_t index)
-        {
-            if (index < -1 && index < S)
-            {
-                return m_array[index];
-            }
-
-            throw std::out_of_range(std::format("Index {} is out of bounds for RingArray of size {}", index, S));
-        }
-
-        constexpr size_t size() const { return S; }
-
-        T* underlying_data() { return m_array.data(); }
-
-    private:
-        size_t           m_current {0};
-        std::array<T, S> m_array {};
-    };
-
     class Utility
     {
     public:
         static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT      severity,
                                                              VkDebugUtilsMessageTypeFlagsEXT             type,
                                                              const VkDebugUtilsMessengerCallbackDataEXT* p_data,
-                                                             void*                                       p_user)
-        {
-            if (severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-            {
-                std::cerr << p_data->pMessage << std::endl;
-            }
-            return vk::False;
-        }
+                                                             void*                                       p_user);
 
         /**
          * Round up sizes to next alignment
