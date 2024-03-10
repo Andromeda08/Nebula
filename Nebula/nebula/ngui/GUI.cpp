@@ -52,7 +52,7 @@ namespace Nebula::ngui
     void GUI::init_imgui(const std::string& font_path)
     {
         m_render_pass = nvk::RenderPass::Builder()
-            .add_color_attachment(m_swapchain->format(), vk::ImageLayout::ePresentSrcKHR, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eLoad)
+            .add_color_attachment(m_swapchain->format(), vk::ImageLayout::ePresentSrcKHR, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eDontCare)
             .make_subpass()
             .with_name("ImGui RenderPass")
             .create(m_context->device());
