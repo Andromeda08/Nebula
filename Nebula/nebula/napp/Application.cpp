@@ -1,21 +1,8 @@
 #include "Application.hpp"
 #include <iostream>
-#include <nhair/HairModel.hpp>
-#include <nvk/Image.hpp>
-#include <nvk/render/Framebuffer.hpp>
-#include <nvk/render/Pipeline.hpp>
-#include <nvk/render/RenderPass.hpp>
 
 namespace Nebula
 {
-    vk::RenderPass g_render_pass;
-    std::shared_ptr<nvk::Pipeline> g_pipeline;
-    std::shared_ptr<nvk::Framebuffer> g_framebuffers;
-    std::array<vk::ClearValue, 2> g_clear_value {};
-    std::shared_ptr<nhair::HairModel> g_hair;
-    std::array<vk::Framebuffer, 2> g_fbs;
-    std::shared_ptr<nvk::Image> g_depth;
-
     uint32_t Application::s_current_frame = 0;
     Size2D   Application::s_extent = {};
 
@@ -45,81 +32,9 @@ namespace Nebula
 
         m_rg_editor = std::make_shared<nrg::GraphEditor>(m_rg_context);
 
-#pragma region hair renderer
-        auto depth_info = nvk::ImageCreateInfo()
-            .set_aspect_flags(vk::ImageAspectFlagBits::eDepth)
-            .set_extent(m_swapchain->extent())
-            .set_format(vk::Format::eD32Sfloat)
-            .set_usage_flags(vk::ImageUsageFlagBits::eDepthStencilAttachment)
-            .set_name("Depth Buffer");
-        g_depth = std::make_shared<nvk::Image>(depth_info, m_context->device());
+        m_hair_model = std::make_shared<nhair::HairModel>((hair_file.has_value() ? hair_file.value() : "wWavy.hair"), m_context->device(), m_context->command_pool());
 
-        g_render_pass = nvk::RenderPass::Builder()
-            .add_color_attachment(m_swapchain->format(), vk::ImageLayout::ePresentSrcKHR)
-            .set_depth_attachment(g_depth->properties().format)
-            .make_subpass()
-            .with_name("Hair")
-            .create(m_context->device());
-
-        g_clear_value[0].setColor(std::array{ 0.0f, 0.0f, 0.0f, 1.0f });
-        g_clear_value[1].setDepthStencil({ 1.0f, 0 });
-
-        g_hair = std::make_shared<nhair::HairModel>((hair_file.has_value() ? hair_file.value() : "wWavy.hair"), m_context->device(), m_context->command_pool());
-
-        nvk::DescriptorCreateInfo descriptor_create_info;
-        descriptor_create_info
-            .add(Nebula::nvk::DescriptorType::eUniformBuffer, 0, vk::ShaderStageFlagBits::eMeshEXT | vk::ShaderStageFlagBits::eFragment)
-            .set_count(2)
-            .set_name("Camera")
-            .enable_ring_mode();
-
-        m_descriptor = std::make_shared<nvk::Descriptor>(descriptor_create_info, m_context->device());
-
-        m_uniform_buffers.resize(2);
-        for (int32_t i = 0; i < 2; i++)
-        {
-            nvk::BufferCreateInfo buf_create_info{};
-            buf_create_info
-                .set_buffer_type(nvk::BufferType::eUniform)
-                .set_name(std::format("Camera #{}", i))
-                .set_size(sizeof(ns::CameraData));
-
-            m_uniform_buffers[i] = std::make_shared<nvk::Buffer>(buf_create_info, m_context->device());
-        }
-
-        nvk::PipelineCreateInfo pipeline_create_info;
-        pipeline_create_info
-            .add_push_constant({ vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants) })
-            .add_descriptor_set_layout(m_descriptor->layout())
-            .set_pipeline_type(nvk::PipelineType::eGraphics)
-            .add_shader("hair.task.glsl.spv", vk::ShaderStageFlagBits::eTaskEXT)
-            .add_shader("hair.mesh.glsl.spv", vk::ShaderStageFlagBits::eMeshEXT)
-            .add_shader("hair.frag.spv", vk::ShaderStageFlagBits::eFragment)
-            .set_attachment_count(1)
-            .set_cull_mode(vk::CullModeFlagBits::eNone)
-            .set_render_pass(g_render_pass)
-            .set_name("Hair");
-
-        g_pipeline = std::make_shared<nvk::Pipeline>(pipeline_create_info, m_context->device());
-
-        auto fbci = vk::FramebufferCreateInfo()
-            .setRenderPass(g_render_pass)
-            .setHeight(m_swapchain->extent().height)
-            .setWidth(m_swapchain->extent().width)
-            .setLayers(1)
-            .setAttachmentCount(2);
-        std::vector<vk::ImageView> attachments { m_swapchain->image_view(0), g_depth->image_view() };
-        for (int32_t i = 0; i < 2; i++) {
-            attachments[0] = m_swapchain->image_view(i);
-            fbci.setPAttachments(attachments.data());
-
-            vk::Result result = m_context->device()->handle().createFramebuffer(&fbci, nullptr, &g_fbs[i]);
-            if (result != vk::Result::eSuccess)
-            {
-                throw std::runtime_error("[Error] Framebuffer creation failed.");
-            }
-        }
-#pragma endregion
+        m_hair_renderer = std::make_shared<nhair::HairRenderer>(m_context->device(), m_swapchain);
     }
 
     void Application::run()
@@ -148,13 +63,6 @@ namespace Nebula
         m_active_scene->update(dt);
 
         const auto camera_data = m_active_scene->active_camera()->uniform_data();
-        m_uniform_buffers[s_current_frame]->set_data(&camera_data);
-
-        vk::DescriptorBufferInfo buffer_info = { m_uniform_buffers[s_current_frame]->buffer(), 0, sizeof(ns::CameraData)};
-        auto write_info = nvk::DescriptorWriteInfo()
-            .set_set_index(s_current_frame)
-            .add_uniform_buffer(0, buffer_info);
-        m_descriptor->write(write_info);
 
         const uint32_t acquired_frame = m_swapchain->acquire_next_image(s_current_frame);
         const vk::CommandBuffer& command_buffer = m_command_ring->next();
@@ -163,28 +71,7 @@ namespace Nebula
 
         m_swapchain->set_viewport_scissor(command_buffer);
 
-        nvk::RenderPass::Execute()
-            .with_clear_values<2>(g_clear_value)
-            .with_framebuffer(g_fbs[s_current_frame])
-            .with_render_area({ {0, 0}, m_swapchain->extent() })
-            .with_render_pass(g_render_pass)
-            .execute(command_buffer, [&](const vk::CommandBuffer& cmd) {
-                g_pipeline->bind(cmd);
-                cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, g_pipeline->layout(), 0, 1, &m_descriptor->set(s_current_frame), 0, nullptr);
-
-                auto buffer_addresses = g_hair->get_hair_buffer_addresses();
-                const HairConstants push_constant {
-                    .model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)),
-                    .buffer_lengths = glm::ivec4(g_hair->vertex_count(), g_hair->strand_count(), 0, 0),
-                    .vertex_buffer = buffer_addresses.vertex_buffer,
-                    .strand_descriptions_buffers = buffer_addresses.strand_descriptions_buffer,
-                };
-
-                cmd.pushConstants(g_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
-
-                uint32_t gx = (g_hair->strand_count() + 31) / 32;
-                cmd.drawMeshTasksEXT(1562, 1, 1);
-            });
+        m_hair_renderer->render(s_current_frame, *m_hair_model, camera_data, command_buffer);
 
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);
         if (m_config.gui_enabled)

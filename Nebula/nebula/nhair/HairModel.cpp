@@ -13,6 +13,8 @@ namespace Nebula::nhair
         process_vertices();
         process_strands();
         create_buffers();
+
+        m_gx = static_cast<uint32_t>(std::floor(strand_count() / 32));
     }
 
     void HairModel::load_file()
@@ -102,7 +104,7 @@ namespace Nebula::nhair
 
     void HairModel::draw(const vk::CommandBuffer& command_buffer) const
     {
-        // command_buffer.drawMeshTasksEXT(1, 1, 1);
+        command_buffer.drawMeshTasksEXT(m_gx, 1, 1);
     }
 
     void HairModel::update(const vk::CommandBuffer& command_buffer)

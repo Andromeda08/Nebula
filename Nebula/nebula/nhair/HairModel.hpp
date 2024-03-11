@@ -98,6 +98,8 @@ class HairModel// : public ns::Mesh
         std::shared_ptr<nvk::Buffer>        m_strand_descriptions_buffer;
         std::shared_ptr<nvk::Buffer>        m_vertex_buffer;
 
+        uint32_t                            m_gx;
+
         std::shared_ptr<nvk::Device>        m_device;
         std::shared_ptr<nvk::CommandPool>   m_command_pool;
     };

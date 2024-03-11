@@ -10,6 +10,7 @@ set (Nebula_main "nebula")
 set("3RD" "../../ThirdParty")
 set("IMGUI_DIR" "${3RD}/imgui")
 set("IMNODES_DIR" "${3RD}/imnodes")
+set("NLOG" "../nlog")
 
 add_executable(${Nebula_main}
     ${3RD}/cy/cyCore.h ${3RD}/cy/cyHairFile.h
@@ -43,8 +44,8 @@ add_executable(${Nebula_main}
     nscene/geometry/primitives/Cube.hpp nscene/geometry/primitives/Cube.cpp
     nscene/geometry/primitives/Sphere.hpp nscene/geometry/primitives/Sphere.cpp
 
-    nhair/HairRenderer.hpp
     nhair/HairModel.hpp nhair/HairModel.cpp
+    nhair/HairRenderer.hpp nhair/HairRenderer.cpp
 
     nrg/common/Context.hpp
     nrg/common/INode.hpp
@@ -78,11 +79,13 @@ target_include_directories(${Nebula_main} PRIVATE
     "${3RD}/stduuid/include"
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
-    "${IMNODES_DIR}")
+    "${IMNODES_DIR}"
+    "${NLOG}")
 target_compile_definitions (${Nebula_main} PRIVATE
     NBL_DEBUG
     -DImTextureID=ImU64
     IMGUI_DEFINE_MATH_OPERATORS
     GLFW_INCLUDE_VULKAN
     UUID_SYSTEM_GENERATOR
-    VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
+    VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
+    NLOG_COLORED NLOG_PRINT_EXCEPTIONS)

@@ -5,9 +5,10 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <glm/glm.hpp>
 #include <napp/AppConfig.hpp>
 #include <ngui/GUI.hpp>
+#include <nhair/HairModel.hpp>
+#include <nhair/HairRenderer.hpp>
 #include <nscene/Scene.hpp>
 #include <nrg/common/Context.hpp>
 #include <nrg/editor/GraphEditor.hpp>
@@ -17,18 +18,8 @@
 #include <nvk/Swapchain.hpp>
 #include <wsi/Window.hpp>
 
-#include <glm/glm.hpp>
-
 namespace Nebula
 {
-    struct HairConstants
-    {
-        glm::mat4 model;
-        glm::ivec4 buffer_lengths;
-        uint64_t vertex_buffer;
-        uint64_t strand_descriptions_buffers;
-    };
-
     class Application
     {
     public:
@@ -60,8 +51,9 @@ namespace Nebula
         std::shared_ptr<nrg::Context>                   m_rg_context;
         std::shared_ptr<nrg::GraphEditor>               m_rg_editor;
 
-        std::shared_ptr<nvk::Descriptor>                m_descriptor;
-        std::vector<std::shared_ptr<nvk::Buffer>>       m_uniform_buffers;
+        // Hair Renderer ------------------------------------------------------
+        std::shared_ptr<nhair::HairModel>               m_hair_model;
+        std::shared_ptr<nhair::HairRenderer>            m_hair_renderer;
 
         std::chrono::high_resolution_clock::time_point  m_last_time;
         const AppConfig                                 m_config {};
