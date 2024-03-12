@@ -1,10 +1,13 @@
 #pragma once
 
 #include <exception>
+#include <iostream>
 #include <format>
+#include <regex>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #ifdef NLOG_PRINT_EXCEPTIONS
 #include <iostream>
@@ -64,6 +67,35 @@ namespace Nebula::nlog
     }
     #pragma endregion
 
+    // Color enum -----------------------------------------------------
+    enum class Color
+    {
+       eRed,
+       eGreen,
+       eYellow,
+       eBlue,
+       eMagenta,
+       eCyan,
+       eWhite,
+       eReset,
+    };
+
+    inline std::string to_code(const Color color)
+    {
+        using enum Color;
+        switch (color)
+        {
+            case eRed:      return "\x1b[31m";
+            case eGreen:    return "\x1b[32m";
+            case eYellow:   return "\x1b[33m";
+            case eBlue:     return "\x1b[34m";
+            case eMagenta:  return "\x1b[35m";
+            case eCyan:     return "\x1b[36m";
+            case eWhite:    return "\x1b[37m";
+            default:        return "\x1b[0m";
+        }
+    }
+
     // Formatter methods ----------------------------------------------
     #pragma region
     template <typename... Args>
@@ -107,7 +139,7 @@ namespace Nebula::nlog
     LOGGER_FMT_METHOD(validation)
     #pragma endregion
 
-    // Exceptions
+    // Exceptions -----------------------------------------------------
     #pragma region
     template <typename E = std::runtime_error, typename... Args>
     inline E make_exception(std::format_string<Args...> fmt, Args&& ...args)
@@ -120,4 +152,79 @@ namespace Nebula::nlog
         return E(message);
     }
     #pragma endregion
+
+    // Logger Class ---------------------------------------------------
+    class Logger
+    {
+    public:
+        explicit Logger(std::string prefix, const Color prefix_color, bool print = true, bool store = true)
+        : m_print(print), m_store(store), m_prefix_color(to_code(prefix_color)), m_prefix(std::move(prefix)) {}
+
+        template <typename... Args>
+        void info(std::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(p_info, fmt, std::forward<Args>(args)...);
+        }
+
+        void info(const std::string& message)
+        {
+            log(p_info, "{}", message);
+        }
+
+        template <typename... Args>
+        void warning(std::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(p_warning, fmt, std::forward<Args>(args)...);
+        }
+
+        void warning(const std::string& message)
+        {
+            log(p_warning, "{}", message);
+        }
+
+        template <typename... Args>
+        void error(std::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(p_error, fmt, std::forward<Args>(args)...);
+        }
+
+        void error(const std::string& message)
+        {
+            log(p_error, "{}", message);
+        }
+
+        template <typename... Args>
+        void verbose(std::format_string<Args...> fmt, Args&& ...args)
+        {
+            log(p_verbose, fmt, std::forward<Args>(args)...);
+        }
+
+        void verbose(const std::string& message)
+        {
+            log(p_verbose, "{}", message);
+        }
+
+    private:
+        template <typename... Args>
+        void log(const std::string& level, std::format_string<Args...> fmt, Args&& ...args) {
+            std::string message = std::format("[{}{}\x1b[0m | {}] {}", m_prefix_color, m_prefix, level,
+                                              std::format(fmt, std::forward<Args>(args)...));
+
+            if (m_print) std::cout << message << std::endl;
+            if (m_store) m_logs.push_back(message);
+        }
+
+        std::string strip_colors(const std::string& string)
+        {
+            return std::regex_replace(string, m_color_codes, "");
+        }
+
+        bool                     m_print;
+        bool                     m_store;
+        std::string              m_prefix_color;
+        std::string              m_prefix;
+        std::vector<std::string> m_logs;
+
+        const std::regex         m_color_codes = std::regex(R"(\\x1b\[\d*m)");
+    };
 }
