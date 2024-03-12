@@ -12,6 +12,8 @@ add_compile_definitions(GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_ENABLE_EXPERIMENTAL)
 
 add_subdirectory(ThirdParty/glfw)
 
+add_subdirectory(ThirdParty/json)
+
 add_subdirectory(ThirdParty/stduuid)
 
 # Nebula

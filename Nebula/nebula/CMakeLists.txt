@@ -48,8 +48,8 @@ add_executable(${Nebula_main}
     nhair/HairRenderer.hpp nhair/HairRenderer.cpp
 
     nrg/common/Context.hpp
-    nrg/common/INode.hpp
-    nrg/common/IResource.hpp
+    nrg/common/Node.hpp
+    nrg/common/Resource.hpp
     nrg/common/NodeType.hpp
     nrg/common/ResourceClaim.hpp
 
@@ -67,15 +67,24 @@ add_executable(${Nebula_main}
     nrg/common/ResourceSpecification.hpp
     nrg/common/ResourceTraits.hpp
     nrg/nodes/SceneDataProvider.cpp
+    nrg/nodes/HairRendering.hpp
+    nrg/nodes/AmbientOcclusion.hpp
+    nrg/nodes/AntiAliasing.hpp
+    nrg/common/NodeConfiguration.hpp
+    nrg/nodes/AntiAliasing.cpp
+    nrg/common/Node.cpp
+
+    nrg/nodes/Nodes.hpp
 )
 
-target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw stduuid)
+target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
 target_include_directories(${Nebula_main} PRIVATE
     ${Vulkan_INCLUDE_DIRS}
     "../nvk"
     "${3RD}/cy"
     "${3RD}/glm"
     "${3RD}/glfw"
+    "${3RD}/json"
     "${3RD}/stduuid/include"
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
