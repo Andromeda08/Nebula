@@ -37,9 +37,13 @@ namespace Nebula::nrg
 
     void GraphEditor::_load_editor_config()
     {
-        using json = nlohmann::json;
         std::fstream config_file(s_config_file);
-        json data = json::parse(config_file);
+        if (!config_file.is_open())
+        {
+            throw nlog::make_exception("Failed to load editor configuration file: {}", s_config_file);
+        }
+
+        nlohmann::json data = nlohmann::json::parse(config_file);
 
         _process_node_colors(data);
         _process_resource_colors(data);
