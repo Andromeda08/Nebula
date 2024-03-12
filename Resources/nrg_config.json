@@ -1,0 +1,102 @@
+{
+  "editor_resource_colors": [
+    {
+      "type": "Unknown",
+      "color": [ 128, 128, 128 ]
+    },
+    {
+      "type": "Image",
+      "color": [ 59, 130, 246 ]
+    },
+    {
+      "type": "StorageBuffer",
+      "color": [ 251, 191, 36 ]
+    },
+    {
+      "type": "SceneData",
+      "color": [ 14, 165, 233 ]
+    }
+  ],
+  "editor_node_colors": [
+    {
+      "type": "Unknown",
+      "title_bar": [ 128, 128, 128 ],
+      "title_bar_hover": [ 200, 200, 200 ]
+    },
+    {
+      "type": "AmbientOcclusion",
+      "title_bar": [ 220, 38, 38 ],
+      "title_bar_hover": [ 248, 113, 113 ]
+    },
+    {
+      "type": "AntiAliasing",
+      "title_bar": [ 101, 163, 13 ],
+      "title_bar_hover": [ 163, 230, 53 ]
+    },
+    {
+      "type": "Bloom",
+      "title_bar": [ 225, 29, 72 ],
+      "title_bar_hover": [ 251, 113, 133 ]
+    },
+    {
+      "type": "DeferredLighting",
+      "title_bar": [ 217, 119, 6 ],
+      "title_bar_hover": [ 251, 191, 36 ]
+    },
+    {
+      "type": "Denoise",
+      "title_bar": [ 2, 132, 199 ],
+      "title_bar_hover": [ 56, 189, 248 ]
+    },
+    {
+      "type": "GaussianBlur",
+      "title_bar": [ 8, 145, 178 ],
+      "title_bar_hover": [ 34, 211, 238 ]
+    },
+    {
+      "type": "GBuffer",
+      "title_bar": [ 79, 70, 229 ],
+      "title_bar_hover": [ 129, 140, 248 ]
+    },
+    {
+      "type": "HairRender",
+      "title_bar": [ 13, 148, 136 ],
+      "title_bar_hover": [ 45, 212, 191 ]
+    },
+    {
+      "type": "HairSimulation",
+      "title_bar": [ 101, 163, 13 ],
+      "title_bar_hover": [ 163, 230, 53 ]
+    },
+    {
+      "type": "MeshShaderGBuffer",
+      "title_bar": [ 79, 70, 229 ],
+      "title_bar_hover": [ 129, 140, 248 ]
+    },
+    {
+      "type": "RayTracing",
+      "title_bar": [ 124, 58, 237 ],
+      "title_bar_hover": [ 167, 139, 250 ]
+    },
+    {
+      "type": "ShadowMapGeneration",
+      "title_bar": [ 82, 82, 91],
+      "title_bar_hover": [ 161, 161, 170 ]
+    },
+    {
+      "type": "ToneMapping",
+      "title_bar": [ 234, 88, 12 ],
+      "title_bar_hover": [ 251, 146, 60 ]
+    },
+    {
+      "type": "Present",
+      "title_bar": [ 192, 38, 211 ],
+      "title_bar_hover": [ 232, 131, 249 ]
+    },
+    {
+      "type": "SceneDataProvider",
+      "title_bar": [ 37, 99, 235 ],
+      "title_bar_hover": [ 96, 165, 250 ]
+    }
+  ]
+}
