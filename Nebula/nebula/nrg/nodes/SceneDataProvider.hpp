@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <nscene/Scene.hpp>
-#include <nrg/common/INode.hpp>
+#include <nrg/common/Node.hpp>
 #include <nrg/common/ResourceClaim.hpp>
 
 namespace Nebula::nrg
@@ -20,8 +20,9 @@ namespace Nebula::nrg
 
         static std::vector<ResourceClaim> get_resource_claims();
 
-        DEF_RESOURCE_SPECIFICATIONS()
     private:
         std::shared_ptr<ns::Scene> m_scene;
+
+        DEF_RESOURCES();
     };
 }
