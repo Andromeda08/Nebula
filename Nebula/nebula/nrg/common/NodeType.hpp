@@ -1,6 +1,9 @@
 #pragma once
 
+#include <format>
+#include <stdexcept>
 #include <string>
+#include <vector>
 #include <glm/vec4.hpp>
 #include <imgui.h>
 #include <imnodes.h>
@@ -32,6 +35,30 @@ namespace Nebula::nrg
         eUnknown
     };
 
+    inline NodeType to_node_type(const std::string& str)
+    {
+        using enum NodeType;
+
+        if (str == "AmbientOcclusion")      return eAmbientOcclusion;
+        if (str == "AntiAliasing")          return eAntiAliasing;
+        if (str == "Bloom")                 return eBloom;
+        if (str == "DeferredLighting")      return eDeferredLighting;
+        if (str == "Denoise")               return eDenoise;
+        if (str == "GaussianBlur")          return eGaussianBlur;
+        if (str == "GBuffer")               return eGBuffer;
+        if (str == "HairRender")            return eHairRender;
+        if (str == "HairSimulation")        return eHairSimulation;
+        if (str == "MeshShaderGBuffer")     return eMeshShaderGBuffer;
+        if (str == "RayTracing")            return eRayTracing;
+        if (str == "ShadowMapGeneration")   return eShadowMapGeneration;
+        if (str == "ToneMapping")           return eToneMapping;
+        if (str == "Present")               return ePresent;
+        if (str == "SceneDataProvider")     return eSceneDataProvider;
+        if (str == "Unknown")               return eUnknown;
+
+        throw std::runtime_error(std::format(R"(Unknown NodeType "{}")", str));
+    }
+
     inline std::string to_string(const NodeType node_type)
     {
         using enum NodeType;
@@ -42,6 +69,7 @@ namespace Nebula::nrg
             case eBloom:                return "Bloom";
             case eDeferredLighting:     return "Deferred Lighting Pass";
             case eDenoise:              return "Denoise";
+            case eGaussianBlur:         return "Gaussian Blur";
             case eGBuffer:              return "G-Buffer Pass";
             case eHairRender:           return "Hair Render";
             case eHairSimulation:       return "Hair Simulation";
@@ -55,6 +83,16 @@ namespace Nebula::nrg
 
             default:                    return "Unknown";
         }
+    }
+
+    inline std::vector<NodeType> get_all_node_types()
+    {
+        using enum NodeType;
+        return {
+            eAmbientOcclusion, eAntiAliasing, eBloom, eDeferredLighting, eDenoise, eGaussianBlur,
+            eGBuffer, eHairRender, eHairSimulation, eMeshShaderGBuffer, eRayTracing, eShadowMapGeneration,
+            eToneMapping, ePresent, eSceneDataProvider
+        };
     }
 
     struct NodeColors
@@ -75,9 +113,4 @@ namespace Nebula::nrg
             for (int32_t i = 0; i < 3; i++) ImNodes::PopColorStyle();
         }
     };
-
-    inline NodeColors to_node_colors(const NodeType node_type)
-    {
-        return NodeColors();
-    }
 }

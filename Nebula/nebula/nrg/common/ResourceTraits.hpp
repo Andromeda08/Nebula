@@ -1,5 +1,10 @@
 #pragma once
 
+#include <format>
+#include <stdexcept>
+#include <string>
+#include <glm/vec4.hpp>
+
 namespace Nebula::nrg
 {
     enum class ResourceLifetime
@@ -26,7 +31,7 @@ namespace Nebula::nrg
     };
 
 
-    // Enum to string conversion methods ----------------------
+    // Enum to String conversion methods ----------------------
     inline std::string to_string(const ResourceLifetime resource_lifetime)
     {
         using enum ResourceLifetime;
@@ -60,6 +65,20 @@ namespace Nebula::nrg
             case eOutput:  return "Write";
             default:       return "Unknown";
         }
+    }
+
+    // String to Enum conversion methods ----------------------
+    inline ResourceType to_resource_type(const std::string& str)
+    {
+        using enum ResourceType;
+
+        if (str == "Image")         return eImage;
+        if (str == "ImageArray")    return eImageArray;
+        if (str == "SceneData")     return eSceneData;
+        if (str == "StorageBuffer") return eStorageBuffer;
+        if (str == "Unknown")       return eUnknown;
+
+        throw std::runtime_error(std::format(R"(Unknown ResourceType "{}")", str));
     }
 
     // Other enum based conversion methods --------------------
