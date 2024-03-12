@@ -49,7 +49,6 @@ namespace Nebula
 
     void Application::loop()
     {
-        // Event Handlers here
         if (!m_gui->want_capture_mouse())
         {
             m_active_scene->mouse_handler(*m_window);
