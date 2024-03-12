@@ -3,6 +3,8 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "hair_common.glsl"
 
+layout(early_fragment_tests) in;
+
 layout (location = 0) in Mesh IN;
 
 layout (binding = 0) uniform CameraData {
@@ -34,21 +36,33 @@ float strand_diffuse(vec3 N, vec3 L)
     return clamp(mix(0.25, 1.0, max(dot(N, L), 0.0)), 0.0, 1.0);
 }
 
+vec3 kajiya_kay(vec3 diffuse, vec3 specular, float p, vec3 T, vec3 L, vec3 E)
+{
+    float cosTL    = dot(T, L);
+    float cosTL_sq = cosTL * cosTL;
+
+    float cosTE    = dot(T, E);
+    float cosTE_sq = cosTE * cosTE;
+
+    float sinTL    = sqrt(1.0f - cosTL_sq);
+    float sinTE    = sqrt(1.0f - cosTE_sq);
+
+    vec3 d = diffuse * sinTL;
+    vec3 s = specular * pow(max(cosTL * cosTE + sinTL * sinTE, 0), p);
+
+    return d + s;
+}
+
 void main()
 {
     vec4 light = vec4(-75, 125, 50, 0);
 
-    // Crude Kajiya-Kay
-    vec3 T = normalize(IN.world_tangent.xyz);
-    vec3 V = normalize(camera.eye.xyz - IN.world_position.xyz);
-    vec3 L = normalize(light - IN.world_position).xyz;
-    vec3 N = normalize(cross(T, V));
-
     vec3 hairD = vec3(83, 61, 53) / 255;
-    vec3 hairS = vec3(0.75);
+    vec3 hairS = vec3(106, 78, 56) / 255;
 
-    vec3 color = hairD * 0.1 + hairD * strand_diffuse(N, L) + hairS * strand_specular(T, V, L, 4);
+    vec3 T = normalize(IN.world_tangent.xyz);
+    vec3 L = normalize(light - IN.world_position).xyz;
 
-    float gamma = 1.0 / 2.2;
+    vec3 color = kajiya_kay(hairD, hairS, 2.0, T, L, camera.eye.xyz);
     out_color = vec4(color, 1.0);
 }
