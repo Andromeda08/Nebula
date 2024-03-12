@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <common/Size2D.hpp>
+#include <ncommon/Size2D.hpp>
 #include <nmath/Utility.hpp>
 #include <nscene/Camera.hpp>
 #include <nscene/Light.hpp>

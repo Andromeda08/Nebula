@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <vector>
-#include <common/Size2D.hpp>
+#include <ncommon/Size2D.hpp>
 #include <nscene/Scene.hpp>
 #include <nrg/common/RenderPath.hpp>
 #include <nvk/Command.hpp>

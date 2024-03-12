@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
 #include <nvk/IWindow.hpp>
-#include <common/Size2D.hpp>
+#include <ncommon/Size2D.hpp>
 #include "WindowCreateInfo.hpp"
 
 namespace Nebula::wsi

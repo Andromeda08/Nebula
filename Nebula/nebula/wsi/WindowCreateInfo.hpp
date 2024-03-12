@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <string>
-#include <common/Size2D.hpp>
+#include <ncommon/Size2D.hpp>
 
 namespace Nebula::wsi
 {

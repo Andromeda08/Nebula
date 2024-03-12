@@ -19,12 +19,14 @@ add_executable(${Nebula_main}
     ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMNODES_DIR}/imnodes.cpp
 
-    common/Size2D.hpp
+    main.cpp
+
+    ncommon/Size2D.hpp
 
     wsi/Window.hpp wsi/Window.cpp
     wsi/WindowCreateInfo.hpp
 
-    napp/AppConfig.hpp
+    napp/AppConfig.hpp napp/AppConfig.cpp
     napp/Application.hpp napp/Application.cpp
 
     ngui/GUI.hpp ngui/GUI.cpp
@@ -48,33 +50,24 @@ add_executable(${Nebula_main}
     nhair/HairRenderer.hpp nhair/HairRenderer.cpp
 
     nrg/common/Context.hpp
-    nrg/common/Node.hpp
+    nrg/common/Node.hpp nrg/common/Node.cpp
+    nrg/common/NodeConfiguration.hpp
     nrg/common/Resource.hpp
     nrg/common/NodeType.hpp
-    nrg/common/ResourceClaim.hpp
-
-    nrg/editor/Edge.hpp
-    nrg/editor/GraphEditor.hpp
-    nrg/editor/EditorNode.hpp nrg/editor/EditorNode.cpp
-    nrg/editor/EditorNodeFactory.hpp
-    nrg/editor/Graph.hpp
     nrg/common/RenderPath.hpp
-    nrg/editor/GraphEditor.cpp
-    nrg/editor/EditorNodeFactory.cpp
-
-    main.cpp
-    nrg/nodes/SceneDataProvider.hpp
+    nrg/common/ResourceClaim.hpp
     nrg/common/ResourceSpecification.hpp
     nrg/common/ResourceTraits.hpp
-    nrg/nodes/SceneDataProvider.cpp
-    nrg/nodes/HairRendering.hpp
-    nrg/nodes/AmbientOcclusion.hpp
-    nrg/nodes/AntiAliasing.hpp
-    nrg/common/NodeConfiguration.hpp
-    nrg/nodes/AntiAliasing.cpp
-    nrg/common/Node.cpp
+
+    nrg/editor/Edge.hpp
+    nrg/editor/Graph.hpp
+    nrg/editor/GraphEditor.hpp nrg/editor/GraphEditor.cpp
+    nrg/editor/EditorNode.hpp nrg/editor/EditorNode.cpp
+    nrg/editor/EditorNodeFactory.hpp nrg/editor/EditorNodeFactory.cpp
 
     nrg/nodes/Nodes.hpp
+    nrg/nodes/AntiAliasing.hpp nrg/nodes/AntiAliasing.cpp
+    nrg/nodes/SceneDataProvider.hpp nrg/nodes/SceneDataProvider.cpp
 )
 
 target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
