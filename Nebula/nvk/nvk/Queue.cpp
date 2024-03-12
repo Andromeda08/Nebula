@@ -55,7 +55,7 @@ namespace Nebula::nvk
         device.getQueue(family_index, index, &queue);
 
         #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Created Queue with name \"{}\", #{} on Queue Family {} ", name, index, family_index) << std::endl;
+        std::cout << nlog::fmt_info("Created {} with name \"{}\", #{} on Queue Family {} ", nlog::cyan("vk::Queue"), name, index, family_index) << std::endl;
         #endif
     }
 }

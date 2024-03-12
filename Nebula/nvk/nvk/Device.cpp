@@ -152,14 +152,14 @@ namespace Nebula::nvk
 
         if (candidate == std::end(devices))
         {
-            throw nlog::make_exception("Failed to find a suitable PhysicalDevice");
+            throw nlog::make_exception("Failed to find a suitable {}", nlog::cyan("vk::PhysicalDevice"));
         }
 
         m_physical_device = *candidate;
         m_physical_device_properties = m_physical_device.getProperties();
 
         #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Selected PhysicalDevice : {}", m_physical_device_properties.deviceName.data()) << std::endl;
+        std::cout << nlog::fmt_info("Selected {} : {}", nlog::cyan("vk::PhysicalDevice"), m_physical_device_properties.deviceName.data()) << std::endl;
         #endif
     }
 
@@ -194,11 +194,11 @@ namespace Nebula::nvk
         if (const vk::Result result = m_physical_device.createDevice(&create_info, nullptr, &m_device);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create vk::Device ({})", to_string(result));
+            throw nlog::make_exception("Failed to create {} ({})", nlog::cyan("vk::Device"), nlog::red(to_string(result)));
         }
 
         #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Created vk::Device") << std::endl;
+        std::cout << nlog::fmt_info("Created {}", nlog::cyan("vk::Device")) << std::endl;
         #endif
 
         auto q0 = QueueCreateInfo()

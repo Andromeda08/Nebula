@@ -18,11 +18,12 @@ namespace Nebula::nvk
             if (const vk::Result result = m_device->handle().createCommandPool(&create_info, nullptr, &pool);
                 result != vk::Result::eSuccess)
             {
-                throw nlog::make_exception("Failed to create vk::CommandPool on Queue Family {} ({})",fidx, to_string(result));
+                throw nlog::make_exception("Failed to create {} on Queue Family {} ({})",
+                                           nlog::cyan("vk::CommandPool"), fidx, nlog::red(to_string(result)));
             }
 
             #ifdef NVK_VERBOSE
-            std::cout << nlog::fmt_info("Created vk::CommandPool on Queue Family {}", fidx) << std::endl;
+            std::cout << nlog::fmt_info("Created {} on Queue Family {}", nlog::cyan("vk::CommandPool"), fidx) << std::endl;
             #endif
 
             m_pools.insert({ fidx, pool });

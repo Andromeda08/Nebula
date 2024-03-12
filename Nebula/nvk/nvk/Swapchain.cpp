@@ -21,8 +21,8 @@ namespace Nebula::nvk
 
         #ifdef NVK_VERBOSE
         std::cout << nlog::fmt_info(
-                "Created Swapchain with {} Images\n\tSize: [{}x{}]\n\tFormat: {} | ColorSpace: {}\n\tPresent Mode: {}",
-                m_image_count, m_size.width, m_size.height, to_string(m_format),
+                "Created {} with {} Images\n\tSize: [{}x{}]\n\tFormat: {} | ColorSpace: {}\n\tPresent Mode: {}",
+                nlog::cyan("vk::Swapchain"), m_image_count, m_size.width, m_size.height, to_string(m_format),
                 to_string(m_color_space), to_string(m_present_mode)) << std::endl;
         #endif
     }
