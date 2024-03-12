@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <common/Size2D.hpp>
+#include <nmath/Utility.hpp>
 #include <nscene/Camera.hpp>
 #include <nscene/Light.hpp>
 #include <nscene/Object.hpp>
@@ -61,6 +62,11 @@ namespace Nebula::ns
             return m_objects;
         }
 
+        const std::vector<Light>& lights() const
+        {
+            return m_lights;
+        }
+
         const std::shared_ptr<nvk::Buffer>& object_descriptions_buffer() const
         {
             return m_object_descriptions_buffer;
@@ -85,7 +91,7 @@ namespace Nebula::ns
         std::shared_ptr<nvk::Buffer>                    m_object_descriptions_buffer;
         std::shared_ptr<nvk::TLAS>                      m_top_level_as;
 
-        const int32_t                                   m_id {-1};
+        const int32_t                                   m_id {nmath::rand()};
         const std::string                               m_name {"Unknown Scene"};
         std::shared_ptr<nvk::CommandPool>               m_command_pool;
         std::shared_ptr<nvk::Device>                    m_device;
