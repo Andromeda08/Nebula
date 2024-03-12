@@ -8,6 +8,7 @@
     <mapping directory="$PROJECT_DIR$/ThirdParty/imgui" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ThirdParty/imnodes" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ThirdParty/imnodes/vcpkg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ThirdParty/json" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ThirdParty/stduuid" vcs="Git" />
   </component>
 </project>
