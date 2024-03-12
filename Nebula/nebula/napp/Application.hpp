@@ -23,7 +23,7 @@ namespace Nebula
     class Application
     {
     public:
-        explicit Application(std::optional<std::string> hair_file = std::nullopt, const std::string& config_json = "");
+        explicit Application(std::optional<std::string> hair_file = std::nullopt);
 
         void run();
 

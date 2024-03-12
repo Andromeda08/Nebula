@@ -6,7 +6,8 @@ namespace Nebula
     uint32_t Application::s_current_frame = 0;
     Size2D   Application::s_extent = {};
 
-    Application::Application(std::optional<std::string> hair_file, const std::string& config_json)
+    Application::Application(std::optional<std::string> hair_file)
+    : m_config(AppConfig::load())
     {
         auto wnd_create_info = wsi::WindowCreateInfo()
             .set_size({ m_config.wnd_width, m_config.wnd_height })

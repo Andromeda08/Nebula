@@ -1,0 +1,10 @@
+{
+  "name": "Nebula Application",
+  "font": "JetBrainsMono-Regular.ttf",
+  "ray_tracing": true,
+  "debug_mode": true,
+  "gui_enabled": true,
+  "wnd_width": 1600,
+  "wnd_height": 900,
+  "wnd_fullscreen": false
+}

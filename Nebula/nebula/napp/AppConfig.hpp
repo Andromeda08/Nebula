@@ -16,9 +16,6 @@ namespace Nebula
         const uint32_t      wnd_height      = 900;
         const bool          wnd_fullscreen  = false;
 
-        static AppConfig load(const std::string& path2json)
-        {
-            return {};
-        }
+        static AppConfig load(const std::string& path2json = "napp_config.json");
     };
 }
