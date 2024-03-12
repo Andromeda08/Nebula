@@ -19,6 +19,11 @@ namespace Nebula::ngui
 
     void GUI::render(const vk::CommandBuffer& command_buffer, const std::function<void()>& lambda)
     {
+        auto marker = vk::DebugUtilsLabelEXT()
+            .setColor(std::array{ 0.8235f, 0.0588f, 0.2235f, 1.0f })
+            .setPLabelName("ImGui");
+        command_buffer.beginDebugUtilsLabelEXT(&marker);
+
         nvk::RenderPass::Execute()
             .with_clear_values<1>(m_clear_value)
             .with_framebuffer(m_framebuffers[m_next_framebuffer])
@@ -45,6 +50,8 @@ namespace Nebula::ngui
                 ImDrawData* main_draw_data = ImGui::GetDrawData();
                 ImGui_ImplVulkan_RenderDrawData(main_draw_data, cmd);
             });
+
+        command_buffer.endDebugUtilsLabelEXT();
 
         m_next_framebuffer = (m_next_framebuffer + 1) % 2;
     }
