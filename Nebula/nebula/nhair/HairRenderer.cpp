@@ -1,5 +1,6 @@
 #include "HairRenderer.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <vulkan/vulkan.hpp>
 #include <nlog/nlog.hpp>
 
 namespace Nebula::nhair
@@ -63,6 +64,10 @@ namespace Nebula::nhair
             {
                 throw nlog::make_exception("Framebuffer creation failed.");
             }
+
+            device->name_object(std::format("Hair Framebuffer {}", i),
+                                (uint64_t) m_framebuffers[i].operator VkFramebuffer(),
+                                vk::ObjectType::eFramebuffer);
         }
 
         m_uniform_buffers.resize(2);
@@ -83,6 +88,11 @@ namespace Nebula::nhair
                               const ns::CameraData& camera_data,
                               const vk::CommandBuffer& command_buffer) const
     {
+        auto marker = vk::DebugUtilsLabelEXT()
+            .setColor(std::array{ 0.9176f, 0.4627f, 0.796f, 1.0f })
+            .setPLabelName("Hair Rendering");
+        command_buffer.beginDebugUtilsLabelEXT(&marker);
+
         m_uniform_buffers[current_frame]->set_data(&camera_data);
 
         vk::DescriptorBufferInfo buffer_info = { m_uniform_buffers[current_frame]->buffer(), 0, sizeof(ns::CameraData)};
@@ -111,5 +121,7 @@ namespace Nebula::nhair
                 cmd.pushConstants(m_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
                 hair_model.draw(cmd);
             });
+
+        command_buffer.endDebugUtilsLabelEXT();
     }
 }
