@@ -204,16 +204,14 @@ namespace Nebula::nvk
             return *this;
         }
 
-        inline DescriptorWriteInfo& add_storage_buffer(uint32_t binding, const Buffer& buffer, vk::DeviceSize range, uint32_t count = 1)
+        inline DescriptorWriteInfo& add_storage_buffer(uint32_t binding, const vk::DescriptorBufferInfo& buffer_info, uint32_t count = 1)
         {
-            auto info = buffer_infos.emplace_back(buffer.buffer(), buffer.offset(), range);
-
             auto write = vk::WriteDescriptorSet()
                 .setDstBinding(binding)
                 .setDescriptorCount(count)
                 .setDescriptorType(vk::DescriptorType::eStorageBuffer)
                 .setDstArrayElement(0)
-                .setPBufferInfo(&buffer_infos.back());
+                .setPBufferInfo(&buffer_info);
 
             writes.push_back(write);
 
