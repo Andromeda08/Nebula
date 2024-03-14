@@ -16,13 +16,10 @@ namespace Nebula::nrg
 
         ~SceneDataProvider() override = default;
 
-        void set_scene(const std::shared_ptr<ns::Scene>& scene);
-
-        static std::vector<ResourceClaim> get_resource_claims();
-
     private:
         std::shared_ptr<ns::Scene> m_scene;
 
-        DEF_RESOURCES();
+        nrg_decl_resource_requirements();
+        nrg_def_get_resource_claims();
     };
 }

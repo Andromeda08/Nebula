@@ -9,6 +9,7 @@
 #include <vulkan/vulkan.hpp>
 #include <nrg/common/Node.hpp>
 #include <nrg/common/NodeConfiguration.hpp>
+#include <nrg/common/NodeTraits.hpp>
 #include <nrg/common/ResourceClaim.hpp>
 #include <nvk/Descriptor.hpp>
 #include <nvk/Device.hpp>
@@ -53,8 +54,6 @@ namespace Nebula::nrg
             std::array<vk::ClearValue, 1>    clear_values {vk::ClearValue{{0.0f, 0.0f, 0.0f, 1.0f}}};
             std::vector<vk::Framebuffer>     framebuffers;
             glm::vec2                        resolution_rcp; // 1/res
-
-            void execute(const vk::CommandBuffer& command_buffer);
         };
 
         AntiAliasing(const std::shared_ptr<Configuration>& configuration,
@@ -64,9 +63,7 @@ namespace Nebula::nrg
 
         void execute(const vk::CommandBuffer &command_buffer) override;
 
-        void update();
-
-        static std::vector<ResourceClaim> get_resource_claims();
+        void update() override;
 
     private:
         static constexpr const char* s_input_name  = "AA Input";
@@ -76,7 +73,8 @@ namespace Nebula::nrg
         std::shared_ptr<nvk::Device> m_device;
         std::unique_ptr<Renderer>    m_renderer;
 
-        DEF_RESOURCES();
+        nrg_decl_resource_requirements();
+        nrg_def_get_resource_claims();
     };
 
     inline std::string to_string(const AntiAliasingMode aa_mode)

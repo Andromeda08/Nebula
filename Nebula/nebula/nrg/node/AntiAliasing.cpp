@@ -1,21 +1,17 @@
 #include "AntiAliasing.hpp"
-#include <nrg/common/NodeType.hpp>
 #include <nrg/common/ResourceTraits.hpp>
 
 namespace Nebula::nrg
 {
-#pragma region "Anti-Aliasing Node Resources"
-    const std::vector<ResourceSpecification> AntiAliasing::s_resource_specifications = {
-        { s_input_name, ResourceUsage::eInput, ResourceType::eImage },
-        { s_output_name, ResourceUsage::eOutput, ResourceType::eImage },
-    };
-#pragma endregion
+    nrg_def_resource_requirements(AntiAliasing, ({
+        std::make_shared<ImageRequirement>(s_input_name, ResourceUsage::eInput, ResourceType::eImage, vk::Format::eR32G32B32A32Sfloat),
+        std::make_shared<ImageRequirement>(s_output_name, ResourceUsage::eOutput, ResourceType::eImage, vk::Format::eR32G32B32A32Sfloat)
+    }));
 
     AntiAliasing::AntiAliasing(const std::shared_ptr<Configuration>& configuration,
                                const std::shared_ptr<nvk::Device>& device)
     : Node("Anti-Aliasing", NodeType::eAntiAliasing), m_configuration(*configuration)
     {
-
     }
 
     void AntiAliasing::initialize()
@@ -30,11 +26,6 @@ namespace Nebula::nrg
     void AntiAliasing::update()
     {
 
-    }
-
-    std::vector<ResourceClaim> AntiAliasing::get_resource_claims()
-    {
-        return std::vector<ResourceClaim>(std::begin(s_resource_specifications), std::end(s_resource_specifications));
     }
 
     void AntiAliasing::Configuration::render()
