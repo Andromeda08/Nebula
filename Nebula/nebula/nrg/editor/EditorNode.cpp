@@ -28,12 +28,12 @@ namespace Nebula::nrg
 
                 for (const auto& resource : m_resource_claims)
                 {
-                    if (resource.usage == ResourceUsage::eUnknown) continue;
+                    if (resource.usage() == ResourceUsage::eUnknown) continue;
 
                     const int32_t attribute_id = resource.id;
-                    ImNodes::PushColorStyle(ImNodesCol_Pin, TO_IM_COL32(get_resource_color(resource.type)));
+                    ImNodes::PushColorStyle(ImNodesCol_Pin, TO_IM_COL32(get_resource_color(resource.type())));
 
-                    switch (resource.usage)
+                    switch (resource.usage())
                     {
                         case ResourceUsage::eInput:
                             ImNodes::BeginInputAttribute(attribute_id, ImNodesPinShape_CircleFilled);
@@ -45,9 +45,9 @@ namespace Nebula::nrg
                             break;
                     }
 
-                    ImGui::Text(resource.name.c_str());
+                    ImGui::Text("%s", resource.name().c_str());
 
-                    switch (resource.usage)
+                    switch (resource.usage())
                     {
                         case ResourceUsage::eInput:
                             ImNodes::EndInputAttribute();
@@ -80,7 +80,7 @@ namespace Nebula::nrg
     {
         for (auto& resource : m_resource_claims)
         {
-            if (resource.name == name) return resource;
+            if (resource.name() == name) return resource;
         }
         throw std::runtime_error(std::format("No Resource found with the name {}", name));
     }

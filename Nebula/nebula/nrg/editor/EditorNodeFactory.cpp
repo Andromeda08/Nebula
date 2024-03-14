@@ -4,7 +4,18 @@
 #include <iostream>
 #include <vector>
 #include <nrg/common/ResourceClaim.hpp>
-#include <nrg/nodes/Nodes.hpp>
+#include <nrg/node/Nodes.hpp>
+
+#define nrg_case_RC(Enum, Type)                                     \
+case Enum:                                                          \
+    resource_claims = Type::get_resource_claims();                  \
+    break;
+
+#define nrg_case_RC_NC(Enum, Type)                                  \
+case Enum:                                                          \
+    resource_claims = Type::get_resource_claims();                  \
+    node_configuration = std::make_shared<Type::Configuration>();   \
+    break;
 
 namespace Nebula::nrg
 {
@@ -22,13 +33,12 @@ namespace Nebula::nrg
         using enum NodeType;
         switch (node_type)
         {
-            case eAntiAliasing:
-                resource_claims = AntiAliasing::get_resource_claims();
-                node_configuration = std::make_shared<AntiAliasing::Configuration>();
-                break;
-            case eSceneDataProvider:
-                resource_claims = SceneDataProvider::get_resource_claims();
-                break;
+            nrg_case_RC_NC(eAmbientOcclusion, AmbientOcclusion);
+            nrg_case_RC_NC(eAntiAliasing, AntiAliasing);
+            nrg_case_RC_NC(eDeferredLighting, DeferredLighting);
+            nrg_case_RC(eGBuffer, GBuffer);
+            nrg_case_RC(ePresent, Present);
+            nrg_case_RC(eSceneDataProvider, SceneDataProvider);
             default:
                 throw std::runtime_error(std::format("EditorNode creation for {} node type not supported", to_string(node_type)));
         }

@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 #include <nrg/common/Context.hpp>
-#include <nrg/common/NodeType.hpp>
+#include <nrg/common/NodeTraits.hpp>
 #include <nrg/editor/EditorNode.hpp>
 
 namespace Nebula::nrg

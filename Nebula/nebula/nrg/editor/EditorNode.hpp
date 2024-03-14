@@ -7,7 +7,7 @@
 #include <nmath/Utility.hpp>
 #include <nmath/graph/Vertex.hpp>
 #include <nrg/common/NodeConfiguration.hpp>
-#include <nrg/common/NodeType.hpp>
+#include <nrg/common/NodeTraits.hpp>
 #include <nrg/common/ResourceClaim.hpp>
 #include <nrg/common/ResourceTraits.hpp>
 

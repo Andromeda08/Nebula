@@ -17,7 +17,7 @@ namespace Nebula::nrg
 
             Point(const EditorNode& editor_node, const ResourceClaim& resource)
             : node_id(editor_node.id()), resource_id(resource.id)
-            , node_name(editor_node.name()), resource_name(resource.name)
+            , node_name(editor_node.name()), resource_name(resource.name())
             {
             }
         };
