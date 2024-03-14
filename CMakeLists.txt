@@ -19,9 +19,3 @@ add_subdirectory(ThirdParty/stduuid)
 # Nebula
 add_subdirectory(Nebula/nvk)
 add_subdirectory(Nebula/nebula)
-
-# samples
-add_subdirectory(Nebula/samples)
-
-# Tests
-add_subdirectory(Nebula/test)
