@@ -75,6 +75,10 @@ class HairModel// : public ns::Mesh
 
         int32_t strand_count() const { return static_cast<int32_t>(m_strands.size()); }
 
+        const nvk::Buffer& vertex_buffer() const { return *m_vertex_buffer; }
+
+        const nvk::Buffer& strand_descriptions_buffer() const { return *m_strand_descriptions_buffer; }
+
         ~HairModel() = default;
 
     private:

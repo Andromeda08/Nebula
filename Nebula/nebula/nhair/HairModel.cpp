@@ -90,7 +90,7 @@ namespace Nebula::nhair
     {
         auto name = std::format("[Hair] {}", m_file_path);
         auto vb_create_info = nvk::BufferCreateInfo()
-            .set_buffer_type(nvk::BufferType::eVertex)
+            .set_buffer_type(nvk::BufferType::eStorage)
             .set_name(name)
             .set_size(sizeof(Vertex) * m_vertices.size());
         m_vertex_buffer = nvk::Buffer::create_with_data(vb_create_info, m_vertices.data(), m_device, m_command_pool);
