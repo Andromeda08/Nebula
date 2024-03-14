@@ -101,7 +101,9 @@ namespace Nebula::ns
             .proj = p,
             .view_inverse = glm::inverse(v),
             .proj_inverse = glm::inverse(p),
-            .eye = { e.x, e.y, e.z, 1.0f }
+            .eye = { e.x, e.y, e.z, 1.0f },
+            .near_plane = m_near,
+            .far_plane = m_far,
         };
     }
 }

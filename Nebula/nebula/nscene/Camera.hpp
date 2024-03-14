@@ -12,6 +12,8 @@ namespace Nebula::ns
         glm::mat4 view_inverse;
         glm::mat4 proj_inverse;
         glm::vec4 eye;
+        float     near_plane;
+        float     far_plane;
     };
 
     class Camera
