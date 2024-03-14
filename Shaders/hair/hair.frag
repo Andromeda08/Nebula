@@ -13,6 +13,8 @@ layout (binding = 0) uniform CameraData {
     mat4 view_inverse;
     mat4 proj_inverse;
     vec4 eye;
+    float near_plane;
+    float far_plane;
 } camera;
 
 layout (location = 0) out vec4 out_color;
@@ -60,9 +62,12 @@ void main()
     vec3 hairD = vec3(83, 61, 53) / 255;
     vec3 hairS = vec3(106, 78, 56) / 255;
 
+    // vec3 hairD = vec3(4, 4, 4) / 255;
+    // vec3 hairS = vec3(32, 32, 32) / 255;
+
     vec3 T = normalize(IN.world_tangent.xyz);
     vec3 L = normalize(light - IN.world_position).xyz;
 
-    vec3 color = kajiya_kay(hairD, hairS, 2.0, T, L, camera.eye.xyz);
+    vec3 color = kajiya_kay(hairD, hairS, 16.0, T, L, camera.eye.xyz);
     out_color = vec4(color, 1.0);
 }

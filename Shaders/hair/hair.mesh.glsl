@@ -33,6 +33,8 @@ layout (binding = 0) uniform CameraData {
     mat4 view_inverse;
     mat4 proj_inverse;
     vec4 eye;
+    float near_plane;
+    float far_plane;
 } camera;
 
 // Input --------------------------------
