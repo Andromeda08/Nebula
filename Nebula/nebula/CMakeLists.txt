@@ -33,6 +33,8 @@ add_executable(${Nebula_main}
 
     nmath/Transform.hpp
     nmath/Utility.hpp nmath/Utility.cpp
+    nmath/algorithm/BFS.hpp nmath/algorithm/BFS.cpp
+    nmath/algorithm/TopologicalSort.hpp nmath/algorithm/TopologicalSort.cpp
     nmath/graph/Vertex.hpp nmath/graph/Vertex.cpp
 
     nscene/Light.hpp
@@ -52,11 +54,9 @@ add_executable(${Nebula_main}
     nrg/common/Context.hpp
     nrg/common/Node.hpp nrg/common/Node.cpp
     nrg/common/NodeConfiguration.hpp
-    nrg/common/Resource.hpp
-    nrg/common/NodeType.hpp
+    nrg/common/NodeTraits.hpp
     nrg/common/RenderPath.hpp
     nrg/common/ResourceClaim.hpp
-    nrg/common/ResourceSpecification.hpp
     nrg/common/ResourceTraits.hpp
 
     nrg/editor/Edge.hpp
@@ -65,9 +65,24 @@ add_executable(${Nebula_main}
     nrg/editor/EditorNode.hpp nrg/editor/EditorNode.cpp
     nrg/editor/EditorNodeFactory.hpp nrg/editor/EditorNodeFactory.cpp
 
-    nrg/nodes/Nodes.hpp
-    nrg/nodes/AntiAliasing.hpp nrg/nodes/AntiAliasing.cpp
-    nrg/nodes/SceneDataProvider.hpp nrg/nodes/SceneDataProvider.cpp
+    nrg/node/Nodes.hpp
+    nrg/node/AmbientOcclusion.hpp nrg/node/AmbientOcclusion.cpp
+    nrg/node/AntiAliasing.hpp nrg/node/AntiAliasing.cpp
+    nrg/node/DeferredLighting.hpp nrg/node/DeferredLighting.cpp
+    nrg/node/GBuffer.hpp nrg/node/GBuffer.cpp
+    nrg/node/Present.hpp nrg/node/Present.cpp
+    nrg/node/SceneDataProvider.hpp nrg/node/SceneDataProvider.cpp
+
+    nrg/resource/Resource.hpp
+    nrg/resource/Resources.hpp
+    nrg/resource/Requirement.hpp
+
+    nrg/compiler/CompilerResult.hpp
+    nrg/compiler/CompilerStrategy.hpp nrg/compiler/CompilerStrategy.cpp
+    nrg/compiler/NodeFactory.hpp
+    nrg/compiler/ResourceFactory.hpp
+    nrg/compiler/optimized/ResourceOptimizer.hpp nrg/compiler/optimized/OptimizedCompiler.cpp
+    nrg/compiler/optimized/OptimizedCompiler.hpp
 )
 
 target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
