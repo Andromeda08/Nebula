@@ -3,7 +3,7 @@
 #define FXAA_QUALITY__PRESET 39
 #define FXAA_GREEN_AS_LUMA 1
 
-#include "inc/fxaa.hlsl"
+#include "fxaa.hlsli"
 
 static const float fxaaSubpix = 0.75;
 static const float fxaaEdgeThreshold = 0.166;
