@@ -4,6 +4,8 @@ set(CMAKE_EXE_LINKER_FLAGS "-static")
 set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+add_compile_definitions(WIN32_LEAN_AND_MEAN)
+
 # External Dependencies
 find_package(Vulkan REQUIRED)
 
@@ -18,4 +20,5 @@ add_subdirectory(ThirdParty/stduuid)
 
 # Nebula
 add_subdirectory(Nebula/nvk)
+add_subdirectory(Nebula/ndx)
 add_subdirectory(Nebula/nebula)
