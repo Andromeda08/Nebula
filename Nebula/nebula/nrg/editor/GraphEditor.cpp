@@ -140,7 +140,7 @@ namespace Nebula::nrg
 
     void GraphEditor::_add_defaults()
     {
-        for (const std::vector to_create = { NodeType::eSceneDataProvider };
+        for (const std::vector to_create = { NodeType::eSceneDataProvider, NodeType::ePresent };
              const NodeType t : to_create)
         {
             switch (t)
@@ -190,7 +190,7 @@ namespace Nebula::nrg
             edges.erase(edge);
 
             m_logger->info(R"(Deleting link: "{}" ("{}") --> "{}" ("{}")",
-                           s_node->name(), s_attr.name, e_node->name(), e_attr.name);
+                           s_node->name(), s_attr.name(), e_node->name(), e_attr.name());
         }
     }
 
@@ -226,28 +226,28 @@ namespace Nebula::nrg
             std::string message;
             if (e_attr.input_connected)
             {
-                m_logger->error(R"(The attribute "{}" of "{}" already has an input attached)", e_attr.name, e_node->name());
+                m_logger->error(R"(The attribute "{}" of "{}" already has an input attached)", e_attr.name(), e_node->name());
                 return false;
             }
 
             if (edge_exists)
             {
-                m_logger->error(R"(The attributes "{}" and "{}" are already connected)", s_attr.name, e_attr.name);
+                m_logger->error(R"(The attributes "{}" and "{}" are already connected)", s_attr.name(), e_attr.name());
                 return false;
             }
 
-            if (s_attr.type != e_attr.type)
+            if (s_attr.type() != e_attr.type())
             {
-                m_logger->error(R"(Type of attribute "{}" is not compatible with "{}")", s_attr.name, e_attr.name);
+                m_logger->error(R"(Type of attribute "{}" is not compatible with "{}")", s_attr.name(), e_attr.name());
                 return false;
             }
 
             EditorNode::make_directed_edge(s_node, e_node);
-            edges.emplace_back(*s_node, s_attr, *e_node, e_attr, s_attr.type);
+            edges.emplace_back(*s_node, s_attr, *e_node, e_attr, s_attr.type());
             e_attr.input_connected = true;
 
             m_logger->info(R"(Connecting: "{}" ("{}") --> "{}" ("{}"))",
-                           s_node->name(), s_attr.name, e_node->name(), e_attr.name);
+                           s_node->name(), s_attr.name(), e_node->name(), e_attr.name());
         }
 
         return true;
