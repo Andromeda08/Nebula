@@ -18,6 +18,8 @@ namespace Nebula
         }
 
         nlohmann::json data = nlohmann::json::parse(config_file);
+        std::cout << nlog::fmt_info("Loaded app configuration from {}", path2json) << std::endl;
+
         return {
             .name = data["name"].get<std::string>(),
             .gui_font = data["font"].get<std::string>(),
