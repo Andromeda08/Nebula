@@ -3,7 +3,7 @@
 #include <string>
 #include <uuid.h>
 #include <nmath/Utility.hpp>
-#include <nrg/common/ResourceSpecification.hpp>
+#include <nrg/resource/Requirement.hpp>
 #include <nrg/common/ResourceTraits.hpp>
 
 namespace Nebula::nrg
@@ -12,17 +12,15 @@ namespace Nebula::nrg
     {
         int32_t         id    {nmath::rand()};
         uuids::uuid     uuid = uuids::uuid_system_generator{}();
-        std::string     name  {"Unknown Resource"};
-        ResourceUsage   usage {ResourceUsage::eUnknown};
-        ResourceType    type  {ResourceType::eUnknown};
-
         bool            input_connected {false};
+        std::shared_ptr<Requirement> req;
 
         ResourceClaim() = default;
 
-        ResourceClaim(const ResourceSpecification& rs)
-        : name(rs.name), usage(rs.usage), type(rs.type)
-        {
-        }
+        explicit ResourceClaim(const std::shared_ptr<Requirement>& requirement): req(requirement) {}
+
+        std::string   name()  const { return req ? req->name  : "Unknown Resource"; }
+        ResourceType  type()  const { return req ? req->type  : ResourceType::eUnknown; }
+        ResourceUsage usage() const { return req ? req->usage : ResourceUsage::eUnknown; }
     };
 }
