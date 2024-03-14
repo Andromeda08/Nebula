@@ -8,17 +8,37 @@
 #include <utility>
 #include <vulkan/vulkan.hpp>
 #include <nlog/nlog.hpp>
-#include <nrg/common/Resource.hpp>
-#include <nrg/common/NodeType.hpp>
+#include <nrg/common/NodeTraits.hpp>
 #include <nrg/common/ResourceClaim.hpp>
-#include <nrg/common/ResourceSpecification.hpp>
+#include <nrg/resource/Resource.hpp>
+#include <nrg/resource/Requirement.hpp>
 
-#if !defined(DEF_RESOURCES)
-#define DEF_RESOURCES()                                                                     \
-public:                                                                                     \
-    static const std::vector<ResourceSpecification> s_resource_specifications;              \
-    const std::vector<ResourceSpecification>& get_resource_specifications() const override  \
-    { return s_resource_specifications; }
+#if !defined(nrg_decl_resource_requirements)
+#define nrg_decl_resource_requirements() \
+public:                                                                                          \
+    static const std::vector<std::shared_ptr<Requirement>> s_resource_requirements;              \
+    const std::vector<std::shared_ptr<Requirement>>& get_resource_requirements() const override  \
+    { return s_resource_requirements; }
+#endif
+
+#if !defined(nrg_def_resource_requirements)
+#define nrg_def_resource_requirements(T, R) \
+const std::vector<std::shared_ptr<Requirement>> T::s_resource_requirements = std::vector<std::shared_ptr<Requirement>> R;
+#endif
+
+#if !defined(nrg_def_get_resource_claims)
+#define nrg_def_get_resource_claims()                       \
+static std::vector<ResourceClaim> get_resource_claims() {   \
+    std::vector<ResourceClaim> result;                      \
+    std::transform(                                         \
+        s_resource_requirements.cbegin(),                   \
+        s_resource_requirements.cend(),                     \
+        std::back_inserter(result),                         \
+        [&](const auto& req) {                              \
+            return ResourceClaim(req);                      \
+        });                                                 \
+    return result;                                          \
+}
 #endif
 
 namespace Nebula::nrg
@@ -51,7 +71,7 @@ namespace Nebula::nrg
 
         virtual void update() {}
 
-        virtual const std::vector<ResourceSpecification>& get_resource_specifications() const = 0;
+        virtual const std::vector<std::shared_ptr<Requirement>>& get_resource_requirements() const = 0;
 
         virtual bool set_resource(const std::string& key, const std::shared_ptr<Resource>& resource);
         #pragma endregion
