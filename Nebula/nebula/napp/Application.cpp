@@ -62,12 +62,12 @@ namespace Nebula
         float dt = delta_time();
         m_active_scene->update(dt);
 
-        const auto camera_data = m_active_scene->active_camera()->uniform_data();
+        auto camera_data = m_active_scene->active_camera()->uniform_data();
 
-        const uint32_t acquired_frame = m_swapchain->acquire_next_image(s_current_frame);
-        const vk::CommandBuffer& command_buffer = m_command_ring->next();
-        const vk::CommandBufferBeginInfo begin_info {};
-        const vk::Result result = command_buffer.begin(&begin_info);
+        uint32_t acquired_frame = m_swapchain->acquire_next_image(s_current_frame);
+        vk::CommandBuffer& command_buffer = m_command_ring->next();
+        vk::CommandBufferBeginInfo begin_info {};
+        vk::Result result = command_buffer.begin(&begin_info);
 
         m_swapchain->set_viewport_scissor(command_buffer);
 
