@@ -17,6 +17,16 @@ namespace Nebula::nrg
             nodes.clear();
         }
 
+        std::vector<std::shared_ptr<EditorNode>> get_nodes_vector()
+        {
+            std::vector<std::shared_ptr<EditorNode>> nodes_vector;
+            for (const auto& [k, v] : nodes)
+            {
+                nodes_vector.push_back(v);
+            }
+            return nodes_vector;
+        }
+
         std::map<int32_t, std::shared_ptr<EditorNode>> nodes;
         std::vector<Edge>                              edges;
     };
