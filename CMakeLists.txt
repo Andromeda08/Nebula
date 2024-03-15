@@ -18,6 +18,8 @@ add_subdirectory(ThirdParty/json)
 
 add_subdirectory(ThirdParty/stduuid)
 
+add_subdirectory(ThirdParty/DirectX)
+
 # Nebula
 add_subdirectory(Nebula/nvk)
 add_subdirectory(Nebula/ndx)

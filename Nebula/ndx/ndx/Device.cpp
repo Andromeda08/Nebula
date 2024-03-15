@@ -1,40 +1,14 @@
 #include "Device.hpp"
-
-#include <format>
-#include <iostream>
-#include <stdexcept>
 #include "Utility.hpp"
+#include <d3dx12.h>
 
 namespace Nebula::ndx
 {
-    Device::Device(IDXGIFactory1* p_factory)
+    Device::Device(const Instance& instance)
     {
-        select_device(p_factory);
+        select_device(instance.factory().Get());
         create_device();
-
-        D3D12_COMMAND_QUEUE_DESC cq_desc = {};
-        cq_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-        cq_desc.Type  = D3D12_COMMAND_LIST_TYPE_DIRECT;
-
-        if (auto result = m_device->CreateCommandQueue(&cq_desc, IID_PPV_ARGS(&m_command_queue));
-            FAILED(result))
-        {
-            throw std::runtime_error(std::format("{} Failed to create {}", p_error, green("D3D12CommandQueue")));
-        }
-
-        std::cout << std::format("{} Created {}", p_info, green("D3D12CommandQueue")) << std::endl;
-    }
-
-    std::string Device::get_adapter_name() const
-    {
-        if (m_adapter.Get() == nullptr)
-        {
-            throw std::runtime_error(std::format("{} No Adapter selected", p_error));
-        }
-
-        DXGI_ADAPTER_DESC1 desc;
-        m_adapter->GetDesc1(&desc);
-        return to_str(desc.Description);
+        create_queues();
     }
 
     void Device::select_device(IDXGIFactory1* p_factory)
@@ -43,7 +17,7 @@ namespace Nebula::ndx
         ComPtr<IDXGIFactory6> factory6;
         if (!SUCCEEDED(p_factory->QueryInterface(IID_PPV_ARGS(&factory6))))
         {
-            throw std::runtime_error("Failed to create IDXGIFactory6");
+            throw make_exception("Failed to create {}", red("IDXGIFactory6"));
         }
 
         for (
@@ -89,10 +63,14 @@ namespace Nebula::ndx
 
         if (m_adapter.Get() == nullptr)
         {
-            throw std::runtime_error(std::format("{} Failed to find a suitable Adapter", p_error));
+            throw make_exception("Failed to find a suitable Adapter");
         }
 
-        std::cout << std::format("{} Selected Adapter: {}", p_info, get_adapter_name()) << std::endl;
+        DXGI_ADAPTER_DESC1 desc;
+        m_adapter->GetDesc1(&desc);
+        m_name = to_str(desc.Description);
+
+        pInfo("Selected Adapter: {}", m_name);
     }
 
     void Device::create_device()
@@ -100,9 +78,56 @@ namespace Nebula::ndx
         if (auto result = D3D12CreateDevice(m_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device));
             FAILED(result))
         {
-            throw std::runtime_error(std::format("{} Failed to create {}", p_error, green("D3D12Device")));
+            throw make_exception("Failed to create {}", red("D3D12Device"));
         }
 
-        std::cout << std::format("{} Created {}", p_info, green("D3D12Device")) << std::endl;
+        pInfo("Created {}", green("D3D12Device"));
+    }
+
+    void Device::create_queues()
+    {
+        D3D12_COMMAND_QUEUE_DESC qg_desc = {};
+        qg_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+        qg_desc.Type  = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+        if (auto result = m_device->CreateCommandQueue(&qg_desc, IID_PPV_ARGS(&m_graphics));
+            FAILED(result))
+        {
+            throw make_exception("Failed to create {}, type: Direct", red("D3D12CommandQueue"));
+        }
+
+        pInfo("Created {}, type: Direct (Graphics)", green("D3D12CommandQueue"));
+
+        D3D12_COMMAND_QUEUE_DESC qc_desc = {};
+        qc_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+        qc_desc.Type  = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+
+        if (auto result = m_device->CreateCommandQueue(&qg_desc, IID_PPV_ARGS(&m_compute));
+            FAILED(result))
+        {
+            throw make_exception("Failed to create {}, type: Compute", red("D3D12CommandQueue"));
+        }
+
+        pInfo("Created {}, type: Compute", green("D3D12CommandQueue"));
+    }
+
+    void Device::make_root_signature(ID3D12RootSignature** pp_root_signature, D3D12_ROOT_SIGNATURE_FLAGS flags)
+    {
+        CD3DX12_ROOT_SIGNATURE_DESC root_signature_desc;
+        root_signature_desc.Init(0, nullptr, 0, nullptr, flags);
+
+        ComPtr<ID3DBlob> signature;
+        ComPtr<ID3DBlob> error;
+        if (auto result = D3D12SerializeRootSignature(&root_signature_desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+            FAILED(result))
+        {
+            throw make_exception("D3D12SerializeRootSignature() failed");
+        }
+
+        if (auto result = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(pp_root_signature));
+            FAILED(result))
+        {
+            throw make_exception("Failed to create {}", red("ID3D12RootSignature"));
+        }
     }
 }

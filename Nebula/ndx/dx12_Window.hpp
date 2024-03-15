@@ -7,6 +7,7 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #include <ndx/IWindow.hpp>
+#include <ndx/Size.hpp>
 
 namespace Nebula
 {
@@ -49,7 +50,7 @@ namespace Nebula
             return result;
         }
 
-        Size window_size() const override
+        ndx::Size window_size() const override
         {
             int width, height;
             glfwGetWindowSize(m_window, &width, &height);
@@ -59,7 +60,7 @@ namespace Nebula
             };
         }
 
-        Size framebuffer_size() const override
+        ndx::Size framebuffer_size() const override
         {
             int width, height;
             glfwGetFramebufferSize(m_window, &width, &height);

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include <format>
+#include <iostream>
+#include <stdexcept>
 #include <string>
 
 #define COLOR_METHOD(COLOR, CODE)                       \
@@ -43,8 +46,43 @@ namespace Nebula
     COLOR_METHOD(white,   c_white);
     #pragma endregion
 
-    constexpr const char* s_ndx = "ndx";
+    // Prefix definitions --------------------------------------------
+    #pragma region
+    auto const s_ndx = "ndx";
 
     auto const p_info = std::format("[{} | {}]", green(s_ndx), cyan("I"));
+    auto const p_warn = std::format("[{} | {}]", green(s_ndx), yellow("W"));
     auto const p_error = std::format("[{} | {}]", green(s_ndx), red("E"));
+    #pragma endregion
+
+    // Print methods --------------------------------------------------
+    #pragma region
+    template <typename... Args>
+    inline void pInfo(std::format_string<Args...> fmt, Args&& ...args)
+    {
+        std::cout << std::format("{} {}", p_info, std::format(fmt, std::forward<Args>(args)...)) << std::endl;
+    }
+
+    template <typename... Args>
+    inline void pWarn(std::format_string<Args...> fmt, Args&& ...args)
+    {
+        std::cout << std::format("{} {}", p_warn, std::format(fmt, std::forward<Args>(args)...)) << std::endl;
+    }
+
+    template <typename... Args>
+    inline void pError(std::format_string<Args...> fmt, Args&& ...args)
+    {
+        std::cout << std::format("{} {}", p_error, std::format(fmt, std::forward<Args>(args)...)) << std::endl;
+    }
+    #pragma endregion
+
+    // Exception utility methods --------------------------------------
+    template <typename E = std::runtime_error, typename... Args>
+    inline E make_exception(std::format_string<Args...> fmt, Args&& ...args)
+    {
+        static_assert(std::is_base_of_v<std::exception, E>, "Template parameter E must be a type of std::exception");
+        const std::string message = std::format(fmt, std::forward<Args>(args)...);
+        std::cout << std::format("{} {}", p_error, message) << std::endl;
+        return E(message);
+    }
 }
