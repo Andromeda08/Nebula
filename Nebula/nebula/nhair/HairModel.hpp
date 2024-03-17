@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -62,7 +63,7 @@ class HairModel// : public ns::Mesh
         inline HairBufferAddresses get_hair_buffer_addresses() const
         {
             return {
-                .vertex_buffer = m_vertex_buffer->address(),
+                .vertex_buffer = m_position_buffers[m_current_position_buffer]->address(),
                 .strand_descriptions_buffer = m_strand_descriptions_buffer->address(),
             };
         }
@@ -79,6 +80,7 @@ class HairModel// : public ns::Mesh
 
         const nvk::Buffer& strand_descriptions_buffer() const { return *m_strand_descriptions_buffer; }
 
+
         ~HairModel() = default;
 
     private:
@@ -89,6 +91,8 @@ class HairModel// : public ns::Mesh
         void process_strands();
 
         void create_buffers();
+
+        void create_initial_position_buffers();
 
         std::string                         m_file_path;
         cyHairFile                          m_hair_file;
@@ -106,5 +110,13 @@ class HairModel// : public ns::Mesh
 
         std::shared_ptr<nvk::Device>        m_device;
         std::shared_ptr<nvk::CommandPool>   m_command_pool;
+
+        int32_t                                     m_current_position_buffer {0};
+        std::array<std::shared_ptr<nvk::Buffer>, 2> m_position_buffers;
+
+    public:
+        const std::array<std::shared_ptr<nvk::Buffer>, 2>& position_buffers() const { return m_position_buffers; }
+
+        const nvk::Buffer& position_buffer(size_t i) const { return *m_position_buffers[i % 2]; }
     };
 }

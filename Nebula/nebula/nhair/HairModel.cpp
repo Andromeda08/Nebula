@@ -13,6 +13,7 @@ namespace Nebula::nhair
         process_vertices();
         process_strands();
         create_buffers();
+        create_initial_position_buffers();
 
         m_gx = static_cast<uint32_t>(std::floor(strand_count() / 32));
     }
@@ -109,6 +110,20 @@ namespace Nebula::nhair
 
     void HairModel::update(const vk::CommandBuffer& command_buffer)
     {
+        m_current_position_buffer = (m_current_position_buffer + 1) % 2;
+    }
 
+    void HairModel::create_initial_position_buffers()
+    {
+        auto create_info = nvk::BufferCreateInfo()
+            .set_buffer_type(nvk::BufferType::eStorage)
+            .set_size(m_vertex_buffer->size());
+        int32_t i = -1;
+        for (auto& buffer : m_position_buffers)
+        {
+            auto name = std::format("[Hair | {}] Position Buffer #{}", m_file_path, i++);
+            create_info.set_name(name);
+            buffer = nvk::Buffer::create_with_data(create_info, m_vertices.data(), m_device, m_command_pool);
+        }
     }
 }

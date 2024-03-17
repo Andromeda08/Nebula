@@ -71,6 +71,7 @@ namespace Nebula
 
         m_swapchain->set_viewport_scissor(command_buffer);
 
+        m_hair_model->update(command_buffer);
         m_hair_renderer->render(s_current_frame, *m_hair_model, camera_data, command_buffer);
 
         // m_render_graph_ctx->get_render_path()->execute(command_buffer);
