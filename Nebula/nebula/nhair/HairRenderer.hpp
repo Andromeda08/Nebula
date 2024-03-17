@@ -26,6 +26,15 @@ namespace Nebula::nhair
         uint64_t strand_descriptions_buffers;
     };
 
+    struct ComputePushConstant
+    {
+        float dt,           _pad1{0}, _pad2{0}, _pad3{0};
+        int   strand_count, _pad5{0}, _pad6{0}, _pad7{0};
+
+        ComputePushConstant() = default;
+        ComputePushConstant(const float a, const int32_t b): dt(a), strand_count(b) {}
+    };
+
     class HairRenderer
     {
     public:
@@ -33,11 +42,15 @@ namespace Nebula::nhair
                               const std::shared_ptr<nvk::Swapchain>& swapchain);
 
         void render(uint32_t current_frame,
+                    float dt,
                     const HairModel& hair_model,
                     const ns::CameraData& camera_data,
                     const vk::CommandBuffer& command_buffer) const;
 
     private:
+        std::unique_ptr<nvk::Descriptor>          m_comp_descriptor;
+        std::unique_ptr<nvk::Pipeline>            m_comp_pipeline;
+
         vk::Extent2D                              m_render_res;
         std::shared_ptr<nvk::Descriptor>          m_descriptor;
         std::array<vk::ClearValue, 2>             m_clear_values;

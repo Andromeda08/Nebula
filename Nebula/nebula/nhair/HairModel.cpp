@@ -16,6 +16,10 @@ namespace Nebula::nhair
         create_initial_position_buffers();
 
         m_gx = static_cast<uint32_t>(std::floor(strand_count() / 32));
+
+        std::cout << std::format("VB: {}, SDB: {}, PB0: {}, PB1: {}",
+                                 m_vertex_buffer->address(), m_strand_descriptions_buffer->address(),
+                                 m_position_buffers[0]->address(), m_position_buffers[1]->address()) << std::endl;
     }
 
     void HairModel::load_file()
@@ -89,16 +93,15 @@ namespace Nebula::nhair
 
     void HairModel::create_buffers()
     {
-        auto name = std::format("[Hair] {}", m_file_path);
         auto vb_create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
-            .set_name(name)
+            .set_name(std::format("[Hair | {}] Vertices ", m_file_path))
             .set_size(sizeof(Vertex) * m_vertices.size());
         m_vertex_buffer = nvk::Buffer::create_with_data(vb_create_info, m_vertices.data(), m_device, m_command_pool);
 
         auto sdb_create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
-            .set_name(name)
+            .set_name(std::format("[Hair | {}] Strand Descriptions ", m_file_path))
             .set_size(sizeof(StrandDescription) * m_strand_descriptions.size());
         m_strand_descriptions_buffer = nvk::Buffer::create_with_data(sdb_create_info, m_strand_descriptions.data(), m_device, m_command_pool);
     }
@@ -118,7 +121,7 @@ namespace Nebula::nhair
         auto create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
             .set_size(m_vertex_buffer->size());
-        int32_t i = -1;
+        int32_t i = 0;
         for (auto& buffer : m_position_buffers)
         {
             auto name = std::format("[Hair | {}] Position Buffer #{}", m_file_path, i++);
