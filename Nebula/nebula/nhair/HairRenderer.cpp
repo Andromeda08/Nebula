@@ -149,7 +149,7 @@ namespace Nebula::nhair
         m_comp_pipeline->bind(command_buffer);
         command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute, m_comp_pipeline->layout(), 0, 1, &m_comp_descriptor->set(current_frame), 0, nullptr);
         command_buffer.pushConstants(m_comp_pipeline->layout(), vk::ShaderStageFlagBits::eCompute, 0, sizeof(ComputePushConstant), &comp_pcs);
-        // command_buffer.dispatch(1024, 1, 1);
+        command_buffer.dispatch(1024, 1, 1);
 
         command_buffer.endDebugUtilsLabelEXT();
 
