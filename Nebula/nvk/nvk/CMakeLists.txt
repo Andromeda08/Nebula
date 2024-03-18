@@ -32,6 +32,8 @@ add_library(${Nebula_nvk}
     render/RenderPass.hpp render/RenderPass.cpp
     render/Shader.hpp render/Shader.cpp
     render/VertexInput.hpp
+    Barrier.hpp
+    Barrier.cpp
 )
 
 target_link_libraries(${Nebula_nvk} PRIVATE ${Vulkan_LIBRARIES})
