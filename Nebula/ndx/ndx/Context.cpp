@@ -71,7 +71,8 @@ namespace Nebula::ndx
         pso_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->handle());
         pso_desc.RasterizerState = rasterizer_state;
         pso_desc.BlendState = blend_desc;
-        pso_desc.DepthStencilState.DepthEnable = false;
+        pso_desc.DepthStencilState.DepthEnable = true;
+        pso_desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
         pso_desc.DepthStencilState.StencilEnable = false;
         pso_desc.SampleMask = UINT_MAX;
         pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

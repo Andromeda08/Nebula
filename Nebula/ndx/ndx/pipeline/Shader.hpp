@@ -42,8 +42,6 @@ namespace Nebula::ndx
         ID3DBlob* handle() { return m_shader_blob.Get(); }
 
     private:
-        ComPtr<ID3DBlob>    m_shader_blob;
-        ShaderStage         m_shader_stage;
-        std::string         m_entry_point;
+        ComPtr<ID3DBlob> m_shader_blob;
     };
 }
