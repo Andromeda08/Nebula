@@ -1,15 +1,20 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdint>
 #include <format>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
+#ifndef COLOR_METHOD
 #define COLOR_METHOD(COLOR, CODE)                       \
 inline std::string COLOR(const std::string& str) {      \
     return CODE + str + "\x1b[0m";                      \
 }
+#endif
 
 namespace Nebula
 {
@@ -20,6 +25,12 @@ namespace Nebula
         std::transform(wstring.begin(), wstring.end(), std::back_inserter(result), [] (wchar_t c) {
             return (char)c;
         });
+        return result;
+    }
+
+    static std::wstring to_wstr(const std::string& string)
+    {
+        std::wstring result(string.begin(), string.end());
         return result;
     }
 

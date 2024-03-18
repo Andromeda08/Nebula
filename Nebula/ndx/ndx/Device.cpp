@@ -75,6 +75,9 @@ namespace Nebula::ndx
 
     void Device::create_device()
     {
+        // Required to run UNSIGNED precompile shaders
+        D3D12EnableExperimentalFeatures(1, &D3D12ExperimentalShaderModels, nullptr, nullptr);
+
         if (auto result = D3D12CreateDevice(m_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device));
             FAILED(result))
         {

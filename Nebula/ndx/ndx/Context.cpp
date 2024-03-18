@@ -2,6 +2,7 @@
 #include "Utility.hpp"
 #include <d3dx12.h>
 #include <d3dcompiler.h>
+#include "pipeline/Shader.hpp"
 
 namespace Nebula::ndx
 {
@@ -51,20 +52,12 @@ namespace Nebula::ndx
         // Test Pipeline
         #pragma region
         m_device->make_root_signature(&m_root_signature, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-        ComPtr<ID3DBlob> vertex_shader;
-        ComPtr<ID3DBlob> pixel_shader;
 
-        uint32_t compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-        if (auto result = D3DCompileFromFile(L"dx12_test.hlsl", nullptr, nullptr, "VSmain", "vs_5_0", compile_flags, 0, &vertex_shader, nullptr);
-            FAILED(result))
-        {
-            throw make_exception("Failed to compile Vertex Shader");
-        }
-        if (auto result = D3DCompileFromFile(L"dx12_test.hlsl", nullptr, nullptr, "PSmain", "ps_5_0", compile_flags, 0, &pixel_shader, nullptr);
-            FAILED(result))
-        {
-            throw make_exception("Failed to compile Vertex Shader");
-        }
+        ShaderCreateInfo vs_ci { ShaderStage::eVertex, "dx12_test.vert.cso" };
+        auto vertex_shader = std::make_shared<Shader>(vs_ci, m_device);
+
+        ShaderCreateInfo fs_ci { ShaderStage::eFragment, "dx12_test.frag.cso" };
+        auto pixel_shader = std::make_shared<Shader>(fs_ci, m_device);
 
         auto rasterizer_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         rasterizer_state.CullMode = D3D12_CULL_MODE_NONE;
@@ -74,8 +67,8 @@ namespace Nebula::ndx
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc = {};
         pso_desc.InputLayout = {};
         pso_desc.pRootSignature = m_root_signature.Get();
-        pso_desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader.Get());
-        pso_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader.Get());
+        pso_desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader->handle());
+        pso_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->handle());
         pso_desc.RasterizerState = rasterizer_state;
         pso_desc.BlendState = blend_desc;
         pso_desc.DepthStencilState.DepthEnable = false;
