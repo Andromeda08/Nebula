@@ -87,6 +87,15 @@ namespace Nebula::ndx
         }
 
         #pragma endregion
+
+        auto pci = PipelineCreateInfo()
+            .add_shader(vertex_shader)
+            .add_shader(pixel_shader)
+            .set_cull_mode(CullMode::eNone)
+            .set_name("Test Pipeline")
+            .set_target_count(1)
+            .set_type(PipelineType::eGraphics);
+        m_pipeline = std::make_shared<Pipeline>(pci, m_device);
     }
 
     void Context::wait_idle()
@@ -102,9 +111,11 @@ namespace Nebula::ndx
         auto& command_list = m_graphics_cmd_list;
 
         m_command_allocators[m_frame_index]->Reset();
-        command_list->Reset(m_command_allocators[m_frame_index].Get(), m_pipeline_state.Get());
+        command_list->Reset(m_command_allocators[m_frame_index].Get(), nullptr);
 
-        command_list->SetGraphicsRootSignature(m_root_signature.Get());
+//        command_list->SetPipelineState(m_pipeline_state.Get());
+//        command_list->SetGraphicsRootSignature(m_root_signature.Get());
+        m_pipeline->bind(command_list);
         m_swapchain->set_viewport_scissor(command_list);
 
         // Present -> RT

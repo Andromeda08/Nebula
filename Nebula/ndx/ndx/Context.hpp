@@ -9,10 +9,12 @@
 #include "Instance.hpp"
 #include "Device.hpp"
 #include "Swapchain.hpp"
+#include "pipeline/Pipeline.hpp"
 
-using Microsoft::WRL::ComPtr;
 namespace Nebula::ndx
 {
+    using Microsoft::WRL::ComPtr;
+
     struct ContextCreateInfo
     {
         uint32_t                 frame_count {2};
@@ -43,6 +45,7 @@ namespace Nebula::ndx
         // Test Pipeline
         ComPtr<ID3D12RootSignature> m_root_signature;
         ComPtr<ID3D12PipelineState> m_pipeline_state;
+        std::shared_ptr<Pipeline>   m_pipeline;
 
         // Sync objects
         uint32_t                m_frame_index {0};

@@ -93,7 +93,7 @@ namespace Nebula::ndx
     void Swapchain::set_viewport_scissor(const ComPtr<ID3D12GraphicsCommandList>& command_list) const
     {
         CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_size.width), static_cast<float>(m_size.height));
-        CD3DX12_RECT scissor  = CD3DX12_RECT(0, 0, static_cast<long>(m_size.width), static_cast<long>(m_size.height));
+        CD3DX12_RECT scissor = CD3DX12_RECT(0, 0, static_cast<long>(m_size.width), static_cast<long>(m_size.height));
 
         command_list->RSSetViewports(1, &viewport);
         command_list->RSSetScissorRects(1, &scissor);

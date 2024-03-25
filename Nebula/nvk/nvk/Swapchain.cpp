@@ -76,7 +76,7 @@ namespace Nebula::nvk
             .setImageIndices(acquired_image)
             .setPResults(nullptr);
         if (const vk::Result result = m_device->q_general()->queue.presentKHR(&present_info);
-            result != vk::Result::eSuccess)
+            result != vk::Resul1t::eSuccess)
         {
             throw nlog::make_exception("Failed to present frame ({})", to_string(result));
         }

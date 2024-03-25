@@ -96,4 +96,25 @@ namespace Nebula
         std::cout << std::format("{} {}", p_error, message) << std::endl;
         return E(message);
     }
+
+    // Read bytes from file --------------------------------------------
+    inline std::vector<uint8_t> read_data(const std::string& name)
+    {
+        std::ifstream in_file(name, std::ios::in | std::ios::binary | std::ios::ate);
+        if (!in_file) throw make_exception("Failed to open file {}", name);
+
+        const std::streampos length = in_file.tellg();
+        if (!in_file) throw make_exception("Failed to read length of file: {}", name);
+
+        std::vector<uint8_t> blob;
+        blob.resize(static_cast<size_t>(length));
+        in_file.seekg(0, std::ios::beg);
+        if (!in_file) throw make_exception("Failed to seek to beginning of file: {}", name);
+
+        in_file.read(reinterpret_cast<char*>(blob.data()), length);
+        if (!in_file) throw make_exception("Failed to read file: {}", name);
+
+        in_file.close();
+        return blob;
+    }
 }

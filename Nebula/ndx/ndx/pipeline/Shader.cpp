@@ -5,6 +5,7 @@
 namespace Nebula::ndx
 {
     Shader::Shader(const ShaderCreateInfo& create_info, const std::shared_ptr<Device>& device)
+    : m_shader_stage(create_info.shader_stage)
     {
         auto path = to_wstr(create_info.file_path);
         if (auto result = D3DReadFileToBlob(path.c_str(), &m_shader_blob);
