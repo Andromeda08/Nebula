@@ -42,7 +42,7 @@ namespace Nebula::nhair
             .add_shader("hair.task.glsl.spv", vk::ShaderStageFlagBits::eTaskEXT)
             .add_shader("hair.mesh.glsl.spv", vk::ShaderStageFlagBits::eMeshEXT)
             .add_shader("hair.frag.spv", vk::ShaderStageFlagBits::eFragment)
-            .set_attachment_count(1)
+            .add_attachment(true)
             .set_cull_mode(vk::CullModeFlagBits::eNone)
             .set_render_pass(m_render_pass)
             .set_name("Hair");
