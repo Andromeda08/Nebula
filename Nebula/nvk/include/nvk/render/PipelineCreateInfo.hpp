@@ -17,8 +17,6 @@ namespace Nebula::nvk
     class PipelineCreateInfo
     {
     public:
-        NVK_DISABLE_COPY(PipelineCreateInfo);
-
         PipelineCreateInfo() = default;
 
         template <VertexInput T>
