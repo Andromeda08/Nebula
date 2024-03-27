@@ -24,67 +24,53 @@ namespace Nebula::ngui
             .setPLabelName("ImGui");
         command_buffer.beginDebugUtilsLabelEXT(&marker);
 
-        nvk::RenderPass::Execute()
-            .with_clear_values<1>(m_clear_value)
-            .with_framebuffer(m_framebuffers[m_next_framebuffer])
-            .with_render_area({{0, 0}, m_swapchain->extent()})
-            .with_render_pass(m_render_pass)
-            .execute(command_buffer, [&](const vk::CommandBuffer& cmd){
-                nvk::MemoryUsage mem_usage = m_context->device()->get_memory_usage();
-                const ImGuiIO& io = ImGui::GetIO();
-                ImGui_ImplVulkan_NewFrame();
-                ImGui_ImplGlfw_NewFrame();
-                ImGui::NewFrame();
-                {
-                    ImGui::Begin("Metrics");
-                    ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
-                    ImGui::Text("Total Memory Usage: %.2f %s", mem_usage.usage, mem_usage.usage_coeff.c_str());
-                    ImGui::Text("Available Memory Budget: %.2f %s", mem_usage.budget, mem_usage.budget_coeff.c_str());
-                    ImGui::End();
+        m_render_pass->execute(command_buffer, m_framebuffers->get(m_next_framebuffer), [&](const vk::CommandBuffer& cmd){
+            nvk::MemoryUsage mem_usage = m_context->device()->get_memory_usage();
+            const ImGuiIO& io = ImGui::GetIO();
+            ImGui_ImplVulkan_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+            {
+                ImGui::Begin("Metrics");
+                ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
+                ImGui::Text("Total Memory Usage: %.2f %s", mem_usage.usage, mem_usage.usage_coeff.c_str());
+                ImGui::Text("Available Memory Budget: %.2f %s", mem_usage.budget, mem_usage.budget_coeff.c_str());
+                ImGui::End();
 
-                    lambda();
-                }
-                ImGui::EndFrame();
+                lambda();
+            }
+            ImGui::EndFrame();
 
-                ImGui::Render();
-                ImDrawData* main_draw_data = ImGui::GetDrawData();
-                ImGui_ImplVulkan_RenderDrawData(main_draw_data, cmd);
-            });
+            ImGui::Render();
+            ImDrawData* main_draw_data = ImGui::GetDrawData();
+            ImGui_ImplVulkan_RenderDrawData(main_draw_data, cmd);
+        });
 
         command_buffer.endDebugUtilsLabelEXT();
-
         m_next_framebuffer = (m_next_framebuffer + 1) % 2;
     }
 
     void GUI::init_imgui(const std::string& font_path)
     {
-        m_render_pass = nvk::RenderPass::Builder()
-            .add_color_attachment(m_swapchain->format(), vk::ImageLayout::ePresentSrcKHR, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eDontCare)
-            .make_subpass()
-            .with_name("ImGui RenderPass")
-            .create(m_context->device());
-
-        m_clear_value[0].color = std::array<float, 4>({ 0.f, 0.f, 0.f, 0.f });
-
         const auto& device = m_context->device()->handle();
-        std::vector attachments = { m_swapchain->image_view(0) };
-        auto fb_create_info = vk::FramebufferCreateInfo()
-            .setAttachmentCount(attachments.size())
-            .setPAttachments(attachments.data())
-            .setRenderPass(m_render_pass)
-            .setHeight(m_swapchain->extent().height)
-            .setWidth(m_swapchain->extent().width)
-            .setLayers(1);
+        auto render_pass_create_info = nvk::RenderPassCreateInfo()
+            .add_color_attachment(m_swapchain->format(),
+                                  vk::ImageLayout::ePresentSrcKHR,
+                                  vk::SampleCountFlagBits::e1,
+                                  { 0.f, 0.f, 0.f, 0.f },
+                                  vk::AttachmentLoadOp::eDontCare)
+            .set_render_area({{0, 0}, m_swapchain->extent()})
+            .set_name("ImGui");
+        m_render_pass = std::make_shared<nvk::RenderPass>(render_pass_create_info, m_context->device());
 
-        for (int32_t i = 0; i < m_swapchain->image_count(); i++)
-        {
-            attachments[0] = m_swapchain->image_view(i);
-            if (const vk::Result result = device.createFramebuffer(&fb_create_info, nullptr, &m_framebuffers[i]);
-                result != vk::Result::eSuccess)
-            {
-                throw std::runtime_error(std::format("[Error] Failed to create ImGui Framebuffer #{}", i));
-            }
-        }
+        auto framebuffer_create_info = nvk::FramebufferCreateInfo()
+            .set_framebuffer_count(m_swapchain->image_count())
+            .add_attachment(m_swapchain->image_view(0), 0, 0)
+            .add_attachment(m_swapchain->image_view(1), 0, 1)
+            .set_render_pass(m_render_pass->render_pass())
+            .set_extent(m_swapchain->extent())
+            .set_name("ImGui");
+        m_framebuffers = std::make_shared<nvk::Framebuffer>(framebuffer_create_info, m_context->device());
 
         #pragma region PoolSize Array
         const vk::DescriptorPoolSize pool_sizes[] {
@@ -139,7 +125,7 @@ namespace Nebula::ngui
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
         init_info.Allocator = nullptr;
         init_info.CheckVkResultFn = nullptr;
-        init_info.RenderPass = m_render_pass;
+        init_info.RenderPass = m_render_pass->render_pass();
         ImGui_ImplVulkan_Init(&init_info);
 
         ImGui_ImplVulkan_CreateFontsTexture();

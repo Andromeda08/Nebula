@@ -6,6 +6,8 @@
 #include <vulkan/vulkan.hpp>
 #include <nvk/Context.hpp>
 #include <nvk/Swapchain.hpp>
+#include <nvk/render/Framebuffer.hpp>
+#include <nvk/render/RenderPass.hpp>
 #include <wsi/Window.hpp>
 
 namespace Nebula::ngui
@@ -37,14 +39,13 @@ namespace Nebula::ngui
 
         float get_font_size() const;
 
-        std::array<vk::ClearValue, 1>   m_clear_value;
-        vk::DescriptorPool              m_descriptor_pool;
-        vk::PipelineCache               m_pipeline_cache;
-        vk::RenderPass                  m_render_pass;
-        uint32_t                        m_next_framebuffer {0};
-        std::array<vk::Framebuffer, 2>  m_framebuffers;
-        std::shared_ptr<wsi::Window>    m_window;
-        std::shared_ptr<nvk::Context>   m_context;
-        std::shared_ptr<nvk::Swapchain> m_swapchain;
+        vk::DescriptorPool                m_descriptor_pool;
+        vk::PipelineCache                 m_pipeline_cache;
+        std::shared_ptr<nvk::RenderPass>  m_render_pass;
+        std::shared_ptr<nvk::Framebuffer> m_framebuffers;
+        uint32_t                          m_next_framebuffer {0};
+        std::shared_ptr<wsi::Window>      m_window;
+        std::shared_ptr<nvk::Context>     m_context;
+        std::shared_ptr<nvk::Swapchain>   m_swapchain;
     };
 }
