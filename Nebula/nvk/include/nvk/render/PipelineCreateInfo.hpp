@@ -17,8 +17,6 @@ namespace Nebula::nvk
     class PipelineCreateInfo
     {
     public:
-        NVK_DISABLE_COPY(PipelineCreateInfo);
-
         PipelineCreateInfo() = default;
 
         template <VertexInput T>
@@ -53,6 +51,9 @@ namespace Nebula::nvk
 
         PipelineCreateInfo& configure_state(const std::function<void(PipelineState&)>& lambda);
 
+        PipelineCreateInfo& add_attachment(bool enable_blending = false);
+
+        [[deprecated("Maybe don't use this 💀")]]
         PipelineCreateInfo& set_attachment_count(uint32_t value);
 
         PipelineCreateInfo& set_cull_mode(vk::CullModeFlagBits cull_mode);

@@ -1,4 +1,4 @@
-#include "PipelineCreateInfo.hpp"
+#include "render/PipelineCreateInfo.hpp"
 
 namespace Nebula::nvk
 {
@@ -36,6 +36,19 @@ namespace Nebula::nvk
     PipelineCreateInfo& PipelineCreateInfo::configure_state(const std::function<void(PipelineState&)>& lambda)
     {
         lambda(m_pipeline_state);
+        return *this;
+    }
+
+    PipelineCreateInfo& PipelineCreateInfo::add_attachment(bool enable_blending)
+    {
+        auto attachment = PipelineState::make_color_blend_attachment_state();
+        if (enable_blending)
+        {
+            attachment
+                .setBlendEnable(true)
+                .setDstAlphaBlendFactor(vk::BlendFactor::eOne);
+        }
+        m_pipeline_state.attachment_states.push_back(attachment);
         return *this;
     }
 

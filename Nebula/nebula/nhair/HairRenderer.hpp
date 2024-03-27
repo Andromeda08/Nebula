@@ -38,13 +38,11 @@ namespace Nebula::nhair
                     const vk::CommandBuffer& command_buffer) const;
 
     private:
-        vk::Extent2D                              m_render_res;
         std::shared_ptr<nvk::Descriptor>          m_descriptor;
-        std::array<vk::ClearValue, 2>             m_clear_values;
-        std::array<vk::Framebuffer, 2>            m_framebuffers;
+        std::shared_ptr<nvk::Framebuffer>         m_framebuffers;
         std::shared_ptr<nvk::Image>               m_depth;
         std::shared_ptr<nvk::Pipeline>            m_pipeline;
-        vk::RenderPass                            m_render_pass;
+        std::shared_ptr<nvk::RenderPass>          m_render_pass;
         std::vector<std::shared_ptr<nvk::Buffer>> m_uniform_buffers;
     };
 }

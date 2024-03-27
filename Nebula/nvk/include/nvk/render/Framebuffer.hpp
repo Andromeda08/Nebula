@@ -10,6 +10,7 @@
 
 namespace Nebula::nvk
 {
+    /*
     class Framebuffer
     {
     public:
@@ -62,5 +63,50 @@ namespace Nebula::nvk
 
     private:
         std::vector<vk::Framebuffer> m_framebuffers;
+    };
+     */
+
+    struct FramebufferCreateInfo
+    {
+        /*
+         * If no framebuffer index was specified, it is assumed that all framebuffers will share the attachment.
+         * If no attachment index was specified, the next available attachment location is chosen.
+         */
+        FramebufferCreateInfo& add_attachment(const vk::ImageView& image_view,
+                                              std::optional<uint32_t> attachment_idx = std::nullopt,
+                                              std::optional<uint32_t> framebuffer_idx = std::nullopt);
+
+        FramebufferCreateInfo& set_framebuffer_count(uint32_t value);
+
+        FramebufferCreateInfo& validate();
+
+        std::map<uint32_t, std::vector<vk::ImageView>> attachments;
+        int32_t                      last_attachment_index {-1};
+        uint32_t                     framebuffer_count {0};
+        struct_param(std::string,    name, {});
+        struct_param(vk::RenderPass, render_pass, {});
+        struct_param(vk::Extent2D,   extent, vk::Extent2D(0, 0));
+    };
+
+    class Framebuffer
+    {
+    public:
+        NVK_DISABLE_COPY(Framebuffer);
+
+        Framebuffer(FramebufferCreateInfo& create_info, const std::shared_ptr<Device>& device);
+
+        ~Framebuffer();
+
+        const vk::Framebuffer& get(size_t index);
+
+        const vk::Framebuffer& operator[](size_t index);
+
+        const std::vector<vk::Framebuffer>& framebuffers() const;
+
+        size_t count() const;
+
+    private:
+        std::vector<vk::Framebuffer> m_framebuffers;
+        std::shared_ptr<Device>      m_device;
     };
 }

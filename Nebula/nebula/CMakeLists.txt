@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
+set(CMAKE_EXE_LINKER_FLAGS "-static")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -88,7 +89,7 @@ add_executable(${Nebula_main}
 target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
 target_include_directories(${Nebula_main} PRIVATE
     ${Vulkan_INCLUDE_DIRS}
-    "../nvk"
+    "../nvk/include"
     "${3RD}/cy"
     "${3RD}/glm"
     "${3RD}/glfw"
@@ -100,6 +101,7 @@ target_include_directories(${Nebula_main} PRIVATE
     "${NLOG}")
 target_compile_definitions (${Nebula_main} PRIVATE
     NBL_DEBUG
+    NVK_DEBUG
     -DImTextureID=ImU64
     IMGUI_DEFINE_MATH_OPERATORS
     GLFW_INCLUDE_VULKAN
