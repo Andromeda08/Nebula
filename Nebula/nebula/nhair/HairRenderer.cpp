@@ -48,27 +48,17 @@ namespace Nebula::nhair
             .set_name("Hair");
         m_pipeline = std::make_shared<nvk::Pipeline>(pipeline_create_info, device);
 
-        auto fbci = vk::FramebufferCreateInfo()
-            .setRenderPass(m_render_pass)
-            .setHeight(swapchain->extent().height)
-            .setWidth(swapchain->extent().width)
-            .setLayers(1)
-            .setAttachmentCount(2);
-        std::vector<vk::ImageView> attachments { swapchain->image_view(0), m_depth->image_view() };
-        for (int32_t i = 0; i < m_framebuffers.size(); i++) {
-            attachments[0] = swapchain->image_view(i);
-            fbci.setPAttachments(attachments.data());
+        auto framebuffer_create_info = nvk::FramebufferCreateInfo()
+            .set_framebuffer_count(swapchain->image_count())
+            .add_attachment(swapchain->image_view(0), 0, 0)
+            .add_attachment(swapchain->image_view(1), 0, 1)
+            .add_attachment(m_depth->image_view(), 1)
+            .set_render_pass(m_render_pass)
+            .set_extent(swapchain->extent())
+            .set_name("Hair Renderer")
+            .validate();
 
-            if (vk::Result result = device->handle().createFramebuffer(&fbci, nullptr, &m_framebuffers[i]);
-                result != vk::Result::eSuccess)
-            {
-                throw nlog::make_exception("Framebuffer creation failed.");
-            }
-
-            device->name_object(std::format("Hair Framebuffer {}", i),
-                                (uint64_t) m_framebuffers[i].operator VkFramebuffer(),
-                                vk::ObjectType::eFramebuffer);
-        }
+        m_framebuffers = std::make_shared<nvk::Framebuffer>(framebuffer_create_info, device);
 
         m_uniform_buffers.resize(2);
         for (int32_t i = 0; i < 2; i++)
@@ -103,7 +93,7 @@ namespace Nebula::nhair
 
         nvk::RenderPass::Execute()
             .with_clear_values<2>(m_clear_values)
-            .with_framebuffer(m_framebuffers[current_frame])
+            .with_framebuffer(m_framebuffers->get(current_frame))
             .with_render_area({ {0, 0}, m_render_res })
             .with_render_pass(m_render_pass)
             .execute(command_buffer, [&](const vk::CommandBuffer& cmd) {

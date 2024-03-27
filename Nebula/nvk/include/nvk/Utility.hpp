@@ -10,6 +10,30 @@
 type(const type&) = delete;             \
 type& operator=(const type&) = delete;
 
+#ifndef struct_param
+#define struct_param(param_t, param_name, param_init)           \
+param_t param_name = param_init;                                \
+inline auto& set_##param_name(const param_t& value) {           \
+    param_name = value;                                         \
+    return *this;                                               \
+}
+#endif
+
+#ifndef struct_list_param
+#define struct_list_param(param_t, param_name)                      \
+std::vector<param_t> m_##param_name##s = {};                        \
+inline auto& add_##param_name(const param_t& value) {               \
+    m_##param_name##s.push_back(value);                             \
+    return *this;                                                   \
+}                                                                   \
+inline auto& add_##param_name##s(                                   \
+    std::initializer_list<param_t>&& init_list) {                   \
+    m_##param_name##s.insert(m_##param_name##s.end(),               \
+                             init_list.begin(),init_list.end());    \
+    return *this;                                                   \
+}
+#endif
+
 namespace Nebula::nvk
 {
     template <class T>

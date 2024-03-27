@@ -1,128 +1,163 @@
 #include "render/Framebuffer.hpp"
 #include <nlog/nlog.hpp>
 
+#include <iostream>
+#include <format>
+#include <sstream>
+
 namespace Nebula::nvk
 {
-    Framebuffer::Builder& Framebuffer::Builder::add_attachment(const vk::ImageView& image_view)
+    FramebufferCreateInfo&
+    FramebufferCreateInfo::add_attachment(const vk::ImageView& image_view, std::optional<uint32_t> attachment_idx,
+                                          std::optional<uint32_t> fb_idx)
     {
-        _attachments.push_back(image_view);
-        return *this;
-    }
-
-    Framebuffer::Builder& Framebuffer::Builder::add_attachment_for_index(uint32_t index, const vk::ImageView& image_view)
-    {
-        _per_fb_attachments.insert({ index, image_view });
-        return *this;
-    }
-
-    Framebuffer::Builder& Framebuffer::Builder::set_render_pass(const vk::RenderPass& render_pass)
-    {
-        _render_pass = render_pass;
-        return *this;
-    }
-
-    Framebuffer::Builder& Framebuffer::Builder::set_size(vk::Extent2D size)
-    {
-        _size = size;
-        return *this;
-    }
-
-    Framebuffer::Builder& Framebuffer::Builder::set_count(uint32_t count)
-    {
-        _count = count;
-        return *this;
-    }
-
-    Framebuffer::Builder& Framebuffer::Builder::set_name(const std::string& name)
-    {
-        _name = name;
-        return *this;
-    }
-
-    std::shared_ptr<Framebuffer> Framebuffer::Builder::create(const std::shared_ptr<Device>& device)
-    {
-        return _attachments.empty()
-               ? std::make_shared<Framebuffer>(_per_fb_attachments, _attachments, _render_pass, _size, _count, device, _name)
-               : std::make_shared<Framebuffer>(_attachments, _render_pass, _size, _count, device, _name);
-    }
-
-    Framebuffer::Framebuffer(const std::vector<vk::ImageView>& attachments,
-                             const vk::RenderPass& render_pass,
-                             const vk::Extent2D& size,
-                             uint32_t count,
-                             const std::shared_ptr<Device>& device,
-                             const std::string& name)
-    {
-        vk::FramebufferCreateInfo create_info;
-        create_info.setLayers(1);
-        create_info.setAttachmentCount(static_cast<uint32_t>(attachments.size()));
-        create_info.setPAttachments(attachments.data());
-        create_info.setRenderPass(render_pass);
-        create_info.setHeight(size.height);
-        create_info.setWidth(size.width);
-
-        m_framebuffers.resize(count);
-        for (vk::Framebuffer& framebuffer : m_framebuffers)
+        if (framebuffer_count <= 0)
         {
-            vk::Result result = device->handle().createFramebuffer(&create_info, nullptr, &framebuffer);
-            if (result != vk::Result::eSuccess)
+            throw std::runtime_error("No Framebuffer count was specified");
+        }
+
+        // Decide on attachment index
+        uint32_t attachment_index = std::max(last_attachment_index + 1, 0); // Default on the next index
+        if (attachment_idx.has_value())
+        {
+            auto value = attachment_idx.value();
+            // 1. Already existing location
+            if (value <= last_attachment_index)
             {
-                throw nlog::make_exception("Framebuffer creation failed.");
+                attachment_index = value;
             }
         }
 
-//        for (int32_t i = 0; i < m_framebuffers.size(); i++)
-//        {
-//            sdvk::util::name_vk_object(std::format("{} {}", name, std::to_string(i)),
-//                                       (uint64_t) static_cast<VkFramebuffer>(m_framebuffers[i]),
-//                                       vk::ObjectType::eFramebuffer,
-//                                       device);
-//        }
+        // Decide on framebuffer range
+        uint32_t first = 0;
+        uint32_t last  = framebuffer_count - 1;
+        if (fb_idx.has_value())
+        {
+            first = last = fb_idx.value();
+        }
+
+        // Set attachment for framebuffers
+        for (uint32_t i = first; i < last + 1; i++)
+        {
+            // New fb_idx -> Insert empty vector into map
+            if (!attachments.contains(i))
+            {
+                attachments.insert({i, {}});
+            }
+
+            auto& vec = attachments[i];
+            if (attachment_index <= vec.size())
+            {
+                vec.resize(attachment_index + 1);
+            }
+
+            vec[attachment_index] = image_view;
+
+            std::cout << std::format("Set attachment #{} for framebuffer #{} : {}", attachment_index, i,
+                                     std::to_string((uint64_t) vec[attachment_index].operator VkImageView())) << std::endl;
+        }
+
+        last_attachment_index = static_cast<int32_t>(attachment_index);
+        return *this;
     }
 
-    Framebuffer::Framebuffer(std::map<uint32_t, vk::ImageView>& per_frame_attachments,
-                             const std::vector<vk::ImageView>& attachments,
-                             const vk::RenderPass& render_pass,
-                             const vk::Extent2D& size,
-                             uint32_t count,
-                             const std::shared_ptr<Device>& device,
-                             const std::string& name)
+    FramebufferCreateInfo& FramebufferCreateInfo::set_framebuffer_count(uint32_t value)
     {
-        vk::FramebufferCreateInfo create_info;
-        create_info.setLayers(1);
-        create_info.setRenderPass(render_pass);
-        create_info.setHeight(size.height);
-        create_info.setWidth(size.width);
-
-        m_framebuffers.resize(count);
-        for (uint32_t i = 0; i < count; i++)
+        framebuffer_count = value;
+        if (!attachments.empty())
         {
-            std::vector<vk::ImageView> att = attachments;
-            att.push_back(per_frame_attachments[i]);
+        #ifdef NVK_DEBUG
+            std::cerr << "Setting the number of Framebuffers after adding attachments will reset the list of attachments" << std::endl;
+            attachments.clear();
+            last_attachment_index = -1;
+        #else
+            throw std::runtime_error("Call [FramebufferCreateInfo::set_framebuffer_count()] before adding attachments!");
+        #endif
+        }
+        return *this;
+    }
 
-            create_info
-                .setPAttachments(att.data())
-                .setAttachmentCount(att.size());
-
-            vk::Result result = device->handle().createFramebuffer(&create_info, nullptr, &m_framebuffers[i]);
-            if (result != vk::Result::eSuccess)
+    FramebufferCreateInfo& FramebufferCreateInfo::validate()
+    {
+        bool has_missing_attachments = false;
+        for (auto& [id, vec] : attachments)
+        {
+            if (!std::ranges::all_of(vec, [&](const auto& b){ return b; }))
             {
-                throw nlog::make_exception("Framebuffer creation failed.");
+                has_missing_attachments = true;
             }
         }
 
-//        for (int32_t i = 0; i < m_framebuffers.size(); i++)
-//        {
-//            sdvk::util::name_vk_object(std::format("{} {}", name, std::to_string(i)),
-//                                       (uint64_t) static_cast<VkFramebuffer>(m_framebuffers[i]),
-//                                       vk::ObjectType::eFramebuffer,
-//                                       device);
-//        }
+        if (has_missing_attachments)
+        {
+            std::cerr << "Invalid FramebufferCreateInfo: Has missing attachments" << std::endl;
+            for (auto& [id, vec] : attachments)
+            {
+            #ifdef NVK_DEBUG
+                std::stringstream out;
+                out << std::format("[Framebuffer #{}]", id);
+                int32_t idx = -1;
+                for (const auto& b : vec)
+                {
+                    out << std::format(" [{} : {}]", idx++, b ? "ok" : "missing");
+                }
+                std::cerr << out.str() << std::endl;
+            #endif
+
+                throw std::runtime_error("Missing attachments for Framebuffers");
+            }
+        }
+
+        if (extent.width == 0 || extent.height == 0)
+        {
+        #ifdef NVK_DEBUG
+            std::cerr << std::format("Invalid Extent for Framebuffers: [{}, {}]", extent.width, extent.height);
+        #endif
+            throw std::runtime_error("Invalid Extent for Framebuffers");
+        }
+
+        return *this;
     }
 
-    const vk::Framebuffer& Framebuffer::get(uint32_t index)
+    Framebuffer::Framebuffer(FramebufferCreateInfo& create_info, const std::shared_ptr<Device>& device)
+    : m_device(device)
     {
-        if (index > static_cast<uint32_t>(m_framebuffers.size()))
+        auto fb_create_info = vk::FramebufferCreateInfo()
+            .setAttachmentCount(create_info.last_attachment_index + 1)
+            .setHeight(create_info.extent.height)
+            .setLayers(1)
+            .setRenderPass(create_info.render_pass)
+            .setWidth(create_info.extent.width);
+
+        m_framebuffers.resize(create_info.framebuffer_count);
+        for (size_t i = 0; i < m_framebuffers.size(); i++)
+        {
+            fb_create_info.setPAttachments(create_info.attachments[i].data());
+            if (vk::Result result = m_device->handle().createFramebuffer(&fb_create_info, nullptr, &m_framebuffers[i]);
+                result != vk::Result::eSuccess)
+            {
+                throw std::runtime_error(std::format("Failed to create Framebuffer #{}", i));
+            }
+            m_device->name_object(std::format("[FB] {} #{}", create_info.name, i),
+                                  (uint64_t) m_framebuffers[i].operator VkFramebuffer(),
+                                  vk::ObjectType::eFramebuffer);
+        }
+    }
+
+    Framebuffer::~Framebuffer()
+    {
+        if (!m_framebuffers.empty())
+        {
+            for (const auto& framebuffer : m_framebuffers)
+            {
+                m_device->handle().destroyFramebuffer(framebuffer);
+            }
+        }
+    }
+
+    const vk::Framebuffer& Framebuffer::get(size_t index)
+    {
+        if (index > m_framebuffers.size())
         {
             throw nlog::make_exception<std::out_of_range>("Index out of range for framebuffer array.");
         }
@@ -130,8 +165,18 @@ namespace Nebula::nvk
         return m_framebuffers[index];
     }
 
-    const vk::Framebuffer& Framebuffer::operator[](uint32_t index)
+    const vk::Framebuffer& Framebuffer::operator[](size_t index)
     {
         return get(index);
+    }
+
+    const std::vector<vk::Framebuffer>& Framebuffer::framebuffers() const
+    {
+        return m_framebuffers;
+    }
+
+    size_t Framebuffer::count() const
+    {
+        return m_framebuffers.size();
     }
 }

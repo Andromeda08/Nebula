@@ -101,6 +101,7 @@ target_include_directories(${Nebula_main} PRIVATE
     "${NLOG}")
 target_compile_definitions (${Nebula_main} PRIVATE
     NBL_DEBUG
+    NVK_DEBUG
     -DImTextureID=ImU64
     IMGUI_DEFINE_MATH_OPERATORS
     GLFW_INCLUDE_VULKAN

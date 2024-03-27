@@ -41,7 +41,7 @@ namespace Nebula::nhair
         vk::Extent2D                              m_render_res;
         std::shared_ptr<nvk::Descriptor>          m_descriptor;
         std::array<vk::ClearValue, 2>             m_clear_values;
-        std::array<vk::Framebuffer, 2>            m_framebuffers;
+        std::shared_ptr<nvk::Framebuffer>         m_framebuffers;
         std::shared_ptr<nvk::Image>               m_depth;
         std::shared_ptr<nvk::Pipeline>            m_pipeline;
         vk::RenderPass                            m_render_pass;

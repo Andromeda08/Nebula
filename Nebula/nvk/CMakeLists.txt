@@ -3,6 +3,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(Vulkan REQUIRED)
 
+file(GLOB_RECURSE Headers "./*.hpp")
+
 add_library("nvk"
     src/Barrier.cpp
     src/Buffer.cpp
@@ -16,7 +18,7 @@ add_library("nvk"
     src/Swapchain.cpp
     src/Utility.cpp
 
-    src/render/Framebuffer.cpp
+    src/render/Framebuffer.cpp include/nvk/render/Framebuffer.hpp
     src/render/Pipeline.cpp
     src/render/PipelineCreateInfo.cpp
     src/render/PipelineState.cpp
