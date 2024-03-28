@@ -25,8 +25,9 @@ namespace Nebula::nvk
         create_info.window->create_surface(m_instance->handle(), &m_surface);
 
         auto device_extensions = DeviceExtensions()
-            .set_ray_tracing_features(create_info.ray_tracing_features)
-            .set_mesh_shading_features(create_info.mesh_shader_features);
+            .enable_raytracing_features(create_info.ray_tracing_features)
+            .enable_mesh_shader_features(create_info.mesh_shader_features)
+            .set_chain();
 
         m_device = std::make_shared<Device>(m_instance->handle(), device_extensions);
         VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device->handle());

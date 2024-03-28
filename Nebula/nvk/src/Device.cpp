@@ -189,7 +189,7 @@ namespace Nebula::nvk
             .setQueueCreateInfoCount(queue_create_infos.size())
             .setPQueueCreateInfos(queue_create_infos.data())
             .setPEnabledFeatures(&m_device_extensions.features)
-            .setPNext(&m_device_extensions.vulkan_11);
+            .setPNext(m_device_extensions.get_p_next());
 
         if (const vk::Result result = m_physical_device.createDevice(&create_info, nullptr, &m_device);
             result != vk::Result::eSuccess)
