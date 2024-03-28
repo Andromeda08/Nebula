@@ -4,7 +4,7 @@ set(CMAKE_EXE_LINKER_FLAGS "-static")
 set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_compile_definitions(WIN32_LEAN_AND_MEAN)
+add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX)
 
 # External Dependencies
 find_package(Vulkan REQUIRED)
