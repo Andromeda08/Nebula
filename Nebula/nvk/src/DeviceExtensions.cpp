@@ -120,8 +120,6 @@ namespace Nebula::nvk
                     throw std::runtime_error(std::format("Unhandled structure type: {}", to_string(sType)));
             }
 
-            std::cout << std::format("Chained: {} -> {} | {} -> {}", p_next, sPtr, to_string(s_type), to_string(sType)) << std::endl;
-
             s_type = sType;
             p_next = sPtr;
         }
