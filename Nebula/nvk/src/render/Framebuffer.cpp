@@ -53,8 +53,10 @@ namespace Nebula::nvk
 
             vec[attachment_index] = image_view;
 
+            #ifdef NVK_VERBOSE
             std::cout << std::format("Set attachment #{} for framebuffer #{} : {}", attachment_index, i,
                                      std::to_string((uint64_t) vec[attachment_index].operator VkImageView())) << std::endl;
+            #endif
         }
 
         last_attachment_index = static_cast<int32_t>(attachment_index);
@@ -66,7 +68,7 @@ namespace Nebula::nvk
         framebuffer_count = value;
         if (!attachments.empty())
         {
-        #ifdef NVK_DEBUG
+        #ifdef NVK_VERBOSE
             std::cerr << "Setting the number of Framebuffers after adding attachments will reset the list of attachments" << std::endl;
             attachments.clear();
             last_attachment_index = -1;
