@@ -19,16 +19,25 @@ namespace Nebula::nvk
                                                  vk::AttachmentLoadOp    load_op      = vk::AttachmentLoadOp::eClear);
 
         RenderPassCreateInfo& add_attachment(const std::shared_ptr<Image>& image,
-                                             vk::ImageLayout final_layout = vk::ImageLayout::eColorAttachmentOptimal,
-                                             vk::ClearColorValue     clear_value  = {0.0f, 0.0f, 0.0f, 1.0f},
-                                             vk::AttachmentLoadOp load_op = vk::AttachmentLoadOp::eClear);
+                                             vk::ImageLayout              final_layout = vk::ImageLayout::eColorAttachmentOptimal,
+                                             vk::ClearColorValue          clear_value  = {0.0f, 0.0f, 0.0f, 1.0f},
+                                             vk::AttachmentLoadOp         load_op = vk::AttachmentLoadOp::eClear);
 
-        RenderPassCreateInfo& set_depth_attachment(vk::Format format,
-                                                   vk::SampleCountFlagBits sample_count = vk::SampleCountFlagBits::e1,
+        RenderPassCreateInfo& set_depth_attachment(vk::Format                 format,
+                                                   vk::SampleCountFlagBits    sample_count = vk::SampleCountFlagBits::e1,
                                                    vk::ClearDepthStencilValue clear_value = {1.0f, 0});
 
         RenderPassCreateInfo& set_depth_attachment(const std::shared_ptr<Image>& depth_image,
-                                                   vk::ClearDepthStencilValue clear_value = {1.0f, 0});
+                                                   vk::ClearDepthStencilValue    clear_value = {1.0f, 0});
+
+        RenderPassCreateInfo& set_resolve_attachment(vk::Format              format,
+                                                     vk::ImageLayout         final_layout = vk::ImageLayout::eColorAttachmentOptimal,
+                                                     vk::SampleCountFlagBits sample_count = vk::SampleCountFlagBits::e1,
+                                                     vk::ClearColorValue     clear_value = {0.0f, 0.0f, 0.0f, 1.0f});
+
+        RenderPassCreateInfo& set_resolve_attachment(const std::shared_ptr<Image>& resolve_image,
+                                                     vk::ImageLayout               final_layout = vk::ImageLayout::eColorAttachmentOptimal,
+                                                     vk::ClearColorValue           clear_value = {0.0f, 0.0f, 0.0f, 1.0f});
 
         RenderPassCreateInfo& set_name(const std::string& value);
 

@@ -122,6 +122,58 @@ namespace Nebula::nvk
         return *this;
     }
 
+    RenderPassCreateInfo&
+    RenderPassCreateInfo::set_resolve_attachment(vk::Format format, vk::ImageLayout final_layout,
+                                                 vk::SampleCountFlagBits sample_count, vk::ClearColorValue clear_value)
+    {
+        auto ad = vk::AttachmentDescription()
+            .setFormat(format)
+            .setSamples(sample_count)
+            .setLoadOp(vk::AttachmentLoadOp::eClear)
+            .setStoreOp(vk::AttachmentStoreOp::eDontCare)
+            .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+            .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+            .setInitialLayout(vk::ImageLayout::eUndefined)
+            .setFinalLayout(final_layout);
+        attachments.push_back(ad);
+
+        has_resolve_attachment = true;
+        resolve_ref.setAttachment(attachments.size() - 1);
+        resolve_ref.setLayout(vk::ImageLayout::eColorAttachmentOptimal);
+
+        auto cv = vk::ClearValue();
+        cv.color = clear_value;
+        clear_values.push_back(cv);
+
+        return *this;
+    }
+
+    RenderPassCreateInfo&
+    RenderPassCreateInfo::set_resolve_attachment(const std::shared_ptr<Image>& resolve_image, vk::ImageLayout final_layout,
+                                                 vk::ClearColorValue clear_value)
+    {
+        auto ad = vk::AttachmentDescription()
+            .setFormat(resolve_image->properties().format)
+            .setSamples(resolve_image->properties().sample_count)
+            .setLoadOp(vk::AttachmentLoadOp::eClear)
+            .setStoreOp(vk::AttachmentStoreOp::eDontCare)
+            .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+            .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+            .setInitialLayout(vk::ImageLayout::eUndefined)
+            .setFinalLayout(final_layout);
+        attachments.push_back(ad);
+
+        has_resolve_attachment = true;
+        resolve_ref.setAttachment(attachments.size() - 1);
+        resolve_ref.setLayout(vk::ImageLayout::eColorAttachmentOptimal);
+
+        auto cv = vk::ClearValue();
+        cv.color = clear_value;
+        clear_values.push_back(cv);
+
+        return *this;
+    }
+
     RenderPass::RenderPass(const RenderPassCreateInfo& create_info, const std::shared_ptr<Device>& device)
     : m_device(device), m_render_area(create_info.render_area), m_clear_values(create_info.clear_values)
     {
