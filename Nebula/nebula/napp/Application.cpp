@@ -35,7 +35,7 @@ namespace Nebula
 
         m_hair_model = std::make_shared<nhair::HairModel>((hair_file.has_value() ? hair_file.value() : "wWavy.hair"), m_context->device(), m_context->command_pool());
 
-        m_hair_renderer = std::make_shared<nhair::HairRenderer>(m_context->device(), m_swapchain);
+        m_hair_renderer = std::make_shared<nhair::HairRenderer>(m_context->device(), m_swapchain, true);
     }
 
     void Application::run()
@@ -78,6 +78,11 @@ namespace Nebula
         if (m_config.gui_enabled)
         {
             m_gui->render(command_buffer, [&](){
+                ImGui::Begin("Hair Parameters");
+                ImGui::SliderFloat3("Diffuse", m_hair_renderer->hair_diffuse.data(), 0.0f, 1.0f);
+                ImGui::SliderFloat3("Specular", m_hair_renderer->hair_specular.data(), 0.0f, 1.0f);
+                ImGui::End();
+
                 m_rg_editor->render();
             });
         }

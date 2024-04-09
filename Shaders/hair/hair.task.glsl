@@ -16,6 +16,8 @@ layout (local_size_x = WORKGROUP_SIZE) in;
 layout (push_constant) uniform HairConstants {
     mat4     model;
     ivec4    buffer_lengths;  // [ VTX, SDESC, -, - ]
+    vec4     hair_color;
+    vec4     hair_specular;
     uint64_t vertex_address; 
     uint64_t sdesc_address;
 } hair_constants;

@@ -6,38 +6,69 @@
 namespace Nebula::nhair
 {
     HairRenderer::HairRenderer(const std::shared_ptr<nvk::Device>& device,
-                               const std::shared_ptr<nvk::Swapchain>& swapchain)
+                               const std::shared_ptr<nvk::Swapchain>& swapchain,
+                               bool msaa,
+                               vk::SampleCountFlagBits msaa_samples)
     {
+        using enum vk::ShaderStageFlagBits;
         auto depth_info = nvk::ImageCreateInfo()
             .set_aspect_flags(vk::ImageAspectFlagBits::eDepth)
             .set_extent(swapchain->extent())
             .set_format(vk::Format::eD32Sfloat)
             .set_usage_flags(vk::ImageUsageFlagBits::eDepthStencilAttachment)
+            .set_sample_count(msaa ? msaa_samples : vk::SampleCountFlagBits::e1)
             .set_name("Hair Depth Buffer");
         m_depth = std::make_shared<nvk::Image>(depth_info, device);
 
+        if (msaa)
+        {
+            using enum vk::ImageUsageFlagBits;
+            auto msaa_target_info = nvk::ImageCreateInfo()
+                .set_aspect_flags(vk::ImageAspectFlagBits::eColor)
+                .set_extent(swapchain->extent())
+                .set_format(swapchain->format())
+                .set_usage_flags(eTransientAttachment | eColorAttachment)
+                .set_sample_count(msaa_samples)
+                .set_name("Hair MSAA Target");
+            m_msaa_target = std::make_shared<nvk::Image>(msaa_target_info, device);
+        }
+
         auto render_pass_create_info = nvk::RenderPassCreateInfo()
-            .add_color_attachment(swapchain->format(), vk::ImageLayout::ePresentSrcKHR)
-            .set_depth_attachment(m_depth)
             .set_render_area({{0, 0}, swapchain->extent()})
             .set_name("Hair");
+
+        if (msaa)
+        {
+            render_pass_create_info
+                .add_attachment(m_msaa_target)
+                .set_depth_attachment(m_depth)
+                .set_resolve_attachment(swapchain->format(), vk::ImageLayout::ePresentSrcKHR);
+        }
+        else
+        {
+            render_pass_create_info
+                .add_color_attachment(swapchain->format(), vk::ImageLayout::ePresentSrcKHR)
+                .set_depth_attachment(m_depth);
+        }
+
         m_render_pass = std::make_shared<nvk::RenderPass>(render_pass_create_info, device);
 
          auto descriptor_create_info = nvk::DescriptorCreateInfo()
-            .add(Nebula::nvk::DescriptorType::eUniformBuffer, 0, vk::ShaderStageFlagBits::eMeshEXT | vk::ShaderStageFlagBits::eFragment)
+            .add(Nebula::nvk::DescriptorType::eUniformBuffer, 0, eMeshEXT | eFragment)
             .set_count(2)
-            .set_name("Camera")
+            .set_name("Hair")
             .enable_ring_mode();
         m_descriptor = std::make_shared<nvk::Descriptor>(descriptor_create_info, device);
 
         auto pipeline_create_info = nvk::PipelineCreateInfo()
-            .add_push_constant({ vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants) })
+            .add_push_constant({ eTaskEXT | eMeshEXT | eFragment, 0, sizeof(HairConstants) })
             .add_descriptor_set_layout(m_descriptor->layout())
             .set_pipeline_type(nvk::PipelineType::eGraphics)
-            .add_shader("hair.task.glsl.spv", vk::ShaderStageFlagBits::eTaskEXT)
-            .add_shader("hair.mesh.glsl.spv", vk::ShaderStageFlagBits::eMeshEXT)
-            .add_shader("hair.frag.spv", vk::ShaderStageFlagBits::eFragment)
+            .add_shader("hair.task.glsl.spv", eTaskEXT)
+            .add_shader("hair.mesh.glsl.spv", eMeshEXT)
+            .add_shader("hair.frag.spv", eFragment)
             .add_attachment(true)
+            .set_sample_count(msaa ? msaa_samples : vk::SampleCountFlagBits::e1)
             .set_cull_mode(vk::CullModeFlagBits::eNone)
             .set_render_pass(m_render_pass->render_pass())
             .set_name("Hair");
@@ -45,13 +76,25 @@ namespace Nebula::nhair
 
         auto framebuffer_create_info = nvk::FramebufferCreateInfo()
             .set_framebuffer_count(swapchain->image_count())
-            .add_attachment(swapchain->image_view(0), 0, 0)
-            .add_attachment(swapchain->image_view(1), 0, 1)
-            .add_attachment(m_depth->image_view(), 1)
             .set_render_pass(m_render_pass->render_pass())
             .set_extent(swapchain->extent())
-            .set_name("Hair Renderer")
-            .validate();
+            .set_name("Hair Renderer");
+
+        if (msaa)
+        {
+            framebuffer_create_info
+                .add_attachment(m_msaa_target->image_view(), 0)
+                .add_attachment(m_depth->image_view(), 1)
+                .add_attachment(swapchain->image_view(0), 2, 0)
+                .add_attachment(swapchain->image_view(1), 2, 1);
+        }
+        else
+        {
+            framebuffer_create_info
+                .add_attachment(swapchain->image_view(0), 0, 0)
+                .add_attachment(swapchain->image_view(1), 0, 1)
+                .add_attachment(m_depth->image_view(), 1);
+        }
 
         m_framebuffers = std::make_shared<nvk::Framebuffer>(framebuffer_create_info, device);
 
@@ -93,11 +136,14 @@ namespace Nebula::nhair
             HairConstants push_constant {
                 .model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)),
                 .buffer_lengths = glm::ivec4(hair_model.vertex_count(), hair_model.strand_count(), 0, 0),
+                .hair_diffuse = glm::vec4(hair_diffuse[0], hair_diffuse[1], hair_diffuse[2], 1.0f),
+                .hair_specular = glm::vec4(hair_specular[0], hair_specular[1], hair_specular[2], 1.0f),
                 .vertex_buffer = buffer_addresses.vertex_buffer,
                 .strand_descriptions_buffers = buffer_addresses.strand_descriptions_buffer,
             };
 
-            cmd.pushConstants(m_pipeline->layout(), vk::ShaderStageFlagBits::eTaskEXT | vk::ShaderStageFlagBits::eMeshEXT, 0, sizeof(HairConstants), &push_constant);
+            using enum vk::ShaderStageFlagBits;
+            cmd.pushConstants(m_pipeline->layout(), eTaskEXT | eMeshEXT | eFragment, 0, sizeof(HairConstants), &push_constant);
             hair_model.draw(cmd);
         });
 

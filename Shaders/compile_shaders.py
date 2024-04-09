@@ -5,10 +5,11 @@ import shutil
 import subprocess
 
 shaders = []
-shader_dirs = ["glsl", "hlsl", "hair", "hair_hlsl"]
+shader_dirs = ["hair"]
 bin_dir = "bin"
 target_env = "vulkan1.3"
 target_dir = "Nebula/nebula"
+filters = ['.hlsli', '.inc.glsl', '.spv', 'common.glsl']
 
 
 def collect_shaders():
@@ -16,7 +17,7 @@ def collect_shaders():
         shaders_in_dir = glob.glob(f"{shader_sources}/*")
         for sh in shaders_in_dir:
             sh_file = sh.rsplit("\\")[-1]
-            if '.hlsli' not in sh and 'inc.glsl' not in sh and 'common.glsl' not in sh:
+            if sh not in filters:
                 shaders.append(f"{shader_sources}/{sh_file}")
 
 

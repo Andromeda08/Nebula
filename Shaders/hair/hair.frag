@@ -1,6 +1,7 @@
 #version 460
 
 #extension GL_GOOGLE_include_directive : enable
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
 #include "hair_common.glsl"
 
 layout(early_fragment_tests) in;
@@ -8,14 +9,23 @@ layout(early_fragment_tests) in;
 layout (location = 0) in Mesh IN;
 
 layout (binding = 0) uniform CameraData {
-    mat4 view;
-    mat4 proj;
-    mat4 view_inverse;
-    mat4 proj_inverse;
-    vec4 eye;
+    mat4  view;
+    mat4  proj;
+    mat4  view_inverse;
+    mat4  proj_inverse;
+    vec4  eye;
     float near_plane;
     float far_plane;
 } camera;
+
+layout (push_constant) uniform HairConstants {
+    mat4     model;
+    ivec4    buffer_lengths;
+    vec4     hair_diffuse;
+    vec4     hair_specular;
+    uint64_t vertex_address;
+    uint64_t sdesc_address;
+} hair_constants;
 
 layout (location = 0) out vec4 out_color;
 
@@ -62,12 +72,9 @@ void main()
     vec3 hairD = vec3(83, 61, 53) / 255;
     vec3 hairS = vec3(106, 78, 56) / 255;
 
-    // vec3 hairD = vec3(4, 4, 4) / 255;
-    // vec3 hairS = vec3(32, 32, 32) / 255;
-
     vec3 T = normalize(IN.world_tangent.xyz);
     vec3 L = normalize(light - IN.world_position).xyz;
 
-    vec3 color = kajiya_kay(hairD, hairS, 16.0, T, L, camera.eye.xyz);
-    out_color = vec4(color, 1.0);
+    vec3 color = kajiya_kay(hair_constants.hair_diffuse.xyz, hair_constants.hair_specular.xyz, 16.0, T, L, camera.eye.xyz);
+    out_color = vec4(color, 0.75);
 }
