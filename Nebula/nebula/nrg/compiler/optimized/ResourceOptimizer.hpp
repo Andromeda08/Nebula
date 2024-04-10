@@ -177,34 +177,155 @@ namespace Nebula::nrg
 
         // Metadata
         std::vector<resource_info> original_resources;
-        int32_t non_optimizable_count {0};
-        int32_t optimized_resource_count {0};
-        int32_t original_resource_count {0};
-        Range   timeline_range {0, 0};
+        uint32_t non_optimizable_count {0};
+        uint32_t optimized_resource_count {0};
+        uint32_t original_resource_count {0};
+        Range    timeline_range {0, 0};
         std::chrono::microseconds optimization_time;
+        std::vector<std::string> logs;
     };
 
-    struct ResourceOptimizerOptions {};
+    struct ResourceOptimizerOptions
+    {
+        bool export_result {false};
+    };
 
     class ResourceOptimizer
     {
     public:
-        ResourceOptimizer(const Graph& graph, const ResourceOptimizerOptions& options)
-        : m_nodes(graph.get_nodes_vector()), m_edges(graph.edges), m_options(options)
+        ResourceOptimizer(const std::vector<node_ptr>&    nodes,
+                          const std::vector<Edge>&        edges,
+                          const ResourceOptimizerOptions& options)
+        : m_nodes(nodes), m_edges(edges), m_options(options)
         {
         }
 
         ResourceOptimizerResult run()
         {
+            std::vector<std::string> logs;
+
             const auto start_time = std::chrono::utc_clock::now();
             const auto R = evaluate_required_resources();
 
             std::vector<OptimizerResource> gen_resources;
 
+            uint32_t non_optimizable_count {0};
+            for (const auto& r : R)
+            {
+                OptimizerResource resource = {
+                    .id = m_id_sequence++,
+                    .usage_points = {},
+                    .original_info = r,
+                    .type = r.type,
+                };
+
+                if (resource.type == ResourceType::eImage)
+                {
+                    resource.format = r.claim.req->as<ImageRequirement>().format;
+                    resource.usage_flags = r.claim.req->as<ImageRequirement>().usage_flags;
+                }
+
+                auto& usage_points = resource.usage_points;
+                usage_points = get_usage_points_for_resource_info(r);
+
+                Range incoming_range(usage_points);
+
+                // Case: Non-Optimizable Resource Type
+                if (!r.optimizable)
+                {
+                    gen_resources.push_back(resource);
+                    non_optimizable_count++;
+                    logs.push_back(std::format("New, non-optimizable resource with id {} of type {}",
+                                               resource.id, to_string(resource.type)));
+                    continue;
+                }
+
+                // Case: No generated resources yet
+                if (gen_resources.empty())
+                {
+                    gen_resources.push_back(resource);
+                    logs.push_back(std::format("New resource with id {} of type {}",
+                                               resource.id, to_string(resource.type)));
+                    continue;
+                }
+
+                // Case: There are generated resources, try inserting into an existing one
+                bool was_inserted = false;
+                for (auto& timeline : gen_resources)
+                {
+                    Range current_range = timeline.get_usage_range();
+                    std::bitset<5> flags;
+                    {
+                        flags[0] = !current_range.overlaps(incoming_range);
+                        flags[1] = r.optimizable;
+                        flags[2] = r.type == timeline.type;
+                        flags[3] = true; // Image Format compatibility
+                    }
+
+                    if (flags[2] && r.type == ResourceType::eImage)
+                    {
+                        auto tl_req = timeline.original_info.claim.req->as<ImageRequirement>();
+                        auto in_req = r.claim.req->as<ImageRequirement>();
+                        flags[3] = tl_req.format == in_req.format;
+
+                        // Combine image usage flags
+                        tl_req.usage_flags |= in_req.usage_flags;
+                    }
+
+                    if (flags.all())
+                    {
+                        was_inserted = timeline.insert_usage_points(usage_points);
+                        if (was_inserted)
+                        {
+                            gen_resources.push_back(resource);
+                            logs.push_back(
+                                std::format("Resource with id {} of type {} was reused in range [{}, {}], {} new usage points were added",
+                                            timeline.id, to_string(timeline.type),
+                                            std::min_element(std::begin(usage_points), std::end(usage_points))->point,
+                                            std::max_element(std::begin(usage_points), std::end(usage_points))->point,
+                                            usage_points.size())
+                                );
+                        }
+                        break;
+                    }
+                }
+
+                // Case: Failed to Insert
+                if (!was_inserted)
+                {
+                    gen_resources.push_back(resource);
+                    logs.push_back(std::format("New resource with id {} of type {}",
+                                               resource.id, to_string(resource.type)));
+                }
+            }
+
             const auto end_time = std::chrono::utc_clock::now();
+
+            ResourceOptimizerResult result = {
+                .resources = gen_resources,
+                .original_resources = R,
+                .non_optimizable_count = non_optimizable_count,
+                .optimized_resource_count = static_cast<uint32_t>(gen_resources.size()),
+                .original_resource_count = static_cast<uint32_t>(R.size()),
+                .timeline_range = { 0, static_cast<int32_t>(m_nodes.size() - 1) },
+                .optimization_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time),
+                .logs = logs,
+            };
+
+            if (m_options.export_result)
+            {
+                export_result(result);
+            }
+
+            return result;
         }
 
     private:
+        void export_result(const ResourceOptimizerResult& result)
+        {
+
+        }
+
         std::vector<resource_info> evaluate_required_resources() const
         {
             std::vector<resource_info> result;
