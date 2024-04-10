@@ -11,6 +11,7 @@
  * U     - Type of the Underlying Resource
  * Name  - Name of the Underlying Resource
  */
+#pragma region "nrg_decl_resource definition"
 #define nrg_decl_resource(T, RTYPE, U, Name)                                        \
 class T final : public Resource {                                                   \
 public:                                                                             \
@@ -23,6 +24,7 @@ public:                                                                         
 private:                                                                            \
     std::shared_ptr<U> m_resource;                                                  \
 };
+#pragma endregion
 #endif
 
 namespace Nebula::nrg
