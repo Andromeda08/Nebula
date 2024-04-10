@@ -53,7 +53,7 @@ namespace Nebula::nhair
         uint64_t strand_descriptions_buffer;
     };
 
-class HairModel// : public ns::Mesh
+    class HairModel
     {
     public:
         explicit HairModel(const std::string& file_path,
