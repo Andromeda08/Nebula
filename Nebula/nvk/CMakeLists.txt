@@ -25,6 +25,8 @@ add_library("nvk"
     src/render/PipelineState.cpp
     src/render/RenderPass.cpp
     src/render/Shader.cpp
+
+    src/rt/BLAS.cpp
 )
 
 target_link_libraries("nvk" PRIVATE ${Vulkan_LIBRARIES})
