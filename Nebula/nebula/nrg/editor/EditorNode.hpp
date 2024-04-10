@@ -28,6 +28,8 @@ namespace Nebula::nrg
 
         ResourceClaim& get_resource(const std::string& name);
 
+        const std::vector<ResourceClaim>& resource_claims() const { return m_resource_claims; }
+
         int32_t id() const { return m_id; }
 
         NodeType type() const { return m_type; }
