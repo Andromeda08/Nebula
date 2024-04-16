@@ -9,7 +9,7 @@ namespace Nebula::nrg
 {
     ResourceOptimizer::ResourceOptimizer(const std::vector<node_ptr>& nodes, const std::vector<Edge>& edges,
                                          const ResourceOptimizerOptions& options)
-        : m_nodes(nodes), m_edges(edges), m_options(options)
+    : m_nodes(nodes), m_edges(edges), m_options(options)
     {
     }
 
