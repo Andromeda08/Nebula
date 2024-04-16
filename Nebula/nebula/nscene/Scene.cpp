@@ -23,13 +23,13 @@ namespace Nebula::ns
 
         if (m_device->is_raytracing_enabled())
         {
-            // Create TLAS
+            create_tlas();
         }
     }
 
     void Scene::update(float dt)
     {
-
+        // update_tlas();
     }
 
     void Scene::add_defaults()
@@ -140,5 +140,31 @@ namespace Nebula::ns
         m_command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
             od_staging->copy_to_buffer(*m_object_descriptions_buffer, command_buffer);
         });
+    }
+
+    std::vector<nvk::TLASInstanceInfo> Scene::collect_tlas_instances() const
+    {
+        std::vector<nvk::TLASInstanceInfo> result;
+        for (const auto& object : m_objects)
+        {
+            result.push_back(object.get_tlas_instance_info());
+        }
+        return result;
+    }
+
+    void Scene::create_tlas()
+    {
+        if (!m_device->is_raytracing_enabled()) return;
+        auto instances = collect_tlas_instances();
+        auto create_info = nvk::TLASCreateInfo { instances, std::format("{} Top-Level AS", m_name) };
+        m_top_level_as = nvk::TLAS::create(create_info, m_device, m_command_pool);
+    }
+
+    void Scene::update_tlas(const vk::CommandBuffer& command_buffer)
+    {
+        if (!m_device->is_raytracing_enabled()) return;
+        auto instances = collect_tlas_instances();
+        auto update_info = nvk::TLASUpdateInfo { instances };
+        m_top_level_as->update(update_info, command_buffer);
     }
 }

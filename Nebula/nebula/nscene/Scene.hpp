@@ -82,6 +82,12 @@ namespace Nebula::ns
 
         void create_object_description_buffers();
 
+        void create_tlas();
+
+        void update_tlas(const vk::CommandBuffer& command_buffer);
+
+        std::vector<nvk::TLASInstanceInfo> collect_tlas_instances() const;
+
         uint32_t                                        m_active_camera {0};
         std::vector<std::shared_ptr<Camera>>            m_cameras;
         Size2D                                          m_camera_size;
