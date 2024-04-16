@@ -16,10 +16,6 @@
 #include <nvk/Device.hpp>
 #include <wsi/Window.hpp>
 
-namespace Nebula::nvk {
-    using TLAS = Buffer;
-}
-
 namespace Nebula::ns
 {
     class Scene
