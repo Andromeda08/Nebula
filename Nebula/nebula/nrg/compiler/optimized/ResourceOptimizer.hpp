@@ -148,6 +148,14 @@ namespace Nebula::nrg
 
         Range get_usage_range() const { return Range(usage_points); }
 
+        std::optional<usage_point> get_usage_point(const int32_t value) const
+        {
+            auto find = std::ranges::find_if(usage_points, [&](const usage_point& up){ return up.point == value; });
+            return (find == std::end(usage_points))
+                ? std::nullopt
+                : std::make_optional(*find);
+        }
+
         bool insert_usage_points(const std::set<usage_point>& points)
         {
             // Validation for occupied usage points
@@ -179,6 +187,7 @@ namespace Nebula::nrg
         uint32_t original_resource_count {0};
         Range    timeline_range {0, 0};
         std::chrono::microseconds optimization_time;
+        std::chrono::time_point<std::chrono::utc_clock> start_time;
         std::vector<std::string> logs;
     };
 
@@ -197,7 +206,7 @@ namespace Nebula::nrg
         ResourceOptimizerResult run();
 
     private:
-        void export_result(const ResourceOptimizerResult& result);
+        static void export_result(const ResourceOptimizerResult& result);
 
         std::vector<resource_info> evaluate_required_resources() const;
 

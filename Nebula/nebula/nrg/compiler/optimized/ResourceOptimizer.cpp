@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <format>
+#include <fstream>
 #include <queue>
 
 namespace Nebula::nrg
@@ -113,6 +114,7 @@ namespace Nebula::nrg
             .original_resource_count = static_cast<uint32_t>(R.size()),
             .timeline_range = {0, static_cast<int32_t>(m_nodes.size() - 1)},
             .optimization_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time),
+            .start_time = start_time,
             .logs = logs,
         };
 
@@ -125,7 +127,50 @@ namespace Nebula::nrg
 
     void ResourceOptimizer::export_result(const ResourceOptimizerResult& result)
     {
+        std::string file_name = std::format("resource_optimizer_{:%Y-%m-%d_%H-%M}.csv", result.start_time);
 
+        std::vector<std::string> csv;
+        std::stringstream sstr;
+        sstr << "Optimized Resources,\n"
+             << std::format("Reduction: {},", result.original_resource_count - result.optimized_resource_count)
+             << std::format("Non-optimizable: {},", result.non_optimizable_count)
+             << std::format("Time: {} microseconds", result.optimization_time.count());
+        csv.push_back(sstr.str());
+        sstr.str(std::string());
+
+        sstr << ",";
+        for (int32_t i = 0; i <= result.timeline_range.end; i++)
+        {
+            sstr << std::format("Node #{},", i);
+        }
+        csv.push_back(sstr.str());
+        sstr.str(std::string());
+
+        for (int32_t i = 0; i < result.resources.size(); i++) {
+            auto& resource = result.resources[i];
+            auto range = resource.get_usage_range();
+
+            sstr << std::format("Resource #{},", i);
+            for (int32_t j = 0; j <= result.timeline_range.end; j++) {
+                auto usage_point = resource.get_usage_point(j);
+                if (usage_point.has_value()) {
+                    auto point = usage_point.value();
+                    sstr << ((range.start == range.end) ? std::format("[{}]", point.used_as)
+                        : (j == range.start) ? std::format("[{}", point.used_as)
+                        : (j == range.end) ? std::format("{}]", point.used_as)
+                        : point.used_as);
+                }
+                sstr << ",";
+            }
+            csv.push_back(sstr.str());
+            sstr.str(std::string());
+        }
+
+        std::fstream fs(file_name);
+        fs.open(file_name, std::ios_base::out);
+        std::ostream_iterator<std::string> os_it(fs, "\n");
+        std::copy(std::begin(csv), std::end(csv), os_it);
+        fs.close();
     }
 
     std::vector<resource_info> ResourceOptimizer::evaluate_required_resources() const
