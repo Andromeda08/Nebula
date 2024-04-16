@@ -43,7 +43,7 @@ namespace Nebula::nvk
 
         vk::DeviceSize instances_size = instances.size() * sizeof(vk::AccelerationStructureInstanceKHR);
         auto staging_create_info = BufferCreateInfo()
-            .set_buffer_type(BufferType::eStaging)
+            .set_buffer_type(BufferType::eStorage)
             .set_name(std::format("{} TLAS Instance Data", m_name))
             .set_size(instances_size);
         auto staging_buffer = Buffer::create(staging_create_info, m_device);
@@ -106,7 +106,7 @@ namespace Nebula::nvk
         }
 
         auto as_staging_create_info = BufferCreateInfo()
-            .set_buffer_type(BufferType::eStaging)
+            .set_buffer_type(BufferType::eStorage)
             .set_name(std::format("{} TLAS", m_name))
             .set_size(build_sizes_info.buildScratchSize);
         auto as_staging_buffer = Buffer::create(as_staging_create_info, m_device);

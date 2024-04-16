@@ -63,7 +63,7 @@ namespace Nebula::nvk
         m_address = device->handle().getAccelerationStructureAddressKHR(&address_info);
 
         auto scratch_buffer_create_info = BufferCreateInfo()
-            .set_buffer_type(BufferType::eStaging)
+            .set_buffer_type(BufferType::eStorage)
             .set_size(build_sizes_info.accelerationStructureSize)
             .set_name(create_info.name);
         auto scratch_buffer = Buffer::create(scratch_buffer_create_info, device);

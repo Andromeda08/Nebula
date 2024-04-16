@@ -106,7 +106,7 @@ namespace Nebula::nvk
 
         BufferTypeFlags result = {
             .memory_flags = {},
-            .usage_flags = vk::BufferUsageFlagBits::eShaderDeviceAddress | vk::BufferUsageFlagBits::eTransferDst,
+            .usage_flags = vk::BufferUsageFlagBits::eShaderDeviceAddress | vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eTransferSrc,
         };
 
         switch (buffer_type)
