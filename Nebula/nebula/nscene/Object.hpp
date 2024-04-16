@@ -53,7 +53,7 @@ namespace Nebula::ns
                 .blas_address = mesh->bottom_level_as()->address(),
                 .hit_group    = rt_hit_group,
                 .mask         = 0xff,
-                .transform    = transform.model3x4();
+                .transform    = transform.model3x4(),
             };
         }
     };
