@@ -6,6 +6,7 @@
 #include <nvk/Buffer.hpp>
 #include <nvk/Command.hpp>
 #include <nvk/Device.hpp>
+#include <nvk/rt/BLAS.hpp>
 
 namespace Nebula::ns
 {
@@ -69,6 +70,7 @@ namespace Nebula::ns
         const std::string& name() const { return m_name; }
         const nvk::Buffer& vertex_buffer() const { return *m_vertex_buffer; }
         const nvk::Buffer& index_buffer() const { return *m_index_buffer; }
+        const std::shared_ptr<nvk::BLAS> bottom_level_as() const { return m_blas; }
 
         inline MeshBufferPointers get_buffer_pointers() const
         {
@@ -80,8 +82,10 @@ namespace Nebula::ns
 
     protected:
         const std::string               m_name;
+        uint32_t                        m_vertex_count {0};
         std::shared_ptr<nvk::Buffer>    m_vertex_buffer;
         uint32_t                        m_index_count {0};
         std::shared_ptr<nvk::Buffer>    m_index_buffer;
+        std::shared_ptr<nvk::BLAS>      m_blas;
     };
 }

@@ -18,6 +18,42 @@ namespace Nebula::nvk
         uint32_t                index_count {0};
         size_t                  vertex_stride {0};
         std::string             name {"Unknown"};
+
+        inline auto& set_vertex_buffer(const std::shared_ptr<Buffer>& buffer)
+        {
+            vertex_buffer = buffer;
+            return *this;
+        }
+
+        inline auto& set_vertex_count(const uint32_t value)
+        {
+            vertex_count = value;
+            return *this;
+        }
+
+        inline auto& set_index_buffer(const std::shared_ptr<Buffer>& buffer)
+        {
+            index_buffer = buffer;
+            return *this;
+        }
+
+        inline auto& set_index_count(const uint32_t value)
+        {
+            index_count = value;
+            return *this;
+        }
+
+        inline auto& set_vertex_stride(const size_t value)
+        {
+            vertex_stride = value;
+            return *this;
+        }
+
+        inline auto& set_name(const std::string& value)
+        {
+            name = value;
+            return *this;
+        }
     };
 
     class BLAS

@@ -80,7 +80,7 @@ namespace Nebula::nvk
            command_buffer.buildAccelerationStructuresKHR(1, &build_geometry_info, build_ranges.data());
         });
 
-        m_device->name_object(std::format("{} BLAS", m_create_info.name),
+        m_device->name_object(m_create_info.name,
                               (uint64_t) m_blas.operator VkAccelerationStructureKHR(),
                               vk::ObjectType::eAccelerationStructureKHR);
 

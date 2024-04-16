@@ -10,7 +10,9 @@ namespace Nebula::ns
     Mesh::Mesh(const MeshCreateInfo& create_info,
                const std::shared_ptr<nvk::Device>& device,
                const std::shared_ptr<nvk::CommandPool>& command_pool)
-    : m_name(create_info.name), m_index_count(create_info.p_geometry->index_count())
+    : m_name(create_info.name)
+    , m_vertex_count(create_info.p_geometry->vertex_count())
+    , m_index_count(create_info.p_geometry->index_count())
     {
         auto name = std::format("[Mesh] {}", m_name);
 
@@ -44,6 +46,19 @@ namespace Nebula::ns
             vb_staging->copy_to_buffer(*m_vertex_buffer, command_buffer);
             ib_staging->copy_to_buffer(*m_index_buffer, command_buffer);
         });
+
+        if (device->is_raytracing_enabled())
+        {
+            auto blas_create_info = nvk::BLASCreateInfo()
+                .set_vertex_buffer(m_vertex_buffer)
+                .set_vertex_count(m_vertex_count)
+                .set_vertex_stride(sizeof(Vertex))
+                .set_index_buffer(m_index_buffer)
+                .set_index_count(m_index_count)
+                .set_name(std::format("{} BLAS", m_name));
+
+            m_blas = nvk::BLAS::create(blas_create_info, device, command_pool);
+        }
     }
 
     void Mesh::update(const vk::CommandBuffer& command_buffer)
