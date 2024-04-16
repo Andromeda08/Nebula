@@ -14,7 +14,7 @@ namespace Nebula::nvk
     {
         build(create_info.instance_info);
 
-        m_device->name_object(std::format("{} TLAS", m_name),
+        m_device->name_object(m_name,
                               (uint64_t) m_tlas.operator VkAccelerationStructureKHR(),
                               vk::ObjectType::eAccelerationStructureKHR);
 
