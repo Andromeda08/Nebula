@@ -41,7 +41,7 @@ namespace Nebula::nvk
             .set_buffer_type(BufferType::eAccelerationStructureStorage)
             .set_size(build_sizes_info.accelerationStructureSize)
             .set_name(create_info.name);
-        m_buffer = std::make_shared<Buffer>(buffer_create_info, device);
+        m_buffer = Buffer::create(buffer_create_info, device);
 
         auto as_create_info = vk::AccelerationStructureCreateInfoKHR()
             .setBuffer(m_buffer->buffer())
@@ -62,7 +62,7 @@ namespace Nebula::nvk
             .set_buffer_type(BufferType::eStaging)
             .set_size(build_sizes_info.accelerationStructureSize)
             .set_name(create_info.name);
-        auto scratch_buffer = std::make_shared<Buffer>(scratch_buffer_create_info, device);
+        auto scratch_buffer = Buffer::create(scratch_buffer_create_info, device);
 
         build_geometry_info
             .setDstAccelerationStructure(m_blas)

@@ -12,6 +12,7 @@ namespace Nebula::nvk
 {
     enum class BufferType
     {
+        eCustom,
         eAccelerationStructureStorage,
         eIndex,
         eShaderBindingTable,
@@ -73,6 +74,12 @@ namespace Nebula::nvk
         Buffer(const BufferCreateInfo& create_info, const std::shared_ptr<Device>& device);
 
         ~Buffer();
+
+        static inline std::shared_ptr<Buffer> create(const BufferCreateInfo& create_info,
+                                                     const std::shared_ptr<Device>& device)
+        {
+            return std::make_shared<Buffer>(create_info, device);
+        }
 
         template <typename T>
         static std::shared_ptr<Buffer> create_with_data(const BufferCreateInfo& create_info,

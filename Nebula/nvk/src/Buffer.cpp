@@ -14,6 +14,7 @@ namespace Nebula::nvk
         {
             using enum BufferType;
             case eAccelerationStructureStorage: return "AS";
+            case eCustom:                       return "Custom";
             case eIndex:                        return "Index";
             case eShaderBindingTable:           return "SBT";
             case eStaging:                      return "Staging";
@@ -98,6 +99,11 @@ namespace Nebula::nvk
 
     Buffer::BufferTypeFlags Buffer::BufferTypeFlags::for_type(const BufferType buffer_type)
     {
+        if (buffer_type == BufferType::eCustom)
+        {
+            return { {}, {} };
+        }
+
         BufferTypeFlags result = {
             .memory_flags = {},
             .usage_flags = vk::BufferUsageFlagBits::eShaderDeviceAddress | vk::BufferUsageFlagBits::eTransferDst,
@@ -145,7 +151,8 @@ namespace Nebula::nvk
                 break;
             }
             default:
-                throw nlog::make_exception<std::invalid_argument>("Invalid BufferType");
+                break;
+                // throw nlog::make_exception<std::invalid_argument>("Invalid BufferType");
         }
         return result;
     }

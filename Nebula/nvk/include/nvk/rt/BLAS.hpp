@@ -29,6 +29,10 @@ namespace Nebula::nvk
              const std::shared_ptr<Device>& device,
              const std::shared_ptr<CommandPool>& command_pool);
 
+        const vk::AccelerationStructureKHR& handle() const { return m_blas; }
+
+        vk::DeviceAddress address() const { return m_address; }
+
     private:
         vk::AccelerationStructureKHR    m_blas;
         vk::DeviceAddress               m_address;
