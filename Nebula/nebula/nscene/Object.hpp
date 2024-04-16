@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <nmath/Transform.hpp>
 #include <nscene/geometry/Mesh.hpp>
+#include <nvk/rt/TLAS.hpp>
 
 namespace Nebula::ns
 {
@@ -43,6 +44,16 @@ namespace Nebula::ns
             return {
                 .model = transform.model(),
                 .solid_color = solid_color,
+            };
+        }
+
+        inline nvk::TLASInstanceInfo get_tlas_instance_info() const
+        {
+            return {
+                .blas_address = mesh->bottom_level_as()->address(),
+                .hit_group    = rt_hit_group,
+                .mask         = 0xff,
+                .transform    = transform.model3x4();
             };
         }
     };
