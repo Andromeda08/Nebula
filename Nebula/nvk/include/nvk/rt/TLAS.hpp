@@ -45,6 +45,12 @@ namespace Nebula::nvk
 
         const vk::AccelerationStructureKHR& handle() const { return m_tlas; }
 
+        static inline std::shared_ptr<TLAS> create(const TLASCreateInfo& create_info,const std::shared_ptr<Device>& device,
+                                                   const std::shared_ptr<CommandPool>& command_pool)
+        {
+            return std::make_shared<TLAS>(create_info, device, command_pool);
+        }
+
     private:
         void build(const std::vector<TLASInstanceInfo>& geometry_info);
 

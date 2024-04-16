@@ -33,6 +33,12 @@ namespace Nebula::nvk
 
         vk::DeviceAddress address() const { return m_address; }
 
+        static inline std::shared_ptr<BLAS> create(const BLASCreateInfo& create_info,const std::shared_ptr<Device>& device,
+                                                   const std::shared_ptr<CommandPool>& command_pool)
+        {
+            return std::make_shared<BLAS>(create_info, device, command_pool);
+        }
+
     private:
         vk::AccelerationStructureKHR    m_blas;
         vk::DeviceAddress               m_address;
