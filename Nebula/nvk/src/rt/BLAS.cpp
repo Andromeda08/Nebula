@@ -1,6 +1,10 @@
 #include "rt/BLAS.hpp"
-#include <nlog/nlog.hpp>
 #include <vector>
+#include <nlog/nlog.hpp>
+
+#ifdef NVK_VERBOSE_EXTRA
+#include <iostream>
+#endif
 
 namespace Nebula::nvk
 {
@@ -51,7 +55,7 @@ namespace Nebula::nvk
         if (vk::Result result = device->handle().createAccelerationStructureKHR(&as_create_info, nullptr, &m_blas);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Bottom Level AS (name: {})", create_info.name);
+            throw nlog::make_exception("Failed to create Bottom-Level AS (name: {})", create_info.name);
         }
 
         auto address_info = vk::AccelerationStructureDeviceAddressInfoKHR()
@@ -75,6 +79,13 @@ namespace Nebula::nvk
         command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
            command_buffer.buildAccelerationStructuresKHR(1, &build_geometry_info, build_ranges.data());
         });
-    }
 
+        m_device->name_object(std::format("{} BLAS", m_create_info.name),
+                              (uint64_t) m_blas.operator VkAccelerationStructureKHR(),
+                              vk::ObjectType::eAccelerationStructureKHR);
+
+        #ifdef NVK_VERBOSE_EXTRA
+        std::cout << nlog::fmt_info("Created Bottom-Level AS: {}", m_create_info.name) << std::endl;
+        #endif
+    }
 }
