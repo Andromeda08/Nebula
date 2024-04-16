@@ -72,13 +72,13 @@ namespace Nebula::nvk
 
         auto geometry = vk::AccelerationStructureGeometryKHR()
             .setGeometryType(vk::GeometryTypeKHR::eInstances)
-            .setGeometry(instancces_data);
+            .setGeometry(instances_data);
 
         auto build_geometry_info = vk::AccelerationStructureBuildGeometryInfoKHR()
             .setFlags(vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace)
             .setGeometryCount(1)
             .setMode(vk::BuildAccelerationStructureModeKHR::eBuild)
-            .setPGeometies(&geometry)
+            .setPGeometries(&geometry)
             .setType(vk::AccelerationStructureTypeKHR::eTopLevel);
 
         vk::AccelerationStructureBuildSizesInfoKHR build_sizes_info;
@@ -99,10 +99,10 @@ namespace Nebula::nvk
             .setSize(build_sizes_info.accelerationStructureSize)
             .setType(vk::AccelerationStructureTypeKHR::eTopLevel);
 
-        if (vk::Result result = device->handle().createAcceerationStructureKHR(&create_info, nullptr, &m_tlas);
+        if (vk::Result result = m_device->handle().createAccelerationStructureKHR(&create_info, nullptr, &m_tlas);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Top-Level AS (name: {})", create_info.name);
+            throw nlog::make_exception("Failed to create Top-Level AS (name: {})", m_name);
         }
 
         auto as_staging_create_info = BufferCreateInfo()
