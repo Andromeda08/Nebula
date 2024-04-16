@@ -27,6 +27,7 @@ add_library("nvk"
     src/render/Shader.cpp
 
     src/rt/BLAS.cpp
+    src/rt/TLAS.cpp
 )
 
 target_link_libraries("nvk" PRIVATE ${Vulkan_LIBRARIES})
