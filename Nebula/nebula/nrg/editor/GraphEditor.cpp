@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <imnodes.h>
 #include <nrg/common/ResourceTraits.hpp>
+#include <nrg/compiler/optimized/OptimizedCompiler.hpp>
 
 namespace Nebula::nrg
 {
@@ -194,7 +195,11 @@ namespace Nebula::nrg
         }
     }
 
-    void GraphEditor::_handle_compile() {}
+    void GraphEditor::_handle_compile()
+    {
+        auto compiler = std::make_shared<OptimizedCompiler>(m_context);
+        auto result = compiler->compile(m_graph);
+    }
 
     bool GraphEditor::_handle_connection()
     {
