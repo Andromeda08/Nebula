@@ -146,5 +146,7 @@ namespace Nebula::nvk
         std::shared_ptr<Device>     m_device;
         const std::string           m_name;
         const BufferType            m_type;
+
+        friend class ShaderBindingTable;
     };
 }

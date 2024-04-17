@@ -28,6 +28,7 @@ add_library("nvk"
 
     src/rt/BLAS.cpp
     src/rt/TLAS.cpp
+    src/rt/ShaderBindingTable.cpp
 )
 
 target_link_libraries("nvk" PRIVATE ${Vulkan_LIBRARIES})

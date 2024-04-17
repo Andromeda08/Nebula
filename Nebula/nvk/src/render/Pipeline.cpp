@@ -1,4 +1,5 @@
 #include "render/Pipeline.hpp"
+#include "rt/ShaderBindingTable.hpp"
 #include <format>
 #include <nlog/nlog.hpp>
 
@@ -149,12 +150,33 @@ namespace Nebula::nvk
 
     void Pipeline::create_ray_tracing(const PipelineCreateInfo& create_info)
     {
+        auto sbt_create_info = ShaderBindingTableCreateInfo()
+            .set_pipeline(m_pipeline)
+            .set_name(std::format("{} Pipeline SBT", m_name));
+
+        bool has_ray_gen = false;
+
         std::vector<std::shared_ptr<Shader>> shaders;
         std::vector<vk::PipelineShaderStageCreateInfo> shader_stage_infos;
         for (const auto& shader_info : create_info.m_shader_sources)
         {
             shaders.push_back(std::make_shared<Shader>(shader_info, m_device));
             shader_stage_infos.push_back(shaders.back()->make_stage_info());
+
+            using enum vk::ShaderStageFlagBits;
+            auto type = shader_info.shader_stage;
+            if (type == eRaygenKHR)
+            {
+                if (has_ray_gen)
+                {
+                    throw nlog::make_exception("Multiple ray generation shaders specified for pipeline {}", m_name);
+                }
+                has_ray_gen = true;
+            }
+
+            if (type == eMissKHR)       sbt_create_info.miss_count++;
+            if (type == eClosestHitKHR) sbt_create_info.hit_count++;
+            if (type == eCallableKHR)   sbt_create_info.callable_count++;
         }
 
         auto sh_groups = create_rt_shader_groups(shader_stage_infos);
@@ -167,11 +189,18 @@ namespace Nebula::nvk
             .setMaxPipelineRayRecursionDepth(create_info.m_ray_depth)
             .setLayout(m_pipeline_layout);
 
+        if (!has_ray_gen)
+        {
+            throw nlog::make_exception("No ray generation shader specified for pipeline {}", m_name);
+        }
+
         if (const vk::Result result = m_device->handle().createRayTracingPipelinesKHR(nullptr, nullptr, 1, &rt_info, nullptr, &m_pipeline);
             result != vk::Result::eSuccess)
         {
             throw nlog::make_exception("Failed to create Ray tracing Pipeline: {} ({})", m_name, to_string(result));
         }
+
+        m_sbt = ShaderBindingTable::create(sbt_create_info, m_device);
     }
 
     std::vector<vk::RayTracingShaderGroupCreateInfoKHR>

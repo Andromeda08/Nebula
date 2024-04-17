@@ -10,6 +10,8 @@
 
 namespace Nebula::nvk
 {
+    class ShaderBindingTable;
+
     class Pipeline
     {
     public:
@@ -22,6 +24,8 @@ namespace Nebula::nvk
         const vk::Pipeline& handle() const { return m_pipeline; }
 
         const vk::PipelineLayout& layout() const { return m_pipeline_layout; }
+
+        const std::string& name() const { return m_name; }
 
         ~Pipeline();
 
@@ -43,6 +47,6 @@ namespace Nebula::nvk
         const std::string                   m_name {"Unknown"};
         const PipelineType                  m_type {PipelineType::eUnknown};
         const vk::PipelineBindPoint         m_bind_point;
-        // std::shared_ptr<ShaderBindingTable> m_sbt;
+        std::shared_ptr<ShaderBindingTable> m_sbt;
     };
 }
