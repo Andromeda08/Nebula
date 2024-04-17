@@ -12,8 +12,8 @@ namespace Nebula::ns
 {
     struct ObjectDescription
     {
-        uint64_t index_buffer;
         uint64_t vertex_buffer;
+        uint64_t index_buffer;
     };
 
     struct ObjectPushConstant
@@ -34,8 +34,8 @@ namespace Nebula::ns
         {
             auto bptrs = mesh->get_buffer_pointers();
             return {
-                .index_buffer = bptrs.index_buffer,
                 .vertex_buffer = bptrs.vertex_buffer,
+                .index_buffer = bptrs.index_buffer,
             };
         }
 
