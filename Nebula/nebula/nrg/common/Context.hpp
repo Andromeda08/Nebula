@@ -22,6 +22,8 @@ namespace Nebula::nrg
             auto extent = swapchain->extent();
             m_render_resolution = { extent.width, extent.height };
             m_target_resolution = { extent.width, extent.height };
+            m_frames = swapchain->image_count();
+            m_current_frame = 0;
         }
 
         const std::shared_ptr<ns::Scene>& get_selected_scene() const
@@ -42,5 +44,7 @@ namespace Nebula::nrg
         std::shared_ptr<nvk::Device>                    m_device;
         std::shared_ptr<nvk::CommandPool>               m_command_pool;
         std::shared_ptr<nvk::Swapchain>                 m_swapchain;
+        uint32_t                                        m_frames;
+        uint32_t                                        m_current_frame;
     };
 }
