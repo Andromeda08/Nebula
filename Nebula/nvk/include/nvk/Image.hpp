@@ -104,6 +104,12 @@ namespace Nebula::nvk
 
         void update_state(const ImageState& state) { m_state = state; }
 
+        static inline std::shared_ptr<Image> create(const ImageCreateInfo& create_info,
+                                                    const std::shared_ptr<Device>& device)
+        {
+            return std::make_shared<Image>(create_info, device);
+        }
+
     private:
         static ImageProperties get_properties(const ImageCreateInfo& create_info);
 
