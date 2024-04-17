@@ -7,8 +7,8 @@ namespace Nebula::nrg
         std::make_shared<Requirement>("Scene Data", ResourceUsage::eOutput, ResourceType::eSceneData)
     }));
 
-    SceneDataProvider::SceneDataProvider(const std::shared_ptr<ns::Scene>& scene)
-    : Node("Scene Data Provider", NodeType::eSceneDataProvider), m_scene(scene)
+    SceneDataProvider::SceneDataProvider()
+    : Node("Scene Data Provider", NodeType::eSceneDataProvider)
     {
     }
 }

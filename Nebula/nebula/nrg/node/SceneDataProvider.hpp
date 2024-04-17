@@ -12,13 +12,11 @@ namespace Nebula::nrg
     class SceneDataProvider final : public Node
     {
     public:
-        explicit SceneDataProvider(const std::shared_ptr<ns::Scene>& scene);
+        explicit SceneDataProvider();
 
         ~SceneDataProvider() override = default;
 
     private:
-        std::shared_ptr<ns::Scene> m_scene;
-
         nrg_decl_resource_requirements();
         nrg_def_get_resource_claims();
     };
