@@ -49,6 +49,11 @@ namespace Nebula::nvk
 
         uint32_t set_count() const { return m_sets.size(); }
 
+        inline static std::shared_ptr<Descriptor> create(const DescriptorCreateInfo& create_info, const std::shared_ptr<Device>& device)
+        {
+            return std::make_shared<Descriptor>(create_info, device);
+        }
+
     private:
         void create_pool();
 

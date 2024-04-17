@@ -29,6 +29,11 @@ namespace Nebula::nvk
 
         ~Pipeline();
 
+        inline static std::shared_ptr<Pipeline> create(PipelineCreateInfo& create_info, const std::shared_ptr<Device>& device)
+        {
+            return std::make_shared<Pipeline>(create_info, device);
+        }
+
     private:
         void create_pipeline_layout(const PipelineCreateInfo& create_info);
 
