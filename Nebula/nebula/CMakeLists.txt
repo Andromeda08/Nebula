@@ -80,7 +80,7 @@ add_executable(${Nebula_main}
 
     nrg/compiler/CompilerResult.hpp
     nrg/compiler/CompilerStrategy.hpp nrg/compiler/CompilerStrategy.cpp
-    nrg/compiler/factory/NodeFactory.hpp
+    nrg/compiler/factory/NodeFactory.hpp nrg/compiler/factory/NodeFactory.cpp
     nrg/compiler/factory/ResourceFactory.hpp nrg/compiler/factory/ResourceFactory.cpp
     nrg/compiler/optimized/ResourceOptimizer.hpp nrg/compiler/optimized/ResourceOptimizer.cpp
     nrg/compiler/optimized/OptimizedCompiler.hpp nrg/compiler/optimized/OptimizedCompiler.cpp
