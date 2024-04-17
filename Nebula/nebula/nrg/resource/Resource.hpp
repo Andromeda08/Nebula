@@ -12,7 +12,7 @@
  * Name  - Name of the Underlying Resource
  */
 #pragma region "nrg_decl_resource definition"
-#define nrg_decl_resource(T, RTYPE, U, Name)                                        \
+#define nrg_decl_resource(T, RTYPE, U, NAME)                                        \
 class T final : public Resource {                                                   \
 public:                                                                             \
     explicit T(const std::shared_ptr<U>& p_##NAME, const std::string& name = #T)    \
