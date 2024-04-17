@@ -67,7 +67,6 @@ namespace Nebula::nrender
                     .set_name(std::format("Camera #{}", i))
                     .set_size(sizeof(ns::CameraData));
                 m_uniform_buffer[i] = nvk::Buffer::create(ub_create_info, m_device);
-                std::cout << "RTUB " << i << " " << m_uniform_buffer[i]->address() << std::endl;
             }
 
             auto objdbuf = m_scene->object_descriptions_buffer();
@@ -90,8 +89,6 @@ namespace Nebula::nrender
                 m_descriptor->write(write_info);
             }
 
-            std::cout << "OBJ " << objdbuf->address() << std::endl;
-
             m_size = m_swapchain->extent();
         }
 
@@ -102,7 +99,7 @@ namespace Nebula::nrender
 
             m_pipeline->bind(command_buffer);
             m_pipeline->bind_descriptor_set(command_buffer, m_descriptor->set(current_frame));
-            m_pipeline->trace_rays(command_buffer, m_size.width, m_size.height, 1);
+            m_pipeline->trace_rays(command_buffer, m_size.width, m_size.height);
         }
 
     private:

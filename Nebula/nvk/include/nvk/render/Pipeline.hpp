@@ -21,7 +21,7 @@ namespace Nebula::nvk
 
         void bind(const vk::CommandBuffer& command_buffer);
 
-        void trace_rays(const vk::CommandBuffer& command_buffer, uint32_t size_x, uint32_t size_y, uint32_t depth);
+        void trace_rays(const vk::CommandBuffer& command_buffer, uint32_t size_x, uint32_t size_y);
 
         void bind_descriptor_set(const vk::CommandBuffer& command_buffer, const vk::DescriptorSet& set);
 
@@ -57,5 +57,6 @@ namespace Nebula::nvk
         const PipelineType                  m_type {PipelineType::eUnknown};
         const vk::PipelineBindPoint         m_bind_point;
         std::shared_ptr<ShaderBindingTable> m_sbt;
+        uint32_t                            m_rt_depth {0};
     };
 }

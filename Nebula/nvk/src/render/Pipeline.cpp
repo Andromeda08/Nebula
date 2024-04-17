@@ -57,7 +57,7 @@ namespace Nebula::nvk
         command_buffer.bindPipeline(m_bind_point, m_pipeline);
     }
 
-    void Pipeline::trace_rays(const vk::CommandBuffer& command_buffer, uint32_t size_x, uint32_t size_y, uint32_t depth)
+    void Pipeline::trace_rays(const vk::CommandBuffer& command_buffer, uint32_t size_x, uint32_t size_y)
     {
         if (m_type != PipelineType::eRayTracing)
         {
@@ -66,7 +66,7 @@ namespace Nebula::nvk
 
         command_buffer.traceRaysKHR(m_sbt->rgen_region(), m_sbt->miss_region(),
                                     m_sbt->hit_region(), m_sbt->call_region(),
-                                    size_x, size_y, depth);
+                                    size_x, size_y, m_rt_depth);
     }
 
     void Pipeline::bind_descriptor_set(const vk::CommandBuffer& command_buffer, const vk::DescriptorSet& set)
@@ -168,6 +168,7 @@ namespace Nebula::nvk
 
     void Pipeline::create_ray_tracing(const PipelineCreateInfo& create_info)
     {
+        m_rt_depth = create_info.m_ray_depth;
         auto sbt_create_info = ShaderBindingTableCreateInfo()
             .set_name(std::format("{} Pipeline SBT", m_name));
 
@@ -219,7 +220,6 @@ namespace Nebula::nvk
 
         sbt_create_info.set_pipeline(m_pipeline);
         m_sbt = ShaderBindingTable::create(sbt_create_info, m_device);
-        std::cout << m_sbt->sbt()->address() << std::endl;
     }
 
     std::vector<vk::RayTracingShaderGroupCreateInfoKHR>
