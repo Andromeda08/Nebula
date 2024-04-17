@@ -2,6 +2,7 @@
 
 #include <format>
 #include <sstream>
+#include <nrg/resource/Resource.hpp>
 #include "ResourceOptimizer.hpp"
 
 namespace Nebula::nrg
@@ -23,44 +24,40 @@ namespace Nebula::nrg
         logs.push_back(std::format("Compiling started at {:%Y-%m-%d %H:%M}", result.start_timestamp));
         logs.push_back(fmt_nodes_str(std::format("Input Nodes ({}):", nodes.size()), nodes));
 
-        // 1. Cull unreachable nodes
+        // 1. Cull unreachable nodes --------------------------------
         std::vector<node_ptr> connected_nodes;
         try {
             connected_nodes = filter_unreachable_nodes(nodes);
+
+            std::size_t culled_node_cnt = nodes.size() - connected_nodes.size();
+            if (culled_node_cnt != 0)
+            {
+                logs.push_back(std::format("Found and culled {} unreachable node(s).", culled_node_cnt));
+            }
+            else
+            {
+                logs.emplace_back("No unreachable nodes were found.");
+            }
+            logs.push_back(fmt_nodes_str(std::format("Remaining Nodes ({}):", connected_nodes.size()), connected_nodes));
         }
         catch (const std::runtime_error& ex) {
             make_failed_result(result, ex.what());
             return result;
         }
 
-        std::size_t culled_node_cnt = nodes.size() - connected_nodes.size();
-        if (culled_node_cnt != 0)
-        {
-            logs.push_back(std::format("Found and culled {} unreachable node(s).", culled_node_cnt));
-        }
-        else
-        {
-            logs.emplace_back("No unreachable nodes were found.");
-        }
-
-        logs.push_back(fmt_nodes_str(std::format("Remaining Nodes ({}):", connected_nodes.size()), connected_nodes));
-
-        // 2. Execution order
+        // 2. Execution order ---------------------------------------
         std::vector<node_ptr> execution_order;
         try {
             execution_order = get_execution_order(connected_nodes);
+            logs.push_back(fmt_nodes_str(std::format("Execution order: ({}):", execution_order.size()), execution_order));
         }
         catch (const std::runtime_error& ex) {
             make_failed_result(result, ex.what());
             return result;
         }
 
-        logs.push_back(fmt_nodes_str(std::format("Execution order: ({}):", execution_order.size()), execution_order));
-
-        // 3. Resource optimization
-        ResourceOptimizerOptions optimizer_options {
-            .export_result = true,
-        };
+        // 3. Resource optimization ---------------------------------
+        ResourceOptimizerOptions optimizer_options { true };
         ResourceOptimizerResult optimizer_result;
         auto resource_optimizer = std::make_shared<ResourceOptimizer>(execution_order, edges, optimizer_options);\
 
@@ -72,7 +69,33 @@ namespace Nebula::nrg
             return result;
         }
 
-        // 4. Create Resources
+        // 4. Create Resources --------------------------------------
+        std::map<std::string, std::shared_ptr<Resource>> resources;
+        for (const auto& gen_res : optimizer_result.resources)
+        {
+            auto name = std::format("({:%Y-%m-%d %H:%M}) Resource {}", result.start_timestamp, gen_res.id);
+
+            ResourceCreateInfo create_info = {
+                .claim       = gen_res.original_info.claim,
+                .format      = gen_res.format,
+                .name        = name,
+                .type        = gen_res.type,
+                .usage_flags = gen_res.usage_flags,
+            };
+
+            auto resource = m_resource_factory->create(create_info);
+
+            if (!resource)
+            {
+                logs.push_back(std::format("Failed to create {} resource: {}", to_string(gen_res.type), name));
+                continue;
+            }
+
+            logs.push_back(std::format("Created {} resource: {}", to_string(gen_res.type), name));
+            resources.insert({ std::to_string(gen_res.id), resource });
+        }
+
+        // 5. Create Nodes ------------------------------------------
 
         return result;
     }
