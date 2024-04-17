@@ -199,6 +199,18 @@ namespace Nebula::nrg
     {
         auto compiler = std::make_shared<OptimizedCompiler>(m_context);
         auto result = compiler->compile(m_graph);
+
+        for (const auto& msg : result.internal_logs)
+        {
+            std::cout << msg << std::endl;
+        }
+
+        m_context->m_render_path = result.render_path;
+        for (auto& node : m_context->m_render_path->nodes)
+        {
+            auto c = m_node_colors[node->type()].title_bar_hovered;
+            node->set_marker_color(std::array<float, 4>{c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, 1.0f});
+        }
     }
 
     bool GraphEditor::_handle_connection()
