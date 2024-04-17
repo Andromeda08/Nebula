@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <concepts>
 #include <memory>
 #include <map>
@@ -13,6 +14,7 @@
 #include <nrg/resource/Resource.hpp>
 #include <nrg/resource/Requirement.hpp>
 
+#pragma region "Node declaration & definition helper macros"
 #if !defined(nrg_decl_resource_requirements)
 #define nrg_decl_resource_requirements() \
 public:                                                                                          \
@@ -40,6 +42,7 @@ static std::vector<ResourceClaim> get_resource_claims() {   \
     return result;                                          \
 }
 #endif
+#pragma endregion
 
 namespace Nebula::nrg
 {
@@ -62,6 +65,8 @@ namespace Nebula::nrg
 
         Node(std::string name, NodeType node_type);
 
+        Node(std::string name, NodeType node_type, const std::array<float, 4>& marker_color);
+
         virtual ~Node() = default;
 
         #pragma region "Virtual methods"
@@ -83,6 +88,12 @@ namespace Nebula::nrg
 
         const std::string& name() const;
 
+        NodeType type() const;
+
+        const std::array<float, 4>& marker_color() const;
+
+        void set_marker_color(const std::array<float, 4>& float4);
+
         void set_common(const Common& common);
 
     protected:
@@ -90,8 +101,9 @@ namespace Nebula::nrg
         std::map<std::string, std::shared_ptr<Resource>> m_resources;
 
     private:
-        const std::string m_name {"Unknown Node"};
-        const NodeType    m_type {NodeType::eUnknown};
+        const std::string          m_name {"Unknown Node"};
+        const NodeType             m_type {NodeType::eUnknown};
+        std::array<float, 4>       m_color { 0.5f, 0.5f, 0.5f, 1.0f };
     };
 
     template<typename T>

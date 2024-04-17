@@ -7,6 +7,26 @@ namespace Nebula::nrg
     {
     }
 
+    Node::Node(std::string name, const NodeType node_type, const std::array<float, 4>& marker_color)
+        : m_name(std::move(name)), m_type(node_type), m_color(marker_color)
+    {
+    }
+
+    const std::array<float, 4>& Node::marker_color() const
+    {
+        return m_color;
+    }
+
+    void Node::set_marker_color(const std::array<float, 4>& float4)
+    {
+        m_color = float4;
+    }
+
+    NodeType Node::type() const
+    {
+        return m_type;
+    }
+
     void Node::set_common(const Node::Common& common)
     {
         m_common = common;
