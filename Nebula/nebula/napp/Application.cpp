@@ -28,8 +28,8 @@ namespace Nebula
                                                      true);
         m_scenes.push_back(m_active_scene);
 
-        m_rg_context = std::make_shared<nrg::Context>(m_scenes, *m_context->device(),
-                                                      *m_context->command_pool(), *m_swapchain);
+        m_rg_context = std::make_shared<nrg::Context>(m_scenes, m_context->device(),
+                                                      m_context->command_pool(), m_swapchain);
 
         m_rg_editor = std::make_shared<nrg::GraphEditor>(m_rg_context);
 
