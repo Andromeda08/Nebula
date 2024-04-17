@@ -7,6 +7,8 @@ namespace Nebula::nrg
     CompilerStrategy::CompilerStrategy(const std::shared_ptr<Context>& context)
     : m_context(context)
     {
+        m_node_factory = std::make_unique<NodeFactory>(m_context);
+        m_resource_factory = std::make_unique<ResourceFactory>(m_context);
     }
 
     std::vector<std::shared_ptr<EditorNode>>
