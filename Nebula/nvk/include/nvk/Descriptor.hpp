@@ -132,7 +132,6 @@ namespace Nebula::nvk
     struct DescriptorWriteInfo
     {
         std::vector<vk::WriteDescriptorSet>                         writes;
-        std::vector<vk::WriteDescriptorSetAccelerationStructureKHR> as_infos;
         std::vector<vk::DescriptorBufferInfo>                       buffer_infos;
         std::vector<vk::DescriptorImageInfo>                        image_infos;
         uint32_t                                                    set_index;
@@ -143,17 +142,14 @@ namespace Nebula::nvk
             return *this;
         }
 
-        inline DescriptorWriteInfo& add_acceleration_structure(uint32_t binding, uint32_t as_count,
-                                                               const vk::AccelerationStructureKHR* p_as, uint32_t count = 1)
+        inline DescriptorWriteInfo& add_acceleration_structure(uint32_t binding, const vk::WriteDescriptorSetAccelerationStructureKHR& as, uint32_t count = 1)
         {
-            as_infos.emplace_back(as_count, p_as);
-
             auto write = vk::WriteDescriptorSet()
                 .setDstBinding(binding)
                 .setDescriptorCount(count)
                 .setDescriptorType(vk::DescriptorType::eAccelerationStructureKHR)
                 .setDstArrayElement(0)
-                .setPNext(&as_infos.back());
+                .setPNext(&as);
 
             writes.push_back(write);
 
