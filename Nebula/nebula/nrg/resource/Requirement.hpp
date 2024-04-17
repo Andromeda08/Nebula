@@ -36,6 +36,7 @@ namespace Nebula::nrg
         vk::Format          format      {eR32G32B32A32Sfloat};
         vk::Extent2D        extent      {0, 0};
         vk::ImageUsageFlags usage_flags {eTransferSrc | eSampled | eStorage};
+        vk::ImageLayout     expected_layout {vk::ImageLayout::eColorAttachmentOptimal};
 
         ImageRequirement() = default;
 
@@ -43,7 +44,26 @@ namespace Nebula::nrg
                          vk::Format _format               = eR32G32B32A32Sfloat,
                          vk::Extent2D _extent             = {0, 0},
                          vk::ImageUsageFlags _image_usage = {eTransferSrc | eSampled | eStorage})
-        : Requirement(std::move(_name), _usage, _type), format(_format), extent(_extent), usage_flags(_image_usage) {}
+        : Requirement(std::move(_name), _usage, _type)
+        , format(_format)
+        , extent(_extent)
+        , usage_flags(_image_usage)
+        {
+            if (_format == eD32Sfloat) {
+                expected_layout = vk::ImageLayout::eDepthAttachmentOptimal;
+            }
+        }
+
+        ImageRequirement(std::string _name, ResourceUsage _usage, ResourceType _type, vk::ImageLayout _expected_layout,
+                         vk::Format _format               = eR32G32B32A32Sfloat,
+                         vk::Extent2D _extent             = {0, 0},
+                         vk::ImageUsageFlags _image_usage = {eTransferSrc | eSampled | eStorage})
+        : Requirement(std::move(_name), _usage, _type)
+        , format(_format)
+        , extent(_extent)
+        , usage_flags(_image_usage)
+        , expected_layout(_expected_layout)
+        {}
 
         ~ImageRequirement() override = default;
     };
