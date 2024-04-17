@@ -14,12 +14,12 @@ namespace Nebula::nrg
     struct Context
     {
         Context(const std::vector<std::shared_ptr<ns::Scene>>& scenes,
-                const nvk::Device& device,
-                const nvk::CommandPool& command_pool,
-                const nvk::Swapchain& swapchain)
+                const std::shared_ptr<nvk::Device>& device,
+                const std::shared_ptr<nvk::CommandPool>& command_pool,
+                const std::shared_ptr<nvk::Swapchain>& swapchain)
         : m_scene_list(scenes), m_device(device), m_command_pool(command_pool), m_swapchain(swapchain)
         {
-            auto extent = swapchain.extent();
+            auto extent = swapchain->extent();
             m_render_resolution = { extent.width, extent.height };
             m_target_resolution = { extent.width, extent.height };
         }
@@ -39,8 +39,8 @@ namespace Nebula::nrg
         // Rendering Context ------------------------------------------------
         Size2D                                          m_render_resolution;
         Size2D                                          m_target_resolution;
-        const nvk::Device&                              m_device;
-        const nvk::CommandPool&                         m_command_pool;
-        const nvk::Swapchain&                           m_swapchain;
+        std::shared_ptr<nvk::Device>                    m_device;
+        std::shared_ptr<nvk::CommandPool>               m_command_pool;
+        std::shared_ptr<nvk::Swapchain>                 m_swapchain;
     };
 }
