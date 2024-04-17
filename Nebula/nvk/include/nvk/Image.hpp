@@ -19,6 +19,8 @@ namespace Nebula::nvk
         vk::ImageTiling         tiling {vk::ImageTiling::eOptimal};
         vk::ImageUsageFlags     usage_flags {vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled};
 
+        struct_param(bool, with_sampler, false);
+
         ImageCreateInfo() = default;
 
         inline ImageCreateInfo& set_aspect_flags(vk::ImageAspectFlagBits value)
@@ -68,6 +70,7 @@ namespace Nebula::nvk
             usage_flags = value;
             return *this;
         }
+
     };
 
     struct ImageProperties
@@ -104,6 +107,8 @@ namespace Nebula::nvk
 
         void update_state(const ImageState& state) { m_state = state; }
 
+        const vk::Sampler& default_sampler() const { return m_sampler; }
+
         static inline std::shared_ptr<Image> create(const ImageCreateInfo& create_info,
                                                     const std::shared_ptr<Device>& device)
         {
@@ -116,7 +121,7 @@ namespace Nebula::nvk
         std::shared_ptr<Allocation> m_allocation;
         vk::Image                   m_image;
         vk::ImageView               m_image_view;
-        // vk::Sampler                 m_sampler;
+        vk::Sampler                 m_sampler;
         ImageState                  m_state;
 
         std::shared_ptr<Device>     m_device;

@@ -59,6 +59,35 @@ namespace Nebula::nvk
                               (uint64_t)m_image_view.operator VkImageView(),
                               vk::ObjectType::eImageView);
 
+        if (create_info.with_sampler)
+        {
+            auto sampler_create_info = vk::SamplerCreateInfo()
+                .setMagFilter(vk::Filter::eLinear)
+                .setMinFilter(vk::Filter::eLinear)
+                .setAddressModeU(vk::SamplerAddressMode::eRepeat)
+                .setAddressModeV(vk::SamplerAddressMode::eRepeat)
+                .setAddressModeW(vk::SamplerAddressMode::eRepeat)
+                .setAnisotropyEnable(false)
+                .setBorderColor(vk::BorderColor::eIntOpaqueBlack)
+                .setUnnormalizedCoordinates(false)
+                .setCompareEnable(false)
+                .setCompareOp(vk::CompareOp::eAlways)
+                .setMipmapMode(vk::SamplerMipmapMode::eLinear)
+                .setMipLodBias(0.0f)
+                .setMinLod(0.0f)
+                .setMaxLod(0.0f);
+
+            if (const vk::Result result = m_device->handle().createSampler(&sampler_create_info, nullptr, &m_sampler);
+                result != vk::Result::eSuccess)
+            {
+                throw nlog::make_exception("Failed to create Sampler for Image \"{}\" ({})", m_name, to_string(result));
+            }
+
+            m_device->name_object(std::format("{}: Sampler", m_name),
+                                  (uint64_t) m_sampler.operator VkSampler(),
+                                  vk::ObjectType::eSampler);
+        }
+
         #ifdef NVK_VERBOSE_EXTRA
         std::cout << nlog::fmt_verbose("[V++] Created Image and ImageView: {}\n\tExtent: [{}x{}] | Format: {}",
                                  m_name, m_properties.extent.width, m_properties.extent.height,
