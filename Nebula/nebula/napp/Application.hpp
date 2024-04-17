@@ -9,9 +9,10 @@
 #include <ngui/GUI.hpp>
 #include <nhair/HairModel.hpp>
 #include <nhair/HairRenderer.hpp>
-#include <nscene/Scene.hpp>
+#include <nrender/Raytracer.hpp>
 #include <nrg/common/Context.hpp>
 #include <nrg/editor/GraphEditor.hpp>
+#include <nscene/Scene.hpp>
 #include <nvk/Command.hpp>
 #include <nvk/Context.hpp>
 #include <nvk/Descriptor.hpp>
@@ -54,6 +55,9 @@ namespace Nebula
         // Hair Renderer ------------------------------------------------------
         std::shared_ptr<nhair::HairModel>               m_hair_model;
         std::shared_ptr<nhair::HairRenderer>            m_hair_renderer;
+
+        // Raytracer ----------------------------------------------------------
+        std::shared_ptr<nrender::Raytracer>             m_ray_tracer;
 
         std::chrono::high_resolution_clock::time_point  m_last_time;
         const AppConfig                                 m_config {};

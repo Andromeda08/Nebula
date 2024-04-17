@@ -36,6 +36,7 @@ namespace Nebula
         m_hair_model = std::make_shared<nhair::HairModel>((hair_file.has_value() ? hair_file.value() : "wWavy.hair"), m_context->device(), m_context->command_pool());
 
         m_hair_renderer = std::make_shared<nhair::HairRenderer>(m_context->device(), m_swapchain, true);
+        m_ray_tracer    = std::make_shared<nrender::Raytracer>(m_context->device(), m_context->command_pool(), m_swapchain, m_active_scene);
     }
 
     void Application::run()
@@ -76,8 +77,10 @@ namespace Nebula
 
         if (m_rg_context->m_render_path)
         {
-            m_rg_context->m_render_path->execute(command_buffer);
+            //m_rg_context->m_render_path->execute(command_buffer);
         }
+
+        // m_ray_tracer->render(s_current_frame, command_buffer);
 
         if (m_config.gui_enabled)
         {
