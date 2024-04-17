@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vulkan/vulkan.hpp>
 
 namespace Nebula
 {
@@ -24,6 +25,11 @@ namespace Nebula
         inline float ratio() const
         {
             return static_cast<float>(width) / static_cast<float>(height);
+        }
+
+        explicit operator vk::Extent2D() const
+        {
+            return { width, height };
         }
     };
 }
