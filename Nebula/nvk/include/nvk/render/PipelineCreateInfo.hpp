@@ -32,10 +32,7 @@ namespace Nebula::nvk
         template <VertexInput T>
         PipelineCreateInfo& add_binding_description(uint32_t binding = 0)
         {
-            for (const auto& b : T::binding_description(binding))
-            {
-                m_pipeline_state.binding_descriptions.push_back(b);
-            }
+            m_pipeline_state.binding_descriptions.push_back(T::binding_description(binding));
             return *this;
         }
 
