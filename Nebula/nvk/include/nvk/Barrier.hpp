@@ -31,6 +31,8 @@ namespace Nebula::nvk
 
         void revert(const vk::CommandBuffer& command_buffer) override;
 
+        const vk::ImageMemoryBarrier2& barrier() const { return m_barrier; }
+
     private:
         std::shared_ptr<Image>      m_image;
         vk::ImageMemoryBarrier2     m_barrier {};
