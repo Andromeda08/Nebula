@@ -96,6 +96,44 @@ namespace Nebula::nrg
         }
 
         // 5. Create Nodes ------------------------------------------
+        std::vector<std::shared_ptr<Node>> rg_nodes;
+        std::map<int32_t, int32_t> node_mapping; // Graph ID -> RG ID
+        for (const auto& node : execution_order)
+        {
+            auto rgn = m_node_factory->create(node);
+            if (rgn != nullptr)
+            {
+                rg_nodes.push_back(rgn);
+                node_mapping.insert({node->id(), static_cast<int32_t>(rg_nodes.size() - 1) });
+            }
+        }
+
+        // 6. Connect resources to nodes ----------------------------
+        for (const auto& opt_resource : optimizer_result.resources)
+        {
+            // 6.0 Get resource
+            auto& resource = resources[std::to_string(opt_resource.id)];
+
+            // 6.1 Connect to origin node
+            auto& origin = opt_resource.original_info;
+            auto& cnode_origin = rg_nodes[node_mapping[origin.origin_node_id]];
+            cnode_origin->set_resource(origin.origin_res_name, resource);
+
+            // 6.2 Connect to consumer nodes
+            for (const auto& consumer : opt_resource.usage_points)
+            {
+                auto& cnode_consumer = rg_nodes[node_mapping[consumer.user_node_id]];
+                cnode_consumer->set_resource(consumer.used_as, resource);
+            }
+        }
+
+        // 7. Create RenderPath -------------------------------------
+        auto render_path = std::make_shared<RenderPath>();
+        render_path->resources = resources;
+        render_path->nodes = rg_nodes;
+
+        // 8. Fill & Finalize result --------------------------------
+        result.render_path = render_path;
 
         return result;
     }
