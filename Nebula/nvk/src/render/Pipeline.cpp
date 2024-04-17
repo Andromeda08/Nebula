@@ -57,6 +57,24 @@ namespace Nebula::nvk
         command_buffer.bindPipeline(m_bind_point, m_pipeline);
     }
 
+    void Pipeline::trace_rays(const vk::CommandBuffer& command_buffer, uint32_t size_x, uint32_t size_y, uint32_t depth)
+    {
+        if (m_type != PipelineType::eRayTracing)
+        {
+            throw nlog::make_exception("trace_rays() call invalid for pipelines of type {}", to_string(m_type));
+        }
+
+        command_buffer.traceRaysKHR(m_sbt->rgen_region(), m_sbt->miss_region(),
+                                    m_sbt->hit_region(), m_sbt->call_region(),
+                                    size_x, size_y, depth);
+    }
+
+    void Pipeline::bind_descriptor_set(const vk::CommandBuffer& command_buffer, const vk::DescriptorSet& set)
+    {
+        command_buffer.bindDescriptorSets(to_bind_point(m_type), m_pipeline_layout, 0, 1,
+                                          &set, 0, nullptr);
+    }
+
     Pipeline::~Pipeline()
     {
         m_device->handle().destroy(m_pipeline);
@@ -151,7 +169,6 @@ namespace Nebula::nvk
     void Pipeline::create_ray_tracing(const PipelineCreateInfo& create_info)
     {
         auto sbt_create_info = ShaderBindingTableCreateInfo()
-            .set_pipeline(m_pipeline)
             .set_name(std::format("{} Pipeline SBT", m_name));
 
         bool has_ray_gen = false;
@@ -200,7 +217,9 @@ namespace Nebula::nvk
             throw nlog::make_exception("Failed to create Ray tracing Pipeline: {} ({})", m_name, to_string(result));
         }
 
+        sbt_create_info.set_pipeline(m_pipeline);
         m_sbt = ShaderBindingTable::create(sbt_create_info, m_device);
+        std::cout << m_sbt->sbt()->address() << std::endl;
     }
 
     std::vector<vk::RayTracingShaderGroupCreateInfoKHR>

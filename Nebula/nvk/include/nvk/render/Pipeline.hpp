@@ -21,6 +21,10 @@ namespace Nebula::nvk
 
         void bind(const vk::CommandBuffer& command_buffer);
 
+        void trace_rays(const vk::CommandBuffer& command_buffer, uint32_t size_x, uint32_t size_y, uint32_t depth);
+
+        void bind_descriptor_set(const vk::CommandBuffer& command_buffer, const vk::DescriptorSet& set);
+
         const vk::Pipeline& handle() const { return m_pipeline; }
 
         const vk::PipelineLayout& layout() const { return m_pipeline_layout; }
