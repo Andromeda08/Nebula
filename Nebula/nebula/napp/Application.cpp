@@ -93,6 +93,7 @@ namespace Nebula
                 ImGui::End();
 
                 m_rg_editor->render();
+                m_ray_tracer->render_ui();
             });
         }
 

@@ -2,6 +2,9 @@
 
 #include <memory>
 #include <vector>
+#include <imgui.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <nscene/Scene.hpp>
 #include <nvk/Barrier.hpp>
 #include <nvk/Buffer.hpp>
@@ -14,6 +17,17 @@
 
 namespace Nebula::nrender
 {
+    struct RaytracerPushConstant
+    {
+        glm::vec4 light_position  { 1.0f, 10.0f, 1.0f, 0.0f };
+        glm::vec4 light_intensity { 1.0f, 1.0f, 1.0f, 1.0f };
+        float     spot_cutoff {0.0f};
+        float     spot_outer_cutoff {0.0f};
+        float     _pad11 {}, _pad12 {};
+        int32_t   light_type {0};
+        int32_t   _pad13 {}, _pad14 {}, _pad15 {};
+    };
+
     class Raytracer
     {
     public:
@@ -51,12 +65,17 @@ namespace Nebula::nrender
 
             auto pipeline_create_info = nvk::PipelineCreateInfo()
                 .set_pipeline_type(nvk::PipelineType::eRayTracing)
+                .add_push_constant({ eClosestHitKHR | eCallableKHR, 0, sizeof(RaytracerPushConstant) })
                 .add_descriptor_set_layout(m_descriptor->layout())
                 .add_shader("raytracer.rgen.spv", eRaygenKHR)
                 .add_shader("raytracer.rmiss.spv", eMissKHR)
+                .add_shader("raytracer_shadow.rmiss.spv", eMissKHR)
                 .add_shader("raytracer.rchit.spv", eClosestHitKHR)
+                .add_shader("raytracer_reflect.rchit.spv", eClosestHitKHR)
+                .add_shader("rt_light_point.rcall.spv", eCallableKHR)
+                .add_shader("rt_light_directional.rcall.spv", eCallableKHR)
                 .set_name("Raytracer")
-                .set_ray_recursion_depth(1);
+                .set_ray_recursion_depth(2);
             m_pipeline = nvk::Pipeline::create(pipeline_create_info, m_device);
 
             m_uniform_buffer.resize(m_swapchain->image_count());
@@ -99,12 +118,23 @@ namespace Nebula::nrender
 
             m_pipeline->bind(command_buffer);
             m_pipeline->bind_descriptor_set(command_buffer, m_descriptor->set(current_frame));
+            m_pipeline->push_constants<RaytracerPushConstant>(command_buffer, vk::ShaderStageFlagBits::eClosestHitKHR | vk::ShaderStageFlagBits::eCallableKHR, 0, &m_push_constant);
             m_pipeline->trace_rays(command_buffer, m_size.width, m_size.height);
+        }
+
+        void render_ui()
+        {
+            ImGui::Begin("Raytracer Parameters");
+            ImGui::SliderFloat3("Light Position", glm::value_ptr(m_push_constant.light_position), -50.0f, 50.0f);
+            ImGui::SliderFloat3("Light Intensity", glm::value_ptr(m_push_constant.light_intensity), 0.0f, 1.0f);
+            ImGui::SliderInt("Light Type", &m_push_constant.light_type, 0, 1);
+            ImGui::End();
         }
 
         const std::shared_ptr<nvk::Image>& target() const { return m_target; }
 
     private:
+        RaytracerPushConstant                     m_push_constant;
         vk::Extent2D                              m_size;
         std::shared_ptr<ns::Scene>                m_scene;
         std::shared_ptr<nvk::Image>               m_target;

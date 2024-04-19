@@ -92,7 +92,7 @@ namespace Nebula::ns
             Object object {
                 .mesh         = m_meshes["cube"],
                 .name         = std::format("Object {}", m_objects.size() + 1),
-                .rt_hit_group = 0,
+                .rt_hit_group = static_cast<uint32_t>(nmath::rand() % 2),
                 .solid_color  = color_pool[dist(random)],
                 .transform    = transform,
             };

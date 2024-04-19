@@ -5,9 +5,9 @@
 
 #include "rt_common.glsl"
 
-layout(location = 0) rayPayloadInEXT RTPayloadBasic payload;
+layout(location = 0) rayPayloadInEXT RTPayload payload;
 
 void main()
 {
-    payload.hit_value = vec3(0.05);
+    payload.hit_value = vec3(0.0);
 }

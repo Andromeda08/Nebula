@@ -1,0 +1,20 @@
+#version 460
+
+#extension GL_EXT_ray_tracing : enable
+#extension GL_GOOGLE_include_directive : enable
+#include "rt_common.glsl"
+
+layout(location = 0) callableDataInEXT RayLight ray_light;
+
+layout(push_constant) uniform RTPushConstant {
+    LightData light;
+} constants;
+
+void main() {
+    LightData l = constants.light;
+    vec3 light_dir = l.light_position.xyz - ray_light.in_hit_position;
+
+    ray_light.out_light_distance  = length(light_dir);
+    ray_light.out_light_intensity = l.light_intensity.rgb;
+    ray_light.out_light_dir       = normalize(light_dir);
+}

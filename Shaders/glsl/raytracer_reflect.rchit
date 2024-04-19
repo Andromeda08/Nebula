@@ -46,8 +46,7 @@ void fetch_vertex_data(int primitiveID, out vec3 position, out vec3 normal) {
     normal = v0.normal * barycentrics.x + v1.normal * barycentrics.y + v2.normal * barycentrics.z;
 }
 
-void main()
-{
+void main() {
     vec3 position;
     vec3 normal;
     fetch_vertex_data(gl_PrimitiveID, position, normal);
@@ -64,7 +63,7 @@ void main()
     vec3  L               = ray_light.out_light_dir;
     vec3  light_intensity = ray_light.out_light_intensity;
     float light_distance  = ray_light.out_light_distance;
-//
+
 //    if (constants.light.light_position.w == 0.0) {
 //        // Point Light
 //        vec3 light_direction = constants.light.light_position.xyz - world_pos;
@@ -107,6 +106,6 @@ void main()
     payload.ray_origin    = world_pos;
     payload.ray_direction = reflect(gl_WorldRayDirectionEXT, world_normal);
     payload.attenuation  *= vec3(attenuation);
-    payload.done          = 1;
+    payload.done          = 0;
     payload.hit_value     = vec3(diffuse + specular) * light_intensity;
 }

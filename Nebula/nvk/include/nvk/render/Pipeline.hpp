@@ -25,6 +25,12 @@ namespace Nebula::nvk
 
         void bind_descriptor_set(const vk::CommandBuffer& command_buffer, const vk::DescriptorSet& set);
 
+        template <typename T>
+        void push_constants(const vk::CommandBuffer& command_buffer, vk::ShaderStageFlags stages, vk::DeviceSize offset, const T* p_data) const
+        {
+            command_buffer.pushConstants(m_pipeline_layout, stages, offset, sizeof(T), p_data);
+        }
+
         const vk::Pipeline& handle() const { return m_pipeline; }
 
         const vk::PipelineLayout& layout() const { return m_pipeline_layout; }

@@ -251,6 +251,16 @@ namespace Nebula::nvk
                     result.push_back(group);
                     break;
                 }
+                case vk::ShaderStageFlagBits::eCallableKHR: {
+                    auto group = vk::RayTracingShaderGroupCreateInfoKHR()
+                        .setType(vk::RayTracingShaderGroupTypeKHR::eGeneral)
+                        .setGeneralShader(i)
+                        .setClosestHitShader(VK_SHADER_UNUSED_KHR)
+                        .setAnyHitShader(VK_SHADER_UNUSED_KHR)
+                        .setIntersectionShader(VK_SHADER_UNUSED_KHR);
+                    result.push_back(group);
+                    break;
+                }
                 default: {
                     #ifdef NVK_DEBUG
                     std::cout << nlog::fmt_warning("Non-RayTracing shader ({}) specified for Pipeline {}",
