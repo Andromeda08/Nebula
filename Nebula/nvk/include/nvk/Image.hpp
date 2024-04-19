@@ -128,4 +128,21 @@ namespace Nebula::nvk
         const std::string           m_name;
         const ImageProperties       m_properties;
     };
+
+    struct ImageBlit
+    {
+        ImageBlit& set_src_image(const std::shared_ptr<Image>& src_image);
+
+        ImageBlit& set_dst_image(const std::shared_ptr<Image>& dst_image);
+
+        void blit(const vk::CommandBuffer& command_buffer);
+
+    private:
+        vk::ImageBlit2                         m_image_blit;
+        vk::BlitImageInfo2                     m_blit_image_info;
+        std::array<vk::ImageMemoryBarrier2, 2> m_barriers;
+        vk::DependencyInfo                     m_dependency_info;
+        std::shared_ptr<Image>                 m_src_image;
+        std::shared_ptr<Image>                 m_dst_image;
+    };
 }

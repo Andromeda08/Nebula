@@ -33,7 +33,7 @@ namespace Nebula::nrender
                 .set_name("Raytracer Target")
                 .set_sample_count(vk::SampleCountFlagBits::e1)
                 .set_tiling(vk::ImageTiling::eOptimal)
-                .set_usage_flags(vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc)
+                .set_usage_flags(vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eSampled)
                 .set_with_sampler(true);
             m_target = nvk::Image::create(target_create_info, m_device);
             command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
@@ -101,6 +101,8 @@ namespace Nebula::nrender
             m_pipeline->bind_descriptor_set(command_buffer, m_descriptor->set(current_frame));
             m_pipeline->trace_rays(command_buffer, m_size.width, m_size.height);
         }
+
+        const std::shared_ptr<nvk::Image>& target() const { return m_target; }
 
     private:
         vk::Extent2D                              m_size;

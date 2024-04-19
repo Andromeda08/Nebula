@@ -33,6 +33,8 @@ namespace Nebula::nvk
 
         const vk::ImageMemoryBarrier2& barrier() const { return m_barrier; }
 
+        const vk::ImageMemoryBarrier2& inverse_barrier() const { return m_reverse_barrier; }
+
     private:
         std::shared_ptr<Image>      m_image;
         vk::ImageMemoryBarrier2     m_barrier {};

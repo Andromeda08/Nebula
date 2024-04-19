@@ -9,6 +9,7 @@
 #include <ngui/GUI.hpp>
 #include <nhair/HairModel.hpp>
 #include <nhair/HairRenderer.hpp>
+#include <nrender/Present.hpp>
 #include <nrender/Raytracer.hpp>
 #include <nrg/common/Context.hpp>
 #include <nrg/editor/GraphEditor.hpp>
@@ -58,6 +59,7 @@ namespace Nebula
 
         // Raytracer ----------------------------------------------------------
         std::shared_ptr<nrender::Raytracer>             m_ray_tracer;
+        std::shared_ptr<nrender::Present>               m_present;
 
         std::chrono::high_resolution_clock::time_point  m_last_time;
         const AppConfig                                 m_config {};

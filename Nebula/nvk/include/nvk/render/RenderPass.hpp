@@ -72,6 +72,11 @@ namespace Nebula::nvk
 
         const vk::RenderPass& render_pass() const { return m_render_pass; }
 
+        inline static std::shared_ptr<RenderPass> create(RenderPassCreateInfo& create_info, const std::shared_ptr<Device>& device)
+        {
+            return std::make_shared<RenderPass>(create_info, device);
+        }
+
     private:
         vk::Rect2D                  m_render_area;
         vk::RenderPass              m_render_pass;

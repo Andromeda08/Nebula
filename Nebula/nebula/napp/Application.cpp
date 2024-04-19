@@ -37,6 +37,7 @@ namespace Nebula
 
         m_hair_renderer = std::make_shared<nhair::HairRenderer>(m_context->device(), m_swapchain, true);
         m_ray_tracer    = std::make_shared<nrender::Raytracer>(m_context->device(), m_context->command_pool(), m_swapchain, m_active_scene);
+        m_present       = std::make_shared<nrender::Present>(m_context->device(), m_swapchain, m_ray_tracer->target());
     }
 
     void Application::run()
@@ -70,17 +71,18 @@ namespace Nebula
         vk::CommandBufferBeginInfo begin_info {};
         vk::Result result = command_buffer.begin(&begin_info);
 
-        m_swapchain->set_viewport_scissor(command_buffer);
-
-        m_hair_model->update(command_buffer);
-        m_hair_renderer->render(s_current_frame, *m_hair_model, camera_data, command_buffer);
+        // m_hair_model->update(command_buffer);
+        // m_hair_renderer->render(s_current_frame, *m_hair_model, camera_data, command_buffer);
 
         if (m_rg_context->m_render_path)
         {
             //m_rg_context->m_render_path->execute(command_buffer);
         }
 
-        // m_ray_tracer->render(s_current_frame, command_buffer);
+        m_ray_tracer->render(s_current_frame, command_buffer);
+
+        m_swapchain->set_viewport_scissor(command_buffer);
+        m_present->render(s_current_frame, command_buffer);
 
         if (m_config.gui_enabled)
         {

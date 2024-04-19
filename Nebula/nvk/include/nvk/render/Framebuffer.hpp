@@ -105,6 +105,11 @@ namespace Nebula::nvk
 
         size_t count() const;
 
+        inline static std::shared_ptr<Framebuffer> create(FramebufferCreateInfo& create_info, const std::shared_ptr<Device>& device)
+        {
+            return std::make_shared<Framebuffer>(create_info, device);
+        }
+
     private:
         std::vector<vk::Framebuffer> m_framebuffers;
         std::shared_ptr<Device>      m_device;

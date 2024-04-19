@@ -2,6 +2,7 @@
 #include <format>
 #include <stdexcept>
 #include <nlog/nlog.hpp>
+#include "Barrier.hpp"
 
 #ifdef NVK_VERBOSE_EXTRA
 #include <iostream>
@@ -115,5 +116,57 @@ namespace Nebula::nvk
         #ifdef NVK_VERBOSE_EXTRA
         std::cout << nlog::fmt_verbose("Destroyed Image and ImageView: {}", m_name) << std::endl;
         #endif
+    }
+
+    ImageBlit& ImageBlit::set_src_image(const std::shared_ptr<Image>& src_image)
+    {
+        m_src_image = src_image;
+        auto barrier = ImageBarrier(m_src_image,m_src_image->state().layout,vk::ImageLayout::eTransferSrcOptimal);
+        m_barriers[0] = barrier.barrier();
+
+        m_image_blit
+            .setSrcOffsets({0, 0})
+            .setSrcSubresource(m_src_image->properties().subresource_layers);
+
+        m_blit_image_info
+            .setSrcImageLayout(vk::ImageLayout::eTransferSrcOptimal)
+            .setSrcImage(m_src_image->image());
+
+        return *this;
+    }
+
+    ImageBlit& ImageBlit::set_dst_image(const std::shared_ptr<Image>& dst_image)
+    {
+        m_dst_image = dst_image;
+        auto barrier = ImageBarrier(m_dst_image,m_dst_image->state().layout,vk::ImageLayout::eTransferDstOptimal);
+        m_barriers[1] = barrier.barrier();
+
+        m_image_blit
+            .setDstOffsets({0, 0})
+            .setDstSubresource(m_dst_image->properties().subresource_layers);
+
+        m_blit_image_info
+            .setDstImageLayout(vk::ImageLayout::eTransferSrcOptimal)
+            .setDstImage(m_dst_image->image());
+
+        return *this;
+    }
+
+    void ImageBlit::blit(const vk::CommandBuffer& command_buffer)
+    {
+        m_blit_image_info
+            .setFilter(vk::Filter::eNearest)
+            .setRegionCount(1)
+            .setPRegions(&m_image_blit);
+
+        m_dependency_info
+            .setImageMemoryBarrierCount(2)
+            .setPImageMemoryBarriers(m_barriers.data());
+
+        command_buffer.pipelineBarrier2(m_dependency_info);
+        command_buffer.blitImage2(&m_blit_image_info);
+
+        m_src_image->update_state({ vk::AccessFlagBits2::eNone, m_barriers[0].newLayout });
+        m_dst_image->update_state({ vk::AccessFlagBits2::eNone, m_barriers[1].newLayout });
     }
 }
