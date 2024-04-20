@@ -21,7 +21,7 @@ namespace Nebula::nrender
             .set_name("Raytracer Target")
             .set_sample_count(vk::SampleCountFlagBits::e1)
             .set_tiling(vk::ImageTiling::eOptimal)
-            .set_usage_flags(vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eSampled)
+            .set_usage_flags(vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment)
             .set_with_sampler(true);
         m_target = nvk::Image::create(target_create_info, m_device);
         command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
@@ -46,6 +46,7 @@ namespace Nebula::nrender
             .add_shader("raytracer_shadow.rmiss.spv", eMissKHR)
             .add_shader("raytracer.rchit.spv", eClosestHitKHR)
             .add_shader("raytracer_reflect.rchit.spv", eClosestHitKHR)
+            .add_shader("raytracer_colorful.rchit.spv", eClosestHitKHR)
             .add_shader("rt_light_point.rcall.spv", eCallableKHR)
             .add_shader("rt_light_directional.rcall.spv", eCallableKHR)
             .set_name("Raytracer")

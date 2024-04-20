@@ -84,10 +84,9 @@ add_executable(${Nebula_main}
     nrg/compiler/factory/ResourceFactory.hpp nrg/compiler/factory/ResourceFactory.cpp
     nrg/compiler/optimized/ResourceOptimizer.hpp nrg/compiler/optimized/ResourceOptimizer.cpp
     nrg/compiler/optimized/OptimizedCompiler.hpp nrg/compiler/optimized/OptimizedCompiler.cpp
-    nrender/Raytracer.hpp
-    nrender/Present.hpp
-    nrender/Raytracer.cpp
-    nrender/Present.cpp
+    nrender/DebugRenderer.hpp
+    nrender/Present.hpp nrender/Present.cpp
+    nrender/Raytracer.hpp nrender/Raytracer.cpp
 )
 
 target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)

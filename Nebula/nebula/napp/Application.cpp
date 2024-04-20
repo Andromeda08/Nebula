@@ -37,7 +37,8 @@ namespace Nebula
 
         m_hair_renderer = std::make_shared<nhair::HairRenderer>(m_context->device(), m_swapchain, true);
         m_ray_tracer    = std::make_shared<nrender::Raytracer>(m_context->device(), m_context->command_pool(), m_swapchain, m_active_scene);
-        m_present       = std::make_shared<nrender::Present>(m_context->device(), m_swapchain, m_ray_tracer->target());
+        m_light_debug   = std::make_shared<nrender::DebugRender>(m_context->device(), m_swapchain, m_active_scene, m_ray_tracer->target());
+        m_present       = std::make_shared<nrender::Present>(m_context->device(), m_swapchain, m_light_debug->target());
     }
 
     void Application::run()
@@ -79,9 +80,15 @@ namespace Nebula
             //m_rg_context->m_render_path->execute(command_buffer);
         }
 
+        nvk::ImageBarrier(m_ray_tracer->target(), m_ray_tracer->target()->state().layout, vk::ImageLayout::eGeneral).apply(command_buffer);
         m_ray_tracer->render(s_current_frame, command_buffer);
 
         m_swapchain->set_viewport_scissor(command_buffer);
+        m_light_debug->render(s_current_frame, command_buffer, m_ray_tracer->rt_light());
+
+        if (m_ray_tracer->rt_light().light_type == 0)
+            nvk::ImageBarrier(m_ray_tracer->target(), vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::eGeneral).apply(command_buffer);
+
         m_present->render(s_current_frame, command_buffer);
 
         if (m_config.gui_enabled)

@@ -20,7 +20,7 @@ namespace Nebula::nrender
     struct RaytracerPushConstant
     {
         glm::vec4 light_position  { 1.0f, 10.0f, 1.0f, 0.0f };
-        glm::vec4 light_intensity { 1.0f, 1.0f, 1.0f, 1.0f };
+        glm::vec4 light_intensity { 0.65f, 0.65f, 0.65f, 1.0f };
         float     spot_cutoff {0.0f};
         float     spot_outer_cutoff {0.0f};
         float     _pad11 {}, _pad12 {};
@@ -41,6 +41,8 @@ namespace Nebula::nrender
         void render_ui();
 
         const std::shared_ptr<nvk::Image>& target() const { return m_target; }
+
+        const RaytracerPushConstant& rt_light() const { return m_push_constant; }
 
     private:
         RaytracerPushConstant                     m_push_constant;
