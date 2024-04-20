@@ -91,9 +91,9 @@ void main() {
         uint ray_flags = gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsOpaqueEXT | gl_RayFlagsSkipClosestHitShaderEXT;
         is_shadowed    = true;
 
-        traceRayEXT(tlas, ray_flags, 0xff, 0, 0, 0,
+        traceRayEXT(tlas, ray_flags, 0xff, 0, 0, 1,
                     origin.xyz, 0.001, direction.xyz, light_distance,
-                    0);
+                    1);
     }
 
     if (is_shadowed) {
