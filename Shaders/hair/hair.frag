@@ -48,19 +48,16 @@ float strand_diffuse(vec3 N, vec3 L)
     return clamp(mix(0.25, 1.0, max(dot(N, L), 0.0)), 0.0, 1.0);
 }
 
-vec3 kajiya_kay(vec3 diffuse, vec3 specular, float p, vec3 T, vec3 L, vec3 E)
-{
+vec3 kajiya_kay(vec3 diffuse, vec3 specular, float p, vec3 T, vec3 L, vec3 V) {
     float cosTL    = dot(T, L);
-    float cosTL_sq = cosTL * cosTL;
+    float sinTL    = sqrt(1.0f - cosTL * cosTL);
 
-    float cosTE    = dot(T, E);
-    float cosTE_sq = cosTE * cosTE;
-
-    float sinTL    = sqrt(1.0f - cosTL_sq);
-    float sinTE    = sqrt(1.0f - cosTE_sq);
+    vec3 H      = normalize(L + V);
+    float cosTH = dot(T, H);
+    float sinTH = sqrt(1.0 - cosTH * cosTH);
 
     vec3 d = diffuse * sinTL;
-    vec3 s = specular * pow(max(cosTL * cosTE + sinTL * sinTE, 0), p);
+    vec3 s = specular * pow(max(sinTH, 0.0), p);
 
     return d + s;
 }
@@ -69,12 +66,10 @@ void main()
 {
     vec4 light = vec4(-75, 125, 50, 0);
 
-    vec3 hairD = vec3(83, 61, 53) / 255;
-    vec3 hairS = vec3(106, 78, 56) / 255;
-
     vec3 T = normalize(IN.world_tangent.xyz);
     vec3 L = normalize(light - IN.world_position).xyz;
+    vec3 V = normalize(camera.eye.xyz - IN.world_position.xyz);
 
-    vec3 color = kajiya_kay(hair_constants.hair_diffuse.xyz, hair_constants.hair_specular.xyz, 16.0, T, L, camera.eye.xyz);
+    vec3 color = kajiya_kay(hair_constants.hair_diffuse.xyz, hair_constants.hair_specular.xyz, 16.0, T, L, V);
     out_color = vec4(color, 0.75);
 }
