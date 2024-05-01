@@ -29,10 +29,6 @@ namespace Nebula
         //                                               m_context->command_pool(), m_swapchain);
 
         // m_rg_editor = std::make_shared<nrg::GraphEditor>(m_rg_context);
-
-        // m_ray_tracer    = std::make_shared<nrender::Raytracer>(m_context->device(), m_context->command_pool(), m_swapchain, m_active_scene);
-        // m_light_debug   = std::make_shared<nrender::DebugRender>(m_context->device(), m_swapchain, m_active_scene, m_ray_tracer->target());
-        // m_present       = std::make_shared<nrender::Present>(m_context->device(), m_swapchain, m_light_debug->target());
     }
 
     void Application::run()

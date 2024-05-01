@@ -7,9 +7,6 @@
 #include <string>
 #include <napp/AppConfig.hpp>
 #include <ngui/GUI.hpp>
-#include <nrender/DebugRenderer.hpp>
-#include <nrender/Present.hpp>
-#include <nrender/Raytracer.hpp>
 #include <nrg/common/Context.hpp>
 #include <nrg/editor/GraphEditor.hpp>
 #include <nscene/Scene.hpp>
@@ -60,11 +57,6 @@ namespace Nebula
         // Render Graph -------------------------------------------------------
         std::shared_ptr<nrg::Context>                   m_rg_context;
         std::shared_ptr<nrg::GraphEditor>               m_rg_editor;
-
-        // Raytracer ----------------------------------------------------------
-        std::shared_ptr<nrender::Raytracer>             m_ray_tracer;
-        std::shared_ptr<nrender::Present>               m_present;
-        std::shared_ptr<nrender::DebugRender>           m_light_debug;
 
         const AppConfig                                 m_config {};
 
