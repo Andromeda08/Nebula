@@ -23,17 +23,29 @@ namespace Nebula
 
         m_gui = std::make_shared<ngui::GUI>(m_config.gui_font, m_window, m_context, m_swapchain);
 
-        m_active_scene = std::make_shared<ns::Scene>(Size2D { m_swapchain->extent().width, m_swapchain->extent().height },
-                                                     "Default Scene",
-                                                     m_context->command_pool(),
-                                                     m_context->device(),
-                                                     true);
-        m_scenes.push_back(m_active_scene);
+        if (m_params.default_scene)
+        {
+            m_active_scene = std::make_shared<ns::Scene>(Size2D { m_swapchain->extent().width, m_swapchain->extent().height },
+                                                         "Default Scene", m_context->command_pool(), m_context->device(), true);
+            m_scenes.push_back(m_active_scene);
+        }
 
-        // m_rg_context = std::make_shared<nrg::Context>(m_scenes, m_context->device(),
-        //                                               m_context->command_pool(), m_swapchain);
+        if (m_scenes.empty())
+        {
+            throw std::runtime_error("No scenes found, your application needs at least one scene to run");
+        }
 
-        // m_rg_editor = std::make_shared<nrg::GraphEditor>(m_rg_context);
+        if (!m_active_scene)
+        {
+            m_active_scene = m_scenes[0];
+            std::cout << nlog::fmt_warning("No active scene set, using the first available scene.") << std::endl;
+        }
+
+        if (m_params.render_graph)
+        {
+            m_rg_context = std::make_shared<nrg::Context>(m_scenes, m_context->device(), m_context->command_pool(), m_swapchain);
+            m_rg_editor  = std::make_shared<nrg::GraphEditor>(m_rg_context);
+        }
     }
 
     void Application::run()
@@ -71,6 +83,9 @@ namespace Nebula
         if (m_config.gui_enabled)
         {
             m_gui->render(command_buffer, [&](){
+                if (m_params.render_graph) {
+                    m_rg_editor->render();
+                }
                 render_ui();
             });
         }

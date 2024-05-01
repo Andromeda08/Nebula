@@ -22,6 +22,8 @@ namespace Nebula
     {
         bool ray_tracing {false};
         bool mesh_shaders {false};
+        bool render_graph {false};
+        bool default_scene {true};
     };
 
     class Application
