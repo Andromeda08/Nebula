@@ -4,7 +4,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set("nebula" "../../Nebula/nebula")
-set("nvk" "../../Nebula/nvk")
 
 add_executable(HairRenderer main.cpp HairRendererApp.hpp HairRendererApp.cpp)
 target_link_libraries(HairRenderer PUBLIC nebula)
