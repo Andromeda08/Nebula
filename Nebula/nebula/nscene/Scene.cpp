@@ -25,10 +25,14 @@ namespace Nebula::ns
         {
             create_tlas();
         }
+
+        create_camera_uniform_buffers();
     }
 
-    void Scene::update(float dt)
+    void Scene::update(float dt, uint32_t current_frame)
     {
+        auto uniform_data = active_camera()->uniform_data();
+        m_camera_uniform_buffer[current_frame]->set_data(&uniform_data);
         // update_tlas();
     }
 
@@ -193,5 +197,23 @@ namespace Nebula::ns
         auto instances = collect_tlas_instances();
         auto update_info = nvk::TLASUpdateInfo { instances };
         m_top_level_as->update(update_info, command_buffer);
+    }
+
+    void Scene::create_camera_uniform_buffers()
+    {
+        for (int32_t i = 0; i < m_camera_uniform_buffer.size(); i++)
+        {
+            auto ub_create_info = nvk::BufferCreateInfo()
+                .set_buffer_type(nvk::BufferType::eUniform)
+                .set_name(std::format("{} Scene Camera UB #{}", m_name, i))
+                .set_size(sizeof(ns::CameraData));
+            m_camera_uniform_buffer[i] = nvk::Buffer::create(ub_create_info, m_device);
+
+            if (active_camera())
+            {
+                auto uniform_data = active_camera()->uniform_data();
+                m_camera_uniform_buffer[i]->set_data(&uniform_data);
+            }
+        }
     }
 }

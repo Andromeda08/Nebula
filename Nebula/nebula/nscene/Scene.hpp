@@ -33,7 +33,7 @@ namespace Nebula::ns
 
         virtual void mouse_handler(const wsi::Window& window);
 
-        virtual void update(float dt);
+        virtual void update(float dt, uint32_t current_frame);
 
         void next_camera();
 
@@ -76,6 +76,8 @@ namespace Nebula::ns
     protected:
         void add_defaults();
 
+        void create_camera_uniform_buffers();
+
         void create_object_description_buffers();
 
         void create_tlas();
@@ -92,6 +94,8 @@ namespace Nebula::ns
         std::vector<Object>                             m_objects;
         std::shared_ptr<nvk::Buffer>                    m_object_descriptions_buffer;
         std::shared_ptr<nvk::TLAS>                      m_top_level_as;
+
+        std::array<std::shared_ptr<nvk::Buffer>, 2>     m_camera_uniform_buffer;
 
         const int32_t                                   m_id {nmath::rand()};
         const std::string                               m_name {"Unknown Scene"};
