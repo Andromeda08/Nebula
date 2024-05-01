@@ -41,12 +41,12 @@ namespace Nebula::nhair
                     const ns::CameraData& camera_data,
                     const vk::CommandBuffer& command_buffer) const;
 
-    public:
-        // ImGui exposed parameters
-        std::array<float, 3> hair_diffuse  = { 83.f / 255.f, 61.f / 255.f, 53.f / 255.f };
-        std::array<float, 3> hair_specular = { 106.f / 255.f, 78.f / 255.f, 56.f / 255.f };
+        void render_ui();
 
     private:
+        glm::vec4 m_hair_diffuse  = { 83.f / 255.f, 61.f / 255.f, 53.f / 255.f, 1.0f };
+        glm::vec4 m_hair_specular = { 106.f / 255.f, 78.f / 255.f, 56.f / 255.f, 1.0f };
+
         std::shared_ptr<nvk::Descriptor>          m_descriptor;
         std::shared_ptr<nvk::Framebuffer>         m_framebuffers;
         std::shared_ptr<nvk::Image>               m_depth;
