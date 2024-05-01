@@ -5,7 +5,7 @@ import shutil
 import subprocess
 
 shaders = []
-shader_dirs = ["glsl", "hair"]
+shader_dirs = ["glsl", "hair", "sbuffer"]
 bin_dir = "bin"
 target_env = "vulkan1.3"
 target_dir = "Nebula/nebula"

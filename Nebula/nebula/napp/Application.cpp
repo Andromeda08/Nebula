@@ -39,6 +39,13 @@ namespace Nebula
         m_ray_tracer    = std::make_shared<nrender::Raytracer>(m_context->device(), m_context->command_pool(), m_swapchain, m_active_scene);
         m_light_debug   = std::make_shared<nrender::DebugRender>(m_context->device(), m_swapchain, m_active_scene, m_ray_tracer->target());
         m_present       = std::make_shared<nrender::Present>(m_context->device(), m_swapchain, m_light_debug->target());
+
+        m_sbuffer       = std::make_shared<nrender::SBuffer>(m_swapchain->extent(),
+                                                             m_context->device(),
+                                                             m_context->command_pool(),
+                                                             m_swapchain,
+                                                             m_active_scene,
+                                                             m_hair_model);
     }
 
     void Application::run()
@@ -77,7 +84,7 @@ namespace Nebula
 
         if (m_rg_context->m_render_path)
         {
-            //m_rg_context->m_render_path->execute(command_buffer);
+            m_rg_context->m_render_path->execute(command_buffer);
         }
 
         nvk::ImageBarrier(m_ray_tracer->target(), m_ray_tracer->target()->state().layout, vk::ImageLayout::eGeneral).apply(command_buffer);
@@ -90,6 +97,9 @@ namespace Nebula
             nvk::ImageBarrier(m_ray_tracer->target(), vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::eGeneral).apply(command_buffer);
 
         m_present->render(s_current_frame, command_buffer);
+
+        // m_sbuffer->init(command_buffer);
+        // m_sbuffer->execute(s_current_frame, command_buffer);
 
         if (m_config.gui_enabled)
         {

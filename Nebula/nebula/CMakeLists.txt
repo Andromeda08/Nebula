@@ -87,6 +87,7 @@ add_executable(${Nebula_main}
     nrender/DebugRenderer.hpp
     nrender/Present.hpp nrender/Present.cpp
     nrender/Raytracer.hpp nrender/Raytracer.cpp
+    nrender/SBuffer.hpp
 )
 
 target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
