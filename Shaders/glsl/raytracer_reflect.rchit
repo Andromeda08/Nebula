@@ -82,7 +82,7 @@ void main() {
     vec3 diffuse  = compute_diffuse(color, L, world_normal);
     vec3 specular = vec3(0.0);
 
-    float attenuation = 1.0;
+    float attenuation = 0.25;
 
     if (dot(N, L) > 0)
     {

@@ -12,9 +12,11 @@ layout(push_constant) uniform RTPushConstant {
 
 void main() {
     LightData l = constants.light;
-    vec3 light_dir = l.light_position.xyz - ray_light.in_hit_position;
 
-    ray_light.out_light_distance  = length(light_dir);
+    vec3 light_dir = l.light_position.xyz - ray_light.in_hit_position;
+    float distance = length(light_dir);
+
+    ray_light.out_light_distance  = distance;
     ray_light.out_light_intensity = l.light_intensity.rgb;
     ray_light.out_light_dir       = normalize(light_dir);
 }

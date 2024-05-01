@@ -20,7 +20,8 @@ struct LightData {
     vec4  light_intensity;
     float spot_cutoff;
     float spot_outer_cutoff;
-    float _pad11, _pad12;
+    float light_power;
+    float _pad12;
     int   light_type;
     int   _pad13, _pad14, pad15;
 };
@@ -28,7 +29,7 @@ struct LightData {
 vec3 compute_diffuse(vec3 color, vec3 light_dir, vec3 normal) {
     float dot_nl = max(dot(normal, light_dir), 0.0);
     vec3 c = color * dot_nl;
-    c += 0.05 * color;
+    // c += 0.05 * color;
     return c;
 }
 
