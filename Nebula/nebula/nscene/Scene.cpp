@@ -64,6 +64,33 @@ namespace Nebula::ns
         plane.transform.scale = { 192.0f, 0.05f, 192.0f};
         m_objects.push_back(plane);
 
+        Object plane1 {};
+        plane1.mesh = m_meshes["cube"];
+        plane1.name = std::format("Object {}", m_objects.size() + 1);
+        plane1.transform.scale = { 192.0f, 0.05f, 192.0f};
+        plane1.transform.translate = { 96.0f, 32.0f, 0.0f };
+        plane1.transform.euler.z = glm::pi<float>() / 2.0f;
+        plane1.rt_hit_group = 0;
+        m_objects.push_back(plane1);
+
+        Object plane2 {};
+        plane2.mesh = m_meshes["cube"];
+        plane2.name = std::format("Object {}", m_objects.size() + 1);
+        plane2.transform.scale = { 192.0f, 0.05f, 192.0f};
+        plane2.transform.translate = { 0.0f, 32.0f, -96.0f };
+        plane2.transform.euler.x = glm::pi<float>() / 2.0f;
+        plane2.rt_hit_group = 1;
+        m_objects.push_back(plane2);
+
+        Object plane3 {};
+        plane3.mesh = m_meshes["cube"];
+        plane3.name = std::format("Object {}", m_objects.size() + 1);
+        plane3.transform.scale = { 192.0f, 0.05f, 192.0f};
+        plane3.transform.translate = { 0.0f, 32.0f, 96.0f };
+        plane3.transform.euler.x = glm::pi<float>() / 2.0f;
+        plane3.rt_hit_group = 1;
+        m_objects.push_back(plane3);
+
         std::vector<glm::vec4> color_pool = {
             {1.0f, 1.0f, 0.0f,  1.0f}, {0.0f, 0.8f, 1.0f,  1.0f},
             {1.0f, 0.0f, 0.25f, 1.0f}, {1.0f, 0.0f, 0.85f, 1.0f},
@@ -81,9 +108,9 @@ namespace Nebula::ns
                 .translate = glm::vec3(nmath::randf(0.0f, 192.0f) - 96.0f + nmath::randf(),
                                        nmath::randf(-0.05f, 0.0f),
                                        nmath::randf(0.0f, 192.0f) - 96.0f + nmath::randf()),
-                .scale = glm::vec3(nmath::randf(1.0f, 4.0f),
-                                   nmath::randf(1.0f, 16.0f),
-                                   nmath::randf(1.0f, 5.0f)),
+                .scale = glm::vec3(nmath::randf(1.0f, 6.0f),
+                                   nmath::randf(1.0f, 18.0f),
+                                   nmath::randf(1.0f, 8.0f)),
                 .euler = glm::vec3(nmath::randf(-30.0f, 30.0f),
                                    nmath::randf(-30.0f, 30.0f),
                                    nmath::randf(-30.0f, 30.0f)),
