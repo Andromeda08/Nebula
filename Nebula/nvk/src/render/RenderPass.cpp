@@ -174,7 +174,7 @@ namespace Nebula::nvk
         return *this;
     }
 
-    RenderPass::RenderPass(const RenderPassCreateInfo& create_info, const std::shared_ptr<Device>& device)
+    RenderPass::RenderPass(RenderPassCreateInfo& create_info, const std::shared_ptr<Device>& device)
     : m_device(device), m_render_area(create_info.render_area), m_clear_values(create_info.clear_values)
     {
         auto subpass = vk::SubpassDescription()

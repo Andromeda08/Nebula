@@ -59,7 +59,7 @@ namespace Nebula::nvk
     public:
         NVK_DISABLE_COPY(RenderPass);
 
-        RenderPass(const RenderPassCreateInfo& create_info, const std::shared_ptr<Device>& device);
+        RenderPass(RenderPassCreateInfo& create_info, const std::shared_ptr<Device>& device);
 
         void set_render_area(const vk::Rect2D& render_area);
 
