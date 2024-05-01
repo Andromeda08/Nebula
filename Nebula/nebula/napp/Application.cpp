@@ -5,9 +5,14 @@ namespace Nebula
 {
     uint32_t Application::s_current_frame = 0;
 
-    Application::Application()
+    Application::Application(const std::optional<AppParameters>& params)
     : m_config(AppConfig::load())
     {
+        if (params.has_value())
+        {
+            m_params = params.value();
+        }
+
         auto wnd_create_info = wsi::WindowCreateInfo()
             .set_size({ m_config.wnd_width, m_config.wnd_height })
             .set_fullscreen(m_config.wnd_fullscreen)
@@ -85,8 +90,8 @@ namespace Nebula
             .set_instance_layers(instance_layers)
             .set_debug_mode(true)
             .set_validation_layers(true)
-            .set_ray_tracing_features(true)
-            .set_mesh_shader_features(true)
+            .set_ray_tracing_features(m_params.ray_tracing)
+            .set_mesh_shader_features(m_params.mesh_shaders)
             .set_window(m_window);
         m_context = std::make_shared<nvk::Context>(ctx_create_info);
 

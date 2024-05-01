@@ -3,7 +3,7 @@
 namespace Nebula
 {
     HairRendererApp::HairRendererApp(const std::string& hair_model_path, bool msaa)
-    : Application()
+    : Application(std::make_optional<AppParameters>({ false, true }))
     {
         m_hair_model = std::make_shared<nhair::HairModel>((hair_model_path.empty() ? "wWavy.hair" : hair_model_path),
                                                           m_context->device(),

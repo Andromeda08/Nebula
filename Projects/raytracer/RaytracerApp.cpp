@@ -3,7 +3,7 @@
 namespace Nebula
 {
     RaytracerApp::RaytracerApp()
-    : Application()
+        : Application(std::make_optional<AppParameters>({ true, false }))
     {
         m_raytracer   = std::make_shared<nrender::Raytracer>(m_context->device(), m_context->command_pool(), m_swapchain, m_active_scene);
         m_light_debug = std::make_shared<nrender::DebugRender>(m_context->device(), m_swapchain, m_active_scene, m_raytracer->target());
