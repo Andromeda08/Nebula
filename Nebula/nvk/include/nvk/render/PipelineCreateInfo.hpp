@@ -50,6 +50,8 @@ namespace Nebula::nvk
 
         PipelineCreateInfo& add_attachment(bool enable_blending = false);
 
+        PipelineCreateInfo& add_attachment(const vk::PipelineColorBlendAttachmentState& blend_state);
+
         [[deprecated("Maybe don't use this 💀")]]
         PipelineCreateInfo& set_attachment_count(uint32_t value);
 

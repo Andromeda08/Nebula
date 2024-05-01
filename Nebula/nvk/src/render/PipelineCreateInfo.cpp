@@ -52,6 +52,12 @@ namespace Nebula::nvk
         return *this;
     }
 
+    PipelineCreateInfo& PipelineCreateInfo::add_attachment(const vk::PipelineColorBlendAttachmentState& blend_state)
+    {
+        m_pipeline_state.attachment_states.push_back(blend_state);
+        return *this;
+    }
+
     PipelineCreateInfo& PipelineCreateInfo::set_attachment_count(uint32_t value)
     {
         m_pipeline_state.attachment_states.clear();
