@@ -31,8 +31,8 @@ add_library("nvk"
     src/rt/ShaderBindingTable.cpp
 )
 
-target_link_libraries("nvk" PRIVATE ${Vulkan_LIBRARIES})
-target_include_directories("nvk" PRIVATE ${Vulkan_INCLUDE_DIRS} "../nlog" "./include/nvk")
-target_compile_definitions ("nvk" PRIVATE VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
+target_link_libraries("nvk" PUBLIC ${Vulkan_LIBRARIES})
+target_include_directories("nvk" PUBLIC ${Vulkan_INCLUDE_DIRS} "../nlog" "./include/nvk")
+target_compile_definitions ("nvk" PUBLIC VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
     NVK_DEBUG
     NLOG_COLORED NLOG_PRINT_EXCEPTIONS)

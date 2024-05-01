@@ -13,14 +13,14 @@ set("IMGUI_DIR" "${3RD}/imgui")
 set("IMNODES_DIR" "${3RD}/imnodes")
 set("NLOG" "../nlog")
 
-add_executable(${Nebula_main}
+add_library(${Nebula_main}
     ${3RD}/cy/cyCore.h ${3RD}/cy/cyHairFile.h
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
     ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui.h ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMNODES_DIR}/imnodes.cpp
 
-    main.cpp
+    # main.cpp
 
     ncommon/Size2D.hpp
 
@@ -89,8 +89,8 @@ add_executable(${Nebula_main}
     nrender/Raytracer.hpp nrender/Raytracer.cpp
 )
 
-target_link_libraries(${Nebula_main} PRIVATE ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
-target_include_directories(${Nebula_main} PRIVATE
+target_link_libraries(${Nebula_main} PUBLIC ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
+target_include_directories(${Nebula_main} PUBLIC
     ${Vulkan_INCLUDE_DIRS}
     "../nvk/include"
     "${3RD}/cy"
@@ -102,12 +102,10 @@ target_include_directories(${Nebula_main} PRIVATE
     "${IMGUI_DIR}/backends"
     "${IMNODES_DIR}"
     "${NLOG}")
-target_compile_definitions (${Nebula_main} PRIVATE
+target_compile_definitions (${Nebula_main} PUBLIC
     NBL_DEBUG
-    NVK_DEBUG
     -DImTextureID=ImU64
     IMGUI_DEFINE_MATH_OPERATORS
     GLFW_INCLUDE_VULKAN
     UUID_SYSTEM_GENERATOR
-    VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
     NLOG_COLORED NLOG_PRINT_EXCEPTIONS)
