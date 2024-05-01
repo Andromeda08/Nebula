@@ -15,3 +15,5 @@ add_subdirectory(ThirdParty/stduuid)
 
 # Nebula
 add_subdirectory(Nebula)
+
+add_subdirectory(Projects)
