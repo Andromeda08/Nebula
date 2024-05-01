@@ -23,7 +23,8 @@ namespace Nebula::nrender
         glm::vec4 light_intensity { 0.65f, 0.65f, 0.65f, 1.0f };
         float     spot_cutoff {0.0f};
         float     spot_outer_cutoff {0.0f};
-        float     _pad11 {}, _pad12 {};
+        float     light_power {1.0f};
+        float     _pad12 {};
         int32_t   light_type {0};
         int32_t   _pad13 {}, _pad14 {}, _pad15 {};
     };
