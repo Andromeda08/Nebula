@@ -69,7 +69,7 @@ namespace Nebula
         }
 
         float dt = delta_time();
-        m_active_scene->update(dt);
+        m_active_scene->update(dt, s_current_frame);
 
         update();
 

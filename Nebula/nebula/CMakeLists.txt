@@ -21,6 +21,7 @@ add_library(${Nebula_main}
     ${IMNODES_DIR}/imnodes.cpp
 
     # main.cpp
+    _impl.cpp
 
     ncommon/Size2D.hpp
 
@@ -84,9 +85,12 @@ add_library(${Nebula_main}
     nrg/compiler/factory/ResourceFactory.hpp nrg/compiler/factory/ResourceFactory.cpp
     nrg/compiler/optimized/ResourceOptimizer.hpp nrg/compiler/optimized/ResourceOptimizer.cpp
     nrg/compiler/optimized/OptimizedCompiler.hpp nrg/compiler/optimized/OptimizedCompiler.cpp
+
     nrender/DebugRenderer.hpp
     nrender/Present.hpp nrender/Present.cpp
     nrender/Raytracer.hpp nrender/Raytracer.cpp
+#    nscene/GTLFScene.hpp
+#    nscene/DefaultScene.hpp
 )
 
 target_link_libraries(${Nebula_main} PUBLIC ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
@@ -97,7 +101,9 @@ target_include_directories(${Nebula_main} PUBLIC
     "${3RD}/glm"
     "${3RD}/glfw"
     "${3RD}/json"
+    "${3RD}/stb"
     "${3RD}/stduuid/include"
+    "${3RD}/tinygltf"
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
     "${IMNODES_DIR}"

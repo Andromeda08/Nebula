@@ -17,6 +17,6 @@ void main() {
     float distance = length(light_dir);
 
     ray_light.out_light_distance  = distance;
-    ray_light.out_light_intensity = l.light_intensity.rgb;
+    ray_light.out_light_intensity = l.light_intensity.rgb * l.light_power / (distance * distance);
     ray_light.out_light_dir       = normalize(light_dir);
 }

@@ -16,3 +16,6 @@
 [submodule "ThirdParty/json"]
 	path = ThirdParty/json
 	url = https://github.com/nlohmann/json.git
+[submodule "ThirdParty/tinygltf"]
+	path = ThirdParty/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

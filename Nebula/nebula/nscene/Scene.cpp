@@ -62,6 +62,7 @@ namespace Nebula::ns
         m_lights.push_back(light);
 
         // Default objects [n = 1024 + 1]
+        /*
         Object plane {};
         plane.mesh = m_meshes["cube"];
         plane.name = std::format("Object {}", m_objects.size() + 1);
@@ -112,22 +113,47 @@ namespace Nebula::ns
                 .translate = glm::vec3(nmath::randf(0.0f, 192.0f) - 96.0f + nmath::randf(),
                                        nmath::randf(-0.05f, 0.0f),
                                        nmath::randf(0.0f, 192.0f) - 96.0f + nmath::randf()),
-                .scale = glm::vec3(nmath::randf(1.0f, 6.0f),
-                                   nmath::randf(1.0f, 18.0f),
-                                   nmath::randf(1.0f, 8.0f)),
+//                .scale = glm::vec3(nmath::randf(1.0f, 6.0f),
+//                                   nmath::randf(1.0f, 18.0f),
+//                                   nmath::randf(1.0f, 8.0f)),
+                .scale = glm::vec3(1.0f),
                 .euler = glm::vec3(nmath::randf(-30.0f, 30.0f),
                                    nmath::randf(-30.0f, 30.0f),
                                    nmath::randf(-30.0f, 30.0f)),
             };
 
             Object object {
-                .mesh         = m_meshes["cube"],
+                .mesh         = m_meshes["sphere"],
                 .name         = std::format("Object {}", m_objects.size() + 1),
                 .rt_hit_group = static_cast<uint32_t>(nmath::rand() % 3),
                 .solid_color  = color_pool[dist(random)],
                 .transform    = transform,
             };
             m_objects.push_back(object);
+        }*/
+
+        Object plane {};
+        plane.mesh = m_meshes["cube"];
+        plane.name = std::format("Test Plane");
+        plane.rt_hit_group = 1;
+        plane.transform.translate = { 0.0f, -5.0f, 0.0f };
+        plane.transform.scale = { 192.0f, 0.05f, 192.0f};
+        m_objects.push_back(plane);
+
+        for (int32_t i = 0; i < 1024; i++)
+        {
+            Object cube {};
+            cube.mesh = m_meshes["cube"];
+            cube.name = std::format("Test Cube");
+            cube.rt_hit_group = 2;
+            cube.solid_color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+            cube.transform.translate = glm::vec3(nmath::randf(0.0f, 192.0f) - 96.0f + nmath::randf(),
+                                                 nmath::randf(0.0f, 8.0f),
+                                                 nmath::randf(0.0f, 192.0f) - 96.0f + nmath::randf());
+            cube.transform.euler = glm::vec3(nmath::randf(-30.0f, 30.0f),
+                                             nmath::randf(-30.0f, 30.0f),
+                                             nmath::randf(-30.0f, 30.0f));
+            m_objects.push_back(cube);
         }
     }
 
