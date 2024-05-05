@@ -33,7 +33,12 @@ namespace Nebula::ns
     {
         auto uniform_data = active_camera()->uniform_data();
         m_camera_uniform_buffer[current_frame]->set_data(&uniform_data);
-        // update_tlas();
+    }
+
+    void Scene::update(float dt, uint32_t current_frame, const vk::CommandBuffer& command_buffer)
+    {
+        update_tlas(command_buffer);
+        update(dt, current_frame);
     }
 
     void Scene::add_defaults()

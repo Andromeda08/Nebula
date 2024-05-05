@@ -8,7 +8,7 @@ shaders = []
 shader_dirs = ["glsl", "hair"]
 bin_dir = "bin"
 target_env = "vulkan1.3"
-target_dir = "Nebula/nebula"
+target_dirs = ["Nebula/nebula", "Projects/hair", "Projects/raytracer"]
 
 
 def collect_shaders():
@@ -70,13 +70,15 @@ def compile_shaders():
 def copy_shaders():
     compiled_shaders = glob.glob(f"bin/*")
     for shader in compiled_shaders:
-        shutil.copy2(shader, f"../cmake-build-debug/{target_dir}")
+        for target_dir in target_dirs:
+            shutil.copy2(shader, f"../cmake-build-debug/{target_dir}")
 
-    msvc_build_exists = os.path.exists(f"../out/build/x64-debug/{target_dir}")
-    if msvc_build_exists:
-        for shader in compiled_shaders:
-            shutil.copy2(shader, f"../out/build/x64-debug/{target_dir}")
-    print(f"Copied {len(compiled_shaders)} shader(s) to build directory")
+    # msvc_build_exists = os.path.exists(f"../out/build/x64-debug/")
+    # if msvc_build_exists:
+    #     for shader in compiled_shaders:
+    #         for target_dir in target_dirs:
+    #             shutil.copy2(shader, f"../out/build/x64-debug/{target_dir}")
+    print(f"Copied shader(s) to build directory")
 
 
 compile_shaders()

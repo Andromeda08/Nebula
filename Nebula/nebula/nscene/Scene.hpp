@@ -35,9 +35,10 @@ namespace Nebula::ns
 
         virtual void update(float dt, uint32_t current_frame);
 
+        virtual void update(float dt, uint32_t current_frame, const vk::CommandBuffer& command_buffer);
+
         void next_camera();
 
-    public:
         const std::shared_ptr<Camera>& active_camera() const
         {
             return m_cameras[m_active_camera];
