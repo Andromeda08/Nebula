@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include <iostream>
+#include <nscene/DefaultScene.hpp>
 
 namespace Nebula
 {
@@ -25,8 +26,9 @@ namespace Nebula
 
         if (m_params.default_scene)
         {
-            m_active_scene = std::make_shared<ns::Scene>(Size2D { m_swapchain->extent().width, m_swapchain->extent().height },
-                                                         "Default Scene", m_context->command_pool(), m_context->device(), true);
+            m_active_scene = std::make_shared<ns::DefaultScene>(glm::ivec2(m_swapchain->extent().width, m_swapchain->extent().height),
+                                                                m_context->command_pool(), m_context->device());
+            m_active_scene->init();
             m_scenes.push_back(m_active_scene);
         }
 

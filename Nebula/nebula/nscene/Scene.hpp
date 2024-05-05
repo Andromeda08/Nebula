@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <ncommon/Size2D.hpp>
+#include <glm/glm.hpp>
 #include <nmath/Utility.hpp>
 #include <nscene/Camera.hpp>
 #include <nscene/Light.hpp>
@@ -21,13 +21,14 @@ namespace Nebula::ns
     class Scene
     {
     public:
-        Scene(const Size2D& camera_size,
+        Scene(const glm::ivec2& camera_size,
               const std::string& name,
               const std::shared_ptr<nvk::CommandPool>& command_pool,
-              const std::shared_ptr<nvk::Device>& device,
-              bool with_defaults = false);
+              const std::shared_ptr<nvk::Device>& device);
 
         virtual ~Scene() = default;
+
+        void init();
 
         virtual void key_handler(const wsi::Window& window);
 
@@ -75,6 +76,8 @@ namespace Nebula::ns
         }
 
     protected:
+        virtual void scene_init() {}
+
         void add_defaults();
 
         void create_camera_uniform_buffers();
@@ -89,7 +92,7 @@ namespace Nebula::ns
 
         uint32_t                                        m_active_camera {0};
         std::vector<std::shared_ptr<Camera>>            m_cameras;
-        Size2D                                          m_camera_size;
+        glm::ivec2                                      m_camera_size;
         std::vector<Light>                              m_lights;
         std::map<std::string, std::shared_ptr<Mesh>>    m_meshes;
         std::vector<Object>                             m_objects;
