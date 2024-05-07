@@ -24,7 +24,5 @@ namespace Nebula
         std::shared_ptr<nrender::Raytracer>   m_raytracer;
         std::shared_ptr<nrender::Present>     m_present;
         std::shared_ptr<nrender::DebugRender> m_light_debug;
-
-        bool m_render_debug_lights {true};
     };
 }

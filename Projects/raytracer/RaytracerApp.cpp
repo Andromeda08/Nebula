@@ -34,12 +34,6 @@ namespace Nebula
 
     void RaytracerApp::render_ui()
     {
-//        ImGui::Begin("Options");
-//        {
-//            ImGui::Checkbox("Render Lights", &m_render_debug_lights);
-//        }
-//        ImGui::End();
-
         m_raytracer->render_ui();
     }
 }
