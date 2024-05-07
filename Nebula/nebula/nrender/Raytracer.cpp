@@ -100,9 +100,9 @@ namespace Nebula::nrender
     void Raytracer::render_ui()
     {
         ImGui::Begin("Raytracer Parameters");
-        ImGui::SliderFloat3("Light Position", glm::value_ptr(m_push_constant.light_position), -50.0f, 50.0f);
+        ImGui::SliderFloat3("Light Position", glm::value_ptr(m_push_constant.light_position), -100.0f, 100.0f);
         ImGui::SliderFloat3("Light Color", glm::value_ptr(m_push_constant.light_intensity), 0.0f, 1.0f);
-        ImGui::SliderFloat("Light Intensity", &m_push_constant.light_power, 0.0f, 500.0f);
+        ImGui::SliderFloat("Light Intensity", &m_push_constant.light_power, 0.0f, 1000.0f);
         ImGui::SliderInt("Light Type", &m_push_constant.light_type, 0, 1);
         ImGui::End();
     }

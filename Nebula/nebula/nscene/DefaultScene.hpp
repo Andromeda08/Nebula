@@ -40,7 +40,7 @@ namespace Nebula::ns
 
             // Default lights
             Light light {
-                .position = glm::vec4(-12.0f, 10, 5.0f, 1.0f),
+                .position = glm::vec4(-12.0f, 20.0f, 5.0f, 1.0f),
                 .color = glm::vec4(1.0f),
             };
             m_lights.push_back(light);
