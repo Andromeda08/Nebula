@@ -140,9 +140,7 @@ namespace Nebula::nvk
             {
                 throw std::runtime_error(std::format("Failed to create Framebuffer #{}", i));
             }
-            m_device->name_object(std::format("[FB] {} #{}", create_info.name, i),
-                                  (uint64_t) m_framebuffers[i].operator VkFramebuffer(),
-                                  vk::ObjectType::eFramebuffer);
+            m_device->name_object(m_framebuffers[i], std::format("{} #{}", create_info.name, i), vk::ObjectType::eFramebuffer);
         }
     }
 

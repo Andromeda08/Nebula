@@ -70,7 +70,7 @@ namespace Nebula::nhair
 
         void draw(const vk::CommandBuffer& command_buffer) const;
 
-        void update(const vk::CommandBuffer& command_buffer);
+        void update();
 
         int32_t vertex_count() const { return static_cast<int32_t>(m_vertices.size()); }
 

@@ -39,10 +39,8 @@ namespace Nebula::nvk
     class Allocation
     {
     public:
-        Allocation(const std::variant<vk::Buffer, vk::Image>& user,
-                   const vk::DeviceSize& device_size,
-                   const vk::Device& device,
-                   const uint32_t id);
+        Allocation(const std::variant<vk::Buffer, vk::Image>& user, const vk::DeviceSize& device_size,
+                   const vk::Device& device, uint32_t id);
 
         void bind();
 
@@ -74,9 +72,9 @@ namespace Nebula::nvk
     struct MemoryUsage
     {
         float budget;
-        std::string budget_coeff;
+        std::string budget_coefficient;
         float usage;
-        std::string usage_coeff;
+        std::string usage_coefficient;
     };
 
     class Device
@@ -89,6 +87,12 @@ namespace Nebula::nvk
         std::shared_ptr<Allocation> allocate_memory(const AllocationInfo& allocation_info);
 
         void name_object(const std::string& name, uint64_t handle, vk::ObjectType type) const;
+
+        template <typename T>
+        void name_object(const T& handle, const std::string& name, vk::ObjectType type) const
+        {
+            name_object(name, uint64_t(static_cast<T::CType>(handle)), type);
+        }
 
         void wait_idle() const { m_device.waitIdle(); }
 
@@ -111,7 +115,7 @@ namespace Nebula::nvk
 
         uint32_t find_memory_heap_index(uint32_t filter, vk::MemoryPropertyFlags property_flags) const;
 
-        std::tuple<float, std::string> _convert_memory_size(const uint64_t input_memory) const;
+        std::tuple<float, std::string> _convert_memory_size(uint64_t input_memory) const;
 
         vk::PhysicalDevice              m_physical_device;
         vk::PhysicalDeviceProperties    m_physical_device_properties;

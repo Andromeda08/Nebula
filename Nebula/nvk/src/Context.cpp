@@ -37,17 +37,13 @@ namespace Nebula::nvk
 
     void Context::create_debug_messenger()
     {
-        auto severity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
-                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose;
+        using Severity = vk::DebugUtilsMessageSeverityFlagBitsEXT;
+        auto severity = Severity::eInfo | Severity::eWarning | Severity::eError | Severity::eVerbose;
 
-        auto type = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-                    vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
-                    vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
+        using Type = vk::DebugUtilsMessageTypeFlagBitsEXT;
+        auto type = Type::eGeneral | Type::ePerformance | Type::eValidation;
 
-        vk::DebugUtilsMessengerCreateInfoEXT create_info;
-        create_info
+        auto create_info = vk::DebugUtilsMessengerCreateInfoEXT()
             .setMessageSeverity(severity)
             .setMessageType(type)
             .setPfnUserCallback(Utility::debug_callback);

@@ -108,7 +108,7 @@ namespace Nebula::nhair
         command_buffer.drawMeshTasksEXT(m_gx, 1, 1);
     }
 
-    void HairModel::update(const vk::CommandBuffer& command_buffer)
+    void HairModel::update()
     {
         m_current_position_buffer = (m_current_position_buffer + 1) % 2;
     }

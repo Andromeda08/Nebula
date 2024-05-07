@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <ncommon/Size2D.hpp>
+#include <glm/glm.hpp>
 #include <nmath/Utility.hpp>
 #include <nscene/Camera.hpp>
 #include <nscene/Light.hpp>
@@ -21,23 +21,25 @@ namespace Nebula::ns
     class Scene
     {
     public:
-        Scene(const Size2D& camera_size,
+        Scene(const glm::ivec2& camera_size,
               const std::string& name,
               const std::shared_ptr<nvk::CommandPool>& command_pool,
-              const std::shared_ptr<nvk::Device>& device,
-              bool with_defaults = false);
+              const std::shared_ptr<nvk::Device>& device);
 
         virtual ~Scene() = default;
+
+        void init();
 
         virtual void key_handler(const wsi::Window& window);
 
         virtual void mouse_handler(const wsi::Window& window);
 
-        virtual void update(float dt);
+        virtual void update(float dt, uint32_t current_frame);
+
+        virtual void update(float dt, uint32_t current_frame, const vk::CommandBuffer& command_buffer);
 
         void next_camera();
 
-    public:
         const std::shared_ptr<Camera>& active_camera() const
         {
             return m_cameras[m_active_camera];
@@ -74,7 +76,9 @@ namespace Nebula::ns
         }
 
     protected:
-        void add_defaults();
+        virtual void scene_init() {}
+
+        void create_camera_uniform_buffers();
 
         void create_object_description_buffers();
 
@@ -86,12 +90,14 @@ namespace Nebula::ns
 
         uint32_t                                        m_active_camera {0};
         std::vector<std::shared_ptr<Camera>>            m_cameras;
-        Size2D                                          m_camera_size;
+        glm::ivec2                                      m_camera_size;
         std::vector<Light>                              m_lights;
         std::map<std::string, std::shared_ptr<Mesh>>    m_meshes;
         std::vector<Object>                             m_objects;
         std::shared_ptr<nvk::Buffer>                    m_object_descriptions_buffer;
         std::shared_ptr<nvk::TLAS>                      m_top_level_as;
+
+        std::array<std::shared_ptr<nvk::Buffer>, 2>     m_camera_uniform_buffer;
 
         const int32_t                                   m_id {nmath::rand()};
         const std::string                               m_name {"Unknown Scene"};

@@ -33,9 +33,7 @@ namespace Nebula::nvk
             throw nlog::make_exception("Failed to create Image \"{}\" ({})", m_name, to_string(result));
         }
 
-        m_device->name_object(std::format("{}: Image", m_name),
-                              (uint64_t)m_image.operator VkImage(),
-                              vk::ObjectType::eImage);
+        m_device->name_object(m_image, std::format("{} [Image]", m_name), vk::ObjectType::eImage);
 
         auto allocation_info = AllocationInfo()
             .set_image(m_image)
@@ -56,9 +54,7 @@ namespace Nebula::nvk
             throw nlog::make_exception("Failed to create ImageView \"{}\" ({})", m_name, to_string(result));
         }
 
-        m_device->name_object(std::format("{}: ImageView", m_name),
-                              (uint64_t)m_image_view.operator VkImageView(),
-                              vk::ObjectType::eImageView);
+        m_device->name_object(m_image_view, std::format("{} [ImageView]", m_name), vk::ObjectType::eImageView);
 
         if (create_info.with_sampler)
         {
@@ -84,9 +80,7 @@ namespace Nebula::nvk
                 throw nlog::make_exception("Failed to create Sampler for Image \"{}\" ({})", m_name, to_string(result));
             }
 
-            m_device->name_object(std::format("{}: Sampler", m_name),
-                                  (uint64_t) m_sampler.operator VkSampler(),
-                                  vk::ObjectType::eSampler);
+            m_device->name_object(m_sampler, std::format("{} [Sampler]", m_name), vk::ObjectType::eSampler);
         }
 
         #ifdef NVK_VERBOSE_EXTRA

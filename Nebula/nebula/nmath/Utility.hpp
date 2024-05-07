@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <glm/vec4.hpp>
 
 namespace Nebula::nmath
 {
@@ -31,5 +32,10 @@ namespace Nebula::nmath
                                                      : std::uniform_real_distribution(low, high);
 
         return dist(Random::s_generator);
+    }
+
+    inline static glm::vec4 rand_color()
+    {
+        return { randf(), randf(), randf(), 1.0f };
     }
 }

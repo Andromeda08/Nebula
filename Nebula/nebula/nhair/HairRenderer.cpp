@@ -1,5 +1,7 @@
 #include "HairRenderer.hpp"
+#include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <vulkan/vulkan.hpp>
 #include <nlog/nlog.hpp>
 
@@ -136,8 +138,8 @@ namespace Nebula::nhair
             HairConstants push_constant {
                 .model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1, 0, 0)),
                 .buffer_lengths = glm::ivec4(hair_model.vertex_count(), hair_model.strand_count(), 0, 0),
-                .hair_diffuse = glm::vec4(hair_diffuse[0], hair_diffuse[1], hair_diffuse[2], 1.0f),
-                .hair_specular = glm::vec4(hair_specular[0], hair_specular[1], hair_specular[2], 1.0f),
+                .hair_diffuse = m_hair_diffuse,
+                .hair_specular = m_hair_specular,
                 .vertex_buffer = buffer_addresses.vertex_buffer,
                 .strand_descriptions_buffers = buffer_addresses.strand_descriptions_buffer,
             };
@@ -148,5 +150,13 @@ namespace Nebula::nhair
         });
 
         command_buffer.endDebugUtilsLabelEXT();
+    }
+
+    void HairRenderer::render_ui()
+    {
+        ImGui::Begin("Hair Parameters");
+        ImGui::SliderFloat3("Diffuse", glm::value_ptr(m_hair_diffuse), 0.0f, 1.0f);
+        ImGui::SliderFloat3("Specular", glm::value_ptr(m_hair_specular), 0.0f, 1.0f);
+        ImGui::End();
     }
 }

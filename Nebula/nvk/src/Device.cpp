@@ -108,8 +108,9 @@ namespace Nebula::nvk
 
     void Device::name_object(const std::string& name, uint64_t handle, vk::ObjectType type) const
     {
+        std::string l_name = name.empty() ? "Unknown" : name;
         auto name_info = vk::DebugUtilsObjectNameInfoEXT()
-            .setPObjectName(name.c_str())
+            .setPObjectName(l_name.c_str())
             .setObjectHandle(handle)
             .setObjectType(type);
 
@@ -204,14 +205,14 @@ namespace Nebula::nvk
         auto q0 = QueueCreateInfo()
             .set_queue_family_index(q_cg.family_index)
             .set_queue_index(0)
-            .set_name("Queue [CG]");
+            .set_name("Queue [Compute, Graphics]");
         m_queue_general = std::make_unique<Queue>(q0, m_device);
         name_object(q0.name, (uint64_t) m_queue_general->queue.operator VkQueue(), vk::ObjectType::eQueue);
 
         auto q1 = QueueCreateInfo()
             .set_queue_family_index(q_async_c.family_index)
             .set_queue_index(0)
-            .set_name("Queue [C]");
+            .set_name("Queue [Compute]");
         m_queue_async_compute = std::make_unique<Queue>(q1, m_device);
         name_object(q1.name, (uint64_t) m_queue_async_compute->queue.operator VkQueue(), vk::ObjectType::eQueue);
     }
@@ -250,9 +251,9 @@ namespace Nebula::nvk
 
         return {
             .budget = mb,
-            .budget_coeff = mb_m,
+            .budget_coefficient = mb_m,
             .usage = mu,
-            .usage_coeff = mu_m,
+            .usage_coefficient = mu_m,
         };
     }
 
