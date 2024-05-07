@@ -78,8 +78,6 @@ namespace Nebula::ns
     protected:
         virtual void scene_init() {}
 
-        void add_defaults();
-
         void create_camera_uniform_buffers();
 
         void create_object_description_buffers();

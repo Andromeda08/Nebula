@@ -15,7 +15,10 @@ namespace Nebula::ns
     {
         scene_init();
 
-        create_object_description_buffers();
+        if (!m_objects.empty())
+        {
+            create_object_description_buffers();
+        }
 
         if (m_device->is_raytracing_enabled())
         {
