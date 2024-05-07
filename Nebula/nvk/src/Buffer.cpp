@@ -13,10 +13,10 @@ namespace Nebula::nvk
         switch (buffer_type)
         {
             using enum BufferType;
-            case eAccelerationStructureStorage: return "AS";
+            case eAccelerationStructureStorage: return "AccelerationStructure";
             case eCustom:                       return "Custom";
             case eIndex:                        return "Index";
-            case eShaderBindingTable:           return "SBT";
+            case eShaderBindingTable:           return "ShaderBindingTable";
             case eStaging:                      return "Staging";
             case eStorage:                      return "Storage";
             case eUniform:                      return "Uniform";
@@ -50,9 +50,7 @@ namespace Nebula::nvk
         auto address_info = vk::BufferDeviceAddressInfo().setBuffer(m_buffer);
         m_address = m_device->handle().getBufferAddress(&address_info);
 
-        m_device->name_object(std::format("{}: {} Buffer", m_name, to_string(m_type)),
-                              (uint64_t)m_buffer.operator VkBuffer(),
-                              vk::ObjectType::eBuffer);
+        m_device->name_object(m_buffer, std::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::eBuffer);
 
         #ifdef NVK_VERBOSE_EXTRA
         if (m_type != BufferType::eStaging) {

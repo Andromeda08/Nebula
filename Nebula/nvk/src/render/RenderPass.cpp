@@ -209,9 +209,7 @@ namespace Nebula::nvk
             throw nlog::make_exception("Failed to create vk::RenderPass {}: {}", create_info.name, to_string(result));
         }
 
-        m_device->name_object(std::format("[RP] {}", create_info.name),
-                              (uint64_t) m_render_pass.operator VkRenderPass(),
-                              vk::ObjectType::eRenderPass);
+        m_device->name_object(m_render_pass, create_info.name, vk::ObjectType::eRenderPass);
 
         m_begin_info = vk::RenderPassBeginInfo()
             .setRenderArea(m_render_area)

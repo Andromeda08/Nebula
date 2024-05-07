@@ -13,10 +13,7 @@ namespace Nebula::nvk
     : m_device(device), m_command_pool(command_pool), m_name(create_info.name)
     {
         build(create_info.instance_info);
-
-        m_device->name_object(m_name,
-                              (uint64_t) m_tlas.operator VkAccelerationStructureKHR(),
-                              vk::ObjectType::eAccelerationStructureKHR);
+        m_device->name_object(m_tlas, std::format("{} [Top-Level]", m_name), vk::ObjectType::eAccelerationStructureKHR);
 
         #ifdef NVK_VERBOSE_EXTRA
         std::cout << nlog::fmt_info("Created Top-Level AS: {}", m_create_info.name) << std::endl;
@@ -59,9 +56,6 @@ namespace Nebula::nvk
         m_instance_data = Buffer::create(instance_create_info, m_device);
 
         staging_buffer->set_data(instances.data());
-//        m_command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
-//            staging_buffer->copy_to_buffer(*m_instance_data, command_buffer);
-//        });
         #pragma endregion
 
         // Acceleration Structure
@@ -118,10 +112,6 @@ namespace Nebula::nvk
         auto build_range_info = vk::AccelerationStructureBuildRangeInfoKHR()
             .setPrimitiveCount(m_instance_count);
         std::vector<const vk::AccelerationStructureBuildRangeInfoKHR*> build_ranges = { &build_range_info };
-
-//        m_command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
-//            command_buffer.buildAccelerationStructuresKHR(1, &build_geometry_info, build_ranges.data());
-//        });
         #pragma endregion
 
         m_command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer) {

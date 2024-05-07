@@ -33,8 +33,8 @@ namespace Nebula::ngui
             {
                 ImGui::Begin("Metrics");
                 ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
-                ImGui::Text("Total Memory Usage: %.2f %s", mem_usage.usage, mem_usage.usage_coeff.c_str());
-                ImGui::Text("Available Memory Budget: %.2f %s", mem_usage.budget, mem_usage.budget_coeff.c_str());
+                ImGui::Text("Total Memory Usage: %.2f %s", mem_usage.usage, mem_usage.usage_coefficient.c_str());
+                ImGui::Text("Available Memory Budget: %.2f %s", mem_usage.budget, mem_usage.budget_coefficient.c_str());
                 ImGui::End();
 
                 lambda();

@@ -93,8 +93,7 @@ namespace Nebula::ns
     {
         if (!m_device->is_raytracing_enabled()) return;
         auto instances = collect_tlas_instances();
-        auto create_info = nvk::TLASCreateInfo { instances, std::format("{} Top-Level AS", m_name) };
-        m_top_level_as = nvk::TLAS::create(create_info, m_device, m_command_pool);
+        m_top_level_as = nvk::TLAS::create({ instances, m_name }, m_device, m_command_pool);
     }
 
     void Scene::update_tlas(const vk::CommandBuffer& command_buffer)

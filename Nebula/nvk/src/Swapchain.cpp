@@ -250,6 +250,9 @@ namespace Nebula::nvk
             {
                 throw nlog::make_exception("Failed to create vk::ImageView #{} for Swapchain", i);
             }
+
+            m_device->name_object(m_images[i], std::format("Swapchain #{}", i), vk::ObjectType::eImage);
+            m_device->name_object(m_image_views[i], std::format("Swapchain ImageView #{}", i), vk::ObjectType::eImageView);
         }
     }
 

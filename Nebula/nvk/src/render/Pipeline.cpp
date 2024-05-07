@@ -39,13 +39,9 @@ namespace Nebula::nvk
                 throw nlog::make_exception("Failed to create Pipeline {}: Pipeline type not specified", m_name);
         }
 
-        m_device->name_object(std::format("{}: {} Pipeline", m_name, to_string(m_type)),
-                              (uint64_t) m_pipeline.operator VkPipeline(),
-                              vk::ObjectType::ePipeline);
+        m_device->name_object(m_pipeline, std::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::ePipeline);
 
-        m_device->name_object(std::format("{}: PipelineLayout", m_name),
-                              (uint64_t) m_pipeline_layout.operator VkPipelineLayout(),
-                              vk::ObjectType::ePipelineLayout);
+        m_device->name_object(m_pipeline_layout, m_name, vk::ObjectType::ePipelineLayout);
 
         #ifdef NVK_VERBOSE
         std::cout << nlog::fmt_info("Created {} Pipeline: {}", to_string(m_type), m_name) << std::endl;

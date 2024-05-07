@@ -55,7 +55,7 @@ namespace Nebula::ns
                 .set_vertex_stride(sizeof(Vertex))
                 .set_index_buffer(m_index_buffer)
                 .set_index_count(m_index_count)
-                .set_name(std::format("{} BLAS", m_name));
+                .set_name(m_name);
 
             m_blas = nvk::BLAS::create(blas_create_info, device, command_pool);
         }

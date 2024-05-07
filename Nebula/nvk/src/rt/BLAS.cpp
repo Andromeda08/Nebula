@@ -80,9 +80,7 @@ namespace Nebula::nvk
            command_buffer.buildAccelerationStructuresKHR(1, &build_geometry_info, build_ranges.data());
         });
 
-        m_device->name_object(m_create_info.name,
-                              (uint64_t) m_blas.operator VkAccelerationStructureKHR(),
-                              vk::ObjectType::eAccelerationStructureKHR);
+        m_device->name_object(m_blas, std::format("{} [Bottom-Level]", m_create_info.name), vk::ObjectType::eAccelerationStructureKHR);
 
         #ifdef NVK_VERBOSE_EXTRA
         std::cout << nlog::fmt_info("Created Bottom-Level AS: {}", m_create_info.name) << std::endl;

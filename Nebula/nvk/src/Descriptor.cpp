@@ -164,7 +164,7 @@ namespace Nebula::nvk
         for (size_t i = 0; i < m_sets.size(); i++)
         {
             m_device->name_object(
-                std::format("{}: DescriptorSet #{}", m_name, i),
+                std::format("{} Set #{}", m_name, i),
                 (uint64_t) m_sets[i].operator VkDescriptorSet(),
                 vk::ObjectType::eDescriptorSet);
         }
