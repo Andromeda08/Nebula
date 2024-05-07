@@ -32,17 +32,6 @@ namespace Nebula
             m_scenes.push_back(m_active_scene);
         }
 
-        if (m_scenes.empty())
-        {
-            throw std::runtime_error("No scenes found, your application needs at least one scene to run");
-        }
-
-        if (!m_active_scene)
-        {
-            m_active_scene = m_scenes[0];
-            std::cout << nlog::fmt_warning("No active scene set, using the first available scene.") << std::endl;
-        }
-
         if (m_params.render_graph)
         {
             m_rg_context = std::make_shared<nrg::Context>(m_scenes, m_context->device(), m_context->command_pool(), m_swapchain);
