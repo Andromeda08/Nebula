@@ -62,7 +62,7 @@ namespace Nebula::nrg
             bool was_inserted = false;
             for (auto& timeline: gen_resources) {
                 Range current_range = timeline.get_usage_range();
-                std::bitset<5> flags;
+                std::bitset<4> flags;
                 {
                     flags[0] = !current_range.overlaps(incoming_range);
                     flags[1] = r.optimizable;
