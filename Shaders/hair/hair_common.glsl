@@ -20,6 +20,11 @@ struct Mesh {
     vec2 uv;
 };
 
+struct MeshData {
+    vec4 world_position;
+    vec4 world_tangent;
+};
+
 struct Vertex {
     vec4 position;
 };
