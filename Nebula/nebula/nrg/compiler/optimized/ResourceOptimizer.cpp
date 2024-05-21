@@ -4,6 +4,7 @@
 #include <format>
 #include <fstream>
 #include <queue>
+#include <nlohmann/json.hpp>
 
 namespace Nebula::nrg
 {
@@ -236,5 +237,59 @@ namespace Nebula::nrg
         }
 
         return usage_points;
+    }
+
+    void ResourceOptimizer::export_json_result(const ResourceOptimizerResult& result)
+    {
+        using json = nlohmann::json;
+        json out = {
+            {"statistics", {
+                {"resource_count", result.original_resources.size()},
+                {"non_optimizable", result.non_optimizable_count},
+                {"optimized_count", result.resources.size()},
+                {"reduction", result.original_resource_count - result.optimized_resource_count},
+                {"time_us", result.optimization_time.count()},
+                {"node_count", m_nodes.size()}
+            }},
+            {"nodes",               json::array()},
+            {"optimized_resources", json::array()}
+        };
+
+        // Nodes
+        for (const auto& node: m_nodes) {
+            out["nodes"].push_back({{"name", node->name()}});
+        }
+
+        // Optimized resources
+        for (int32_t i = 0; i < result.resources.size(); i++)
+        {
+            auto& resource = result.resources[i];
+            auto range = resource.get_usage_range();
+            json usage_points = json::array();
+
+            for (int32_t j = 0; j <= result.timeline_range.end; j++) {
+                auto usage_point = resource.get_usage_point(j);
+                if (usage_point.has_value()) {
+                    auto point = usage_point.value();
+                    usage_points.push_back({
+                        {"location", point.point},
+                        {"used_as",  point.used_as},
+                        {"used_by",  point.used_by},
+                        {"usage",    to_string(point.usage)}
+                    });
+                }
+            }
+
+            out["optimized_resources"].push_back({
+                {"id",           resource.id},
+                {"type",         to_string(resource.type)},
+                {"usage_points", usage_points},
+            });
+        }
+
+        std::string file_name = std::format("resource_optimizer_{:%Y-%m-%d_%H-%M}.json", result.start_time);
+        std::ofstream file(file_name);
+        file << std::setw(4) << out << std::endl;
+        file.close();
     }
 }

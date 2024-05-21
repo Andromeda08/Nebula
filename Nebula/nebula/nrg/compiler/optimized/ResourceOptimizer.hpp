@@ -208,6 +208,8 @@ namespace Nebula::nrg
     private:
         static void export_result(const ResourceOptimizerResult& result);
 
+        void export_json_result(const ResourceOptimizerResult& result);
+
         std::vector<resource_info> evaluate_required_resources() const;
 
         static std::set<usage_point> get_usage_points_for_resource_info(const resource_info& resource_info);
