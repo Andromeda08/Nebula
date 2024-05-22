@@ -2,7 +2,7 @@
 
 #include <format>
 #include <sstream>
-#include <nrg/resource/Resource.hpp>
+#include <iostream>
 #include "ResourceOptimizer.hpp"
 
 namespace Nebula::nrg
@@ -59,7 +59,7 @@ namespace Nebula::nrg
         // 3. Resource optimization ---------------------------------
         ResourceOptimizerOptions optimizer_options { true };
         ResourceOptimizerResult optimizer_result;
-        auto resource_optimizer = std::make_shared<ResourceOptimizer>(execution_order, edges, optimizer_options);\
+        auto resource_optimizer = std::make_shared<ResourceOptimizer>(execution_order, edges, optimizer_options);
 
         try {
             optimizer_result = resource_optimizer->run();

@@ -83,7 +83,6 @@ namespace Nebula::nrg
                 if (flags.all()) {
                     was_inserted = timeline.insert_usage_points(usage_points);
                     if (was_inserted) {
-                        gen_resources.push_back(resource);
                         logs.push_back(
                             std::format(
                                 "Resource with id {} of type {} was reused in range [{}, {}], {} new usage points were added",
@@ -92,8 +91,8 @@ namespace Nebula::nrg
                                 std::max_element(std::begin(usage_points), std::end(usage_points))->point,
                                 usage_points.size())
                         );
+                        break;
                     }
-                    break;
                 }
             }
 
@@ -121,6 +120,7 @@ namespace Nebula::nrg
 
         if (m_options.export_result) {
             export_result(result);
+            export_json_result(result);
         }
 
         return result;
@@ -244,15 +244,16 @@ namespace Nebula::nrg
         using json = nlohmann::json;
         json out = {
             {"statistics", {
-                {"resource_count", result.original_resources.size()},
+                {"resource_count", result.original_resource_count},
                 {"non_optimizable", result.non_optimizable_count},
-                {"optimized_count", result.resources.size()},
+                {"optimized_count", result.optimized_resource_count},
                 {"reduction", result.original_resource_count - result.optimized_resource_count},
                 {"time_us", result.optimization_time.count()},
                 {"node_count", m_nodes.size()}
             }},
             {"nodes",               json::array()},
-            {"optimized_resources", json::array()}
+            {"optimized_resources", json::array()},
+            {"logs",                result.logs}
         };
 
         // Nodes
