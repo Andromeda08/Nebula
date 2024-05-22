@@ -23,7 +23,8 @@ namespace Nebula::nvk
             .setScalarBlockLayout(true)
             .setShaderFloat16(true)
             .setShaderInt8(true)
-            .setTimelineSemaphore(true);
+            .setTimelineSemaphore(true)
+            .setHostQueryReset(true);
         m_chain.emplace_back(vulkan_12.sType, &vulkan_12);
 
         vulkan_13
