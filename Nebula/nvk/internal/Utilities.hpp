@@ -8,7 +8,7 @@
 
 #pragma region "Configuration"
 // Log levels
-#define NVK_LOG_LEVEL_NONE    0
+#define NVK_LOG_LEVEL_SILENT  0
 #define NVK_LOG_LEVEL_INFO    1
 #define NVK_LOG_LEVEL_SUCCESS 2
 #define NVK_LOG_LEVEL_WARNING 3
@@ -17,8 +17,9 @@
 
 // Options
 #define NVK_LOG_COLORS
-#define NVK_MSG_FORMAT "[{} | {}] {}"
-#define NVK_LOG_LEVEL  NVK_LOG_LEVEL_VERBOSE
+#define NVK_PREFIX_COLOR cyan
+#define NVK_MSG_FORMAT   "[{} | {}] {}"
+#define NVK_LOG_LEVEL    NVK_LOG_LEVEL_INFO
 
 #pragma endregion
 
@@ -56,14 +57,15 @@ inline std::string fmt_##NAME(std::format_string<Args...> fmt, Args&& ...args)  
 {                                                                               \
     return std::format(                                                         \
         NVK_MSG_FORMAT,                                                         \
-        Format::red("nvk"), Format::COLOR(PREFIX),                              \
+        Format::NVK_PREFIX_COLOR("nvk"), Format::COLOR(PREFIX),                 \
         std::format(fmt, std::forward<Args>(args)...)                           \
     );                                                                          \
 }                                                                               \
-inline std::string fmt_##NAME(const std::string& str)                           \
+inline std::string str_##NAME(const std::string& str)                           \
 {                                                                               \
-    return std::format(NVK_MSG_FORMAT,                                          \
-                       Format::red("nvk"), Format::COLOR(PREFIX), str);         \
+    return std::format(                                                         \
+        NVK_MSG_FORMAT,                                                         \
+        Format::NVK_PREFIX_COLOR("nvk"), Format::COLOR(PREFIX), str);           \
                                                                                 \
 }
 #pragma endregion
@@ -92,7 +94,7 @@ inline void print_##NAME(const std::string& str)                                
 {                                                                               \
     if (NVK_LOG_LEVEL >= LEVEL)                                                 \
     {                                                                           \
-        std::cout << fmt_##NAME(str) << std::endl;                              \
+        std::cout << str_##NAME(str) << std::endl;                              \
     }                                                                           \
 }
 #pragma endregion
@@ -113,7 +115,7 @@ namespace Nebula::nvk
     #pragma region "String formatter methods"
 
     NVK_DEFINE_FMT_STR_METHODS(info,    blue,    "Info");
-    NVK_DEFINE_FMT_STR_METHODS(success, green,   "Success");
+    NVK_DEFINE_FMT_STR_METHODS(success, green,   "Ok");
     NVK_DEFINE_FMT_STR_METHODS(warning, yellow,  "Warning");
     NVK_DEFINE_FMT_STR_METHODS(error,   red,     "Error");
     NVK_DEFINE_FMT_STR_METHODS(verbose, magenta, "Verbose");
@@ -137,17 +139,6 @@ namespace Nebula::nvk
     {
         static_assert(std::is_base_of_v<std::exception, E>, "Template parameter E must be a type of std::exception");
         const std::string message = fmt_error(fmt, std::forward<Args>(args)...);
-        #ifdef NVK_PRINT_EXCEPTIONS
-        std::cout << message << std::endl;
-        #endif
-        return E(message);
-    }
-
-    template <typename E = std::runtime_error>
-    inline E make_exception(const std::string& str)
-    {
-        static_assert(std::is_base_of_v<std::exception, E>, "Template parameter E must be a type of std::exception");
-        const std::string message = fmt_error(str);
         #ifdef NVK_PRINT_EXCEPTIONS
         std::cout << message << std::endl;
         #endif

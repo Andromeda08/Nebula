@@ -50,6 +50,11 @@ namespace Nebula::nvk
         const vk::CommandPool&  m_pool;
     };
 
+    class CommandBufferSet
+    {
+
+    };
+
     class CommandPool
     {
     public:

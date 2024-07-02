@@ -1,12 +1,8 @@
 #include "Image.hpp"
 #include <format>
 #include <stdexcept>
-#include <nlog/nlog.hpp>
 #include "Barrier.hpp"
-
-#ifdef NVK_VERBOSE_EXTRA
-#include <iostream>
-#endif
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -30,7 +26,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createImage(&img_create_info, nullptr, &m_image);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Image \"{}\" ({})", m_name, to_string(result));
+            throw make_exception("Failed to create Image \"{}\" ({})", m_name, to_string(result));
         }
 
         m_device->name_object(m_image, std::format("{} [Image]", m_name), vk::ObjectType::eImage);
@@ -51,7 +47,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createImageView(&view_create_info, nullptr, &m_image_view);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create ImageView \"{}\" ({})", m_name, to_string(result));
+            throw make_exception("Failed to create ImageView \"{}\" ({})", m_name, to_string(result));
         }
 
         m_device->name_object(m_image_view, std::format("{} [ImageView]", m_name), vk::ObjectType::eImageView);
@@ -77,17 +73,15 @@ namespace Nebula::nvk
             if (const vk::Result result = m_device->handle().createSampler(&sampler_create_info, nullptr, &m_sampler);
                 result != vk::Result::eSuccess)
             {
-                throw nlog::make_exception("Failed to create Sampler for Image \"{}\" ({})", m_name, to_string(result));
+                throw make_exception("Failed to create Sampler for Image \"{}\" ({})", m_name, to_string(result));
             }
 
             m_device->name_object(m_sampler, std::format("{} [Sampler]", m_name), vk::ObjectType::eSampler);
         }
 
-        #ifdef NVK_VERBOSE_EXTRA
-        std::cout << nlog::fmt_verbose("[V++] Created Image and ImageView: {}\n\tExtent: [{}x{}] | Format: {}",
-                                 m_name, m_properties.extent.width, m_properties.extent.height,
-                                 to_string(m_properties.format)) << std::endl;
-        #endif
+        print_verbose("[Created Image and ImageView: {}\n\tExtent: [{}x{}] | Format: {}",
+                      m_name, m_properties.extent.width, m_properties.extent.height,
+                      to_string(m_properties.format));
     }
 
     ImageProperties Image::get_properties(const ImageCreateInfo& create_info)
@@ -107,9 +101,7 @@ namespace Nebula::nvk
         m_device->handle().destroy(m_image);
         m_allocation->free();
 
-        #ifdef NVK_VERBOSE_EXTRA
-        std::cout << nlog::fmt_verbose("Destroyed Image and ImageView: {}", m_name) << std::endl;
-        #endif
+        print_verbose("Destroyed Image and ImageView: {}", m_name);
     }
 
     ImageBlit& ImageBlit::set_src_image(const std::shared_ptr<Image>& src_image)

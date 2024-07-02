@@ -1,5 +1,5 @@
 #include "render/Framebuffer.hpp"
-#include <nlog/nlog.hpp>
+#include "Utilities.hpp"
 
 #include <iostream>
 #include <format>
@@ -13,7 +13,7 @@ namespace Nebula::nvk
     {
         if (framebuffer_count <= 0)
         {
-            throw std::runtime_error("No Framebuffer count was specified");
+            throw make_exception("No Framebuffer count was specified");
         }
 
         // Decide on attachment index
@@ -53,10 +53,8 @@ namespace Nebula::nvk
 
             vec[attachment_index] = image_view;
 
-            #ifdef NVK_VERBOSE
-            std::cout << std::format("Set attachment #{} for framebuffer #{} : {}", attachment_index, i,
-                                     std::to_string((uint64_t) vec[attachment_index].operator VkImageView())) << std::endl;
-            #endif
+            print_verbose("Set attachment #{} for framebuffer #{} : {}", attachment_index, i,
+                          std::to_string((uint64_t) vec[attachment_index].operator VkImageView()));
         }
 
         last_attachment_index = static_cast<int32_t>(attachment_index);
@@ -69,11 +67,11 @@ namespace Nebula::nvk
         if (!attachments.empty())
         {
         #ifdef NVK_VERBOSE
-            std::cerr << "Setting the number of Framebuffers after adding attachments will reset the list of attachments" << std::endl;
+            print_warning("Setting the number of Framebuffers after adding attachments will reset the list of attachments");
             attachments.clear();
             last_attachment_index = -1;
         #else
-            throw std::runtime_error("Call [FramebufferCreateInfo::set_framebuffer_count()] before adding attachments!");
+            throw make_exception("Call [FramebufferCreateInfo::set_framebuffer_count()] before adding attachments!");
         #endif
         }
         return *this;
@@ -92,7 +90,7 @@ namespace Nebula::nvk
 
         if (has_missing_attachments)
         {
-            std::cerr << "Invalid FramebufferCreateInfo: Has missing attachments" << std::endl;
+            print_error("Invalid FramebufferCreateInfo: Has missing attachments");
             for (auto& [id, vec] : attachments)
             {
             #ifdef NVK_DEBUG
@@ -105,17 +103,16 @@ namespace Nebula::nvk
                 }
                 std::cerr << out.str() << std::endl;
             #endif
-
-                throw std::runtime_error("Missing attachments for Framebuffers");
+                throw make_exception("Missing attachments for Framebuffers");
             }
         }
 
         if (extent.width == 0 || extent.height == 0)
         {
         #ifdef NVK_DEBUG
-            std::cerr << std::format("Invalid Extent for Framebuffers: [{}, {}]", extent.width, extent.height);
+            print_error("Invalid Extent for Framebuffers: [{}, {}]", extent.width, extent.height);
         #endif
-            throw std::runtime_error("Invalid Extent for Framebuffers");
+            throw make_exception("Invalid Extent for Framebuffers");
         }
 
         return *this;
@@ -138,7 +135,7 @@ namespace Nebula::nvk
             if (vk::Result result = m_device->handle().createFramebuffer(&fb_create_info, nullptr, &m_framebuffers[i]);
                 result != vk::Result::eSuccess)
             {
-                throw std::runtime_error(std::format("Failed to create Framebuffer #{}", i));
+                throw make_exception("Failed to create Framebuffer #{}", i);
             }
             m_device->name_object(m_framebuffers[i], std::format("{} #{}", create_info.name, i), vk::ObjectType::eFramebuffer);
         }
@@ -159,7 +156,7 @@ namespace Nebula::nvk
     {
         if (index > m_framebuffers.size())
         {
-            throw nlog::make_exception<std::out_of_range>("Index out of range for framebuffer array.");
+            throw make_exception<std::out_of_range>("Index out of range for framebuffer array.");
         }
 
         return m_framebuffers[index];

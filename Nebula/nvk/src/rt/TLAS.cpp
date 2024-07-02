@@ -1,23 +1,19 @@
 #include "rt/TLAS.hpp"
-#include <nlog/nlog.hpp>
-
-#ifdef NVK_VERBOSE_EXTRA
-#include <iostream>
-#endif
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
 
     TLAS::TLAS(const TLASCreateInfo& create_info, const std::shared_ptr<Device>& device,
                const std::shared_ptr<CommandPool>& command_pool)
-    : m_device(device), m_command_pool(command_pool), m_name(create_info.name)
+    : m_device(device)
+    , m_command_pool(command_pool)
+    , m_name(create_info.name)
     {
         build(create_info.instance_info);
         m_device->name_object(m_tlas, std::format("{} [Top-Level]", m_name), vk::ObjectType::eAccelerationStructureKHR);
 
-        #ifdef NVK_VERBOSE_EXTRA
-        std::cout << nlog::fmt_info("Created Top-Level AS: {}", m_create_info.name) << std::endl;
-        #endif
+        print_verbose("Created Top-Level AS: {}", create_info.name);
     }
 
     void TLAS::build(const std::vector<TLASInstanceInfo>& instance_info)
@@ -96,7 +92,7 @@ namespace Nebula::nvk
         if (vk::Result result = m_device->handle().createAccelerationStructureKHR(&create_info, nullptr, &m_tlas);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Top-Level AS (name: {})", m_name);
+            throw make_exception("Failed to create Top-Level AS (name: {})", m_name);
         }
 
         auto as_staging_create_info = BufferCreateInfo()
@@ -129,6 +125,6 @@ namespace Nebula::nvk
 
     void TLAS::update(const TLASUpdateInfo& update_info, const vk::CommandBuffer& command_buffer)
     {
-        throw nlog::make_exception("TLAS::update() is not implemented");
+        throw make_exception("TLAS::update() is not implemented");
     }
 }

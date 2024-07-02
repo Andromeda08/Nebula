@@ -1,5 +1,5 @@
 #include "rt/ShaderBindingTable.hpp"
-#include <nlog/nlog.hpp>
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -39,7 +39,7 @@ namespace Nebula::nvk
         if (auto result = m_device->handle().getRayTracingShaderGroupHandlesKHR(m_pipeline, 0, handle_count, data_size, handles.data());
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to fetch ray tracing shader group handles");
+            throw make_exception("Failed to fetch ray tracing shader group handles");
         }
 
         vk::DeviceSize sbt_size = m_rgen.size + m_miss.size + m_hit.size + m_callable.size;

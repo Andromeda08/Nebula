@@ -1,11 +1,7 @@
 #include "render/Pipeline.hpp"
 #include "rt/ShaderBindingTable.hpp"
+#include "Utilities.hpp"
 #include <format>
-#include <nlog/nlog.hpp>
-
-#if defined(NVK_DEBUG) | defined(NVK_VERBOSE)
-#include <iostream>
-#endif
 
 namespace Nebula::nvk
 {
@@ -16,7 +12,7 @@ namespace Nebula::nvk
 
         if (create_info.m_shader_sources.size() < 1)
         {
-            throw nlog::make_exception("Failed to create Pipeline {}: no shaders were specified", m_name);
+            throw make_exception("Failed to create Pipeline {}: no shaders were specified", m_name);
         }
 
         create_pipeline_layout(create_info);
@@ -36,16 +32,14 @@ namespace Nebula::nvk
                 break;
             }
             default:
-                throw nlog::make_exception("Failed to create Pipeline {}: Pipeline type not specified", m_name);
+                throw make_exception("Failed to create Pipeline {}: Pipeline type not specified", m_name);
         }
 
         m_device->name_object(m_pipeline, std::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::ePipeline);
 
         m_device->name_object(m_pipeline_layout, m_name, vk::ObjectType::ePipelineLayout);
 
-        #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Created {} Pipeline: {}", to_string(m_type), m_name) << std::endl;
-        #endif
+        print_success("Created {} Pipeline: {}", to_string(m_type), m_name);
     }
 
     void Pipeline::bind(const vk::CommandBuffer& command_buffer)
@@ -57,7 +51,7 @@ namespace Nebula::nvk
     {
         if (m_type != PipelineType::eRayTracing)
         {
-            throw nlog::make_exception("trace_rays() call invalid for pipelines of type {}", to_string(m_type));
+            throw make_exception("trace_rays() call invalid for pipelines of type {}", to_string(m_type));
         }
 
         command_buffer.traceRaysKHR(m_sbt->rgen_region(), m_sbt->miss_region(),
@@ -92,7 +86,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createPipelineLayout(&layout_info, nullptr, &m_pipeline_layout);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create PipelineLayout: {} ({})", m_name, to_string(result));
+            throw make_exception("Failed to create PipelineLayout: {} ({})", m_name, to_string(result));
         }
     }
 
@@ -101,7 +95,7 @@ namespace Nebula::nvk
         #ifdef NVK_DEBUG
         if (create_info.m_shader_sources.size() > 1)
         {
-            std::cout << nlog::fmt_warning("[Warning] More than 1 shader specified for a Compute Pipeline, using the first specified compute shader") << std::endl;
+            print_warning("More than 1 shader specified for a Compute Pipeline, using the first specified compute shader");
         }
         #endif
 
@@ -111,7 +105,7 @@ namespace Nebula::nvk
 
         if (shader_info == std::end(create_info.m_shader_sources))
         {
-            throw nlog::make_exception("Failed to create Compute Pipeline {}: No compute shader was specified", m_name);
+            throw make_exception("Failed to create Compute Pipeline {}: No compute shader was specified", m_name);
         }
 
         auto shader = std::make_shared<Shader>(*shader_info, m_device);
@@ -122,7 +116,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createComputePipelines({}, 1, &compute_info, nullptr, &m_pipeline);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Compute Pipeline {}: {}", m_name, to_string(result));
+            throw make_exception("Failed to create Compute Pipeline {}: {}", m_name, to_string(result));
         }
     }
 
@@ -158,7 +152,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createGraphicsPipelines({}, 1, &graphics_info, nullptr, &m_pipeline);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Graphics Pipeline: {} ({})", m_name, to_string(result));
+            throw make_exception("Failed to create Graphics Pipeline: {} ({})", m_name, to_string(result));
         }
     }
 
@@ -183,7 +177,7 @@ namespace Nebula::nvk
             {
                 if (has_ray_gen)
                 {
-                    throw nlog::make_exception("Multiple ray generation shaders specified for pipeline {}", m_name);
+                    throw make_exception("Multiple ray generation shaders specified for pipeline {}", m_name);
                 }
                 has_ray_gen = true;
             }
@@ -205,13 +199,13 @@ namespace Nebula::nvk
 
         if (!has_ray_gen)
         {
-            throw nlog::make_exception("No ray generation shader specified for pipeline {}", m_name);
+            throw make_exception("No ray generation shader specified for pipeline {}", m_name);
         }
 
         if (const vk::Result result = m_device->handle().createRayTracingPipelinesKHR(nullptr, nullptr, 1, &rt_info, nullptr, &m_pipeline);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Ray tracing Pipeline: {} ({})", m_name, to_string(result));
+            throw make_exception("Failed to create Ray tracing Pipeline: {} ({})", m_name, to_string(result));
         }
 
         sbt_create_info.set_pipeline(m_pipeline);
@@ -258,10 +252,7 @@ namespace Nebula::nvk
                     break;
                 }
                 default: {
-                    #ifdef NVK_DEBUG
-                    std::cout << nlog::fmt_warning("Non-RayTracing shader ({}) specified for Pipeline {}",
-                                                   to_string(shader_stages[i].stage), m_name) << std::endl;
-                    #endif
+                    print_warning("Non-RayTracing shader ({}) specified for Pipeline {}", to_string(shader_stages[i].stage), m_name);
                 }
             }
         }

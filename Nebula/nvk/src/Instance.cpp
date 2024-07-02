@@ -1,12 +1,8 @@
 #include "Instance.hpp"
 #include <set>
-#include <stdexcept>
-#include <nlog/nlog.hpp>
-
-#ifdef NVK_VERBOSE
-#include <iostream>
 #include <sstream>
-#endif
+#include <stdexcept>
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -57,7 +53,7 @@ namespace Nebula::nvk
         if (const vk::Result result = vk::createInstance(&create_info, nullptr, &m_instance);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create {} ({})", nlog::cyan("vk::Instance"), to_string(result));
+            throw make_exception("Failed to create {} ({})", Format::cyan("vk::Instance"), to_string(result));
         }
 
         for (const auto& layer : supported_layers)
@@ -69,23 +65,24 @@ namespace Nebula::nvk
             m_extensions.emplace_back(extension);
         }
 
-        #ifdef NVK_VERBOSE
-        std::stringstream layers_ss;
-        for (const auto& layer : m_layers)
+        if (NVK_LOG_LEVEL >= NVK_LOG_LEVEL_VERBOSE)
         {
-            layers_ss << layer << ", ";
-        }
+            std::stringstream layers_ss;
+            for (const auto& layer : m_layers)
+            {
+                layers_ss << layer << ", ";
+            }
 
-        std::stringstream exts_ss;
-        for (const auto& ext : m_extensions)
-        {
-            exts_ss << ext << ", ";
-        }
+            std::stringstream exts_ss;
+            for (const auto& ext : m_extensions)
+            {
+                exts_ss << ext << ", ";
+            }
 
-        std::cout << nlog::fmt_info("Created {} with {}/{} layers and {}/{} extensions\n\tLayers: {}\n\tExtensions: {}",
-                                    nlog::cyan("vk::Instance"), m_layers.size(), requested_layers.size(),
-                                    m_extensions.size(), requested_extensions.size(),
-                                    layers_ss.str(), exts_ss.str()) << std::endl;
-        #endif
+            print_verbose("Created {} with {}/{} layers and {}/{} extensions\n\tLayers: {}\n\tExtensions: {}",
+                          Format::cyan("vk::Instance"), m_layers.size(), requested_layers.size(),
+                          m_extensions.size(), requested_extensions.size(),
+                          layers_ss.str(), exts_ss.str());
+        }
     }
 }

@@ -1,5 +1,5 @@
 #include "Command.hpp"
-#include <nlog/nlog.hpp>
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -18,13 +18,11 @@ namespace Nebula::nvk
             if (const vk::Result result = m_device->handle().createCommandPool(&create_info, nullptr, &pool);
                 result != vk::Result::eSuccess)
             {
-                throw nlog::make_exception("Failed to create {} on Queue Family {} ({})",
-                                           nlog::cyan("vk::CommandPool"), fidx, nlog::red(to_string(result)));
+                throw make_exception("Failed to create {} on Queue Family {} ({})",
+                                     Format::cyan("vk::CommandPool"), fidx, Format::red(to_string(result)));
             }
 
-            #ifdef NVK_VERBOSE
-            std::cout << nlog::fmt_info("Created {} on Queue Family {}", nlog::cyan("vk::CommandPool"), fidx) << std::endl;
-            #endif
+            print_success("Created {} on Queue Family {}", Format::cyan("vk::CommandPool"), fidx);
 
             m_pools.insert({ fidx, pool });
         }
@@ -52,13 +50,13 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().allocateCommandBuffers(&allocate_info, &buffer);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to allocate vk::CommandBuffer for single time use on Queue Family {}", family_index);
+            throw make_exception("Failed to allocate vk::CommandBuffer for single time use on Queue Family {}", family_index);
         }
 
         auto begin_info = vk::CommandBufferBeginInfo().setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
         if (const vk::Result result = buffer.begin(&begin_info); result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to begin vk::CommandBuffer for single time use on Queue Family {}", family_index);
+            throw make_exception("Failed to begin vk::CommandBuffer for single time use on Queue Family {}", family_index);
         }
 
         commands(buffer);
@@ -69,7 +67,7 @@ namespace Nebula::nvk
         auto submit_info = vk::SubmitInfo().setCommandBufferCount(1).setPCommandBuffers(&buffer);
         if (const vk::Result result = queue.submit(1, &submit_info, nullptr); result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to submit vk::CommandBuffer for single time use on Queue Family {}", family_index);
+            throw make_exception("Failed to submit vk::CommandBuffer for single time use on Queue Family {}", family_index);
         }
 
         queue.waitIdle();
@@ -83,7 +81,7 @@ namespace Nebula::nvk
             return m_pools.at(family_index);
         }
 
-        throw nlog::make_exception<std::out_of_range>("No CommandPool found for Queue Family with index {}", family_index);
+        throw make_exception<std::out_of_range>("No CommandPool found for Queue Family with index {}", family_index);
     }
 
     const vk::Queue& CommandPool::get_queue(uint32_t family_index)
@@ -93,6 +91,6 @@ namespace Nebula::nvk
             return m_queues.at(family_index)->queue;
         }
 
-        throw nlog::make_exception<std::out_of_range>("No Queue found for Queue Family with index {}", family_index);
+        throw make_exception<std::out_of_range>("No Queue found for Queue Family with index {}", family_index);
     }
 }

@@ -1,9 +1,5 @@
 #include "Swapchain.hpp"
-#include <nlog/nlog.hpp>
-
-#ifdef NVK_VERBOSE
-#include <iostream>
-#endif
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -19,21 +15,15 @@ namespace Nebula::nvk
         create_sync_objects();
         make_scissor_and_viewport();
 
-        #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info(
-                "Created {} with {} Images\n\tSize: [{}x{}]\n\tFormat: {} | ColorSpace: {}\n\tPresent Mode: {}",
-                nlog::cyan("vk::Swapchain"), m_image_count, m_size.width, m_size.height, to_string(m_format),
-                to_string(m_color_space), to_string(m_present_mode)) << std::endl;
-        #endif
+        print_success("Created {} with {} Images\n\tSize: [{}x{}]\n\tFormat: {} | ColorSpace: {}\n\tPresent Mode: {}",
+                      Format::cyan("vk::Swapchain"), m_image_count, m_size.width, m_size.height, to_string(m_format),
+                      to_string(m_color_space), to_string(m_present_mode));
     }
 
     Swapchain::~Swapchain()
     {
         destroy();
-
-        #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Destroyed Swapchain") << std::endl;
-        #endif
+        print_verbose("Destroyed Swapchain");
     }
 
     uint32_t Swapchain::acquire_next_image(uint32_t current_frame) const
@@ -65,7 +55,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->q_general()->queue.submit(1, &submit_info, m_frame_in_flight[current_frame]);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to submit command buffer ({})", to_string(result));
+            throw make_exception("Failed to submit command buffer ({})", to_string(result));
         }
 
         auto present_info = vk::PresentInfoKHR()
@@ -78,7 +68,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->q_general()->queue.presentKHR(&present_info);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to present frame ({})", to_string(result));
+            throw make_exception("Failed to present frame ({})", to_string(result));
         }
     }
 
@@ -108,7 +98,7 @@ namespace Nebula::nvk
     {
         if (i > m_images.size())
         {
-            throw nlog::make_exception<std::out_of_range>("Swapchain Image index {} out of bounds", i);
+            throw make_exception<std::out_of_range>("Swapchain Image index {} out of bounds", i);
         }
         return m_images[i];
     }
@@ -117,7 +107,7 @@ namespace Nebula::nvk
     {
         if (i > m_image_views.size())
         {
-            throw nlog::make_exception<std::out_of_range>("Swapchain ImageView index {} out of bounds", i);
+            throw make_exception<std::out_of_range>("Swapchain ImageView index {} out of bounds", i);
         }
         return m_image_views[i];
     }
@@ -150,7 +140,7 @@ namespace Nebula::nvk
         if (surface_caps.minImageCount > m_image_count ||
             surface_caps.maxImageCount < m_image_count)
         {
-            throw nlog::make_exception("Swapchain image count {} out of supported range", m_image_count);
+            throw make_exception("Swapchain image count {} out of supported range", m_image_count);
         }
 
         if (surface_caps.currentExtent.width != std::numeric_limits<uint32_t>::max())
@@ -168,7 +158,7 @@ namespace Nebula::nvk
         // Surface Format & ColorSpace
         if (surface_formats.empty())
         {
-            throw nlog::make_exception("No surface formats found");
+            throw make_exception("No surface formats found");
         }
         m_format      = surface_formats[0].format;
         m_color_space = surface_formats[0].colorSpace;
@@ -186,7 +176,7 @@ namespace Nebula::nvk
         // Present Mode
         if (present_modes.empty())
         {
-            throw nlog::make_exception("No present modes found");
+            throw make_exception("No present modes found");
         }
         m_present_mode = present_modes[0];
         auto it = std::ranges::find(present_modes, create_info.pref_present_mode);
@@ -218,7 +208,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createSwapchainKHR(&create_info, nullptr, &m_swapchain);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create vk::SwapchainKHR ({})", to_string(result));
+            throw make_exception("Failed to create vk::SwapchainKHR ({})", to_string(result));
         }
     }
 
@@ -248,7 +238,7 @@ namespace Nebula::nvk
             if (const vk::Result result = m_device->handle().createImageView(&create_info, nullptr, &m_image_views[i]);
                 result != vk::Result::eSuccess)
             {
-                throw nlog::make_exception("Failed to create vk::ImageView #{} for Swapchain", i);
+                throw make_exception("Failed to create vk::ImageView #{} for Swapchain", i);
             }
 
             m_device->name_object(m_images[i], std::format("Swapchain #{}", i), vk::ObjectType::eImage);

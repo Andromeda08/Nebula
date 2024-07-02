@@ -1,10 +1,5 @@
 #include "Buffer.hpp"
-#include <nlog/nlog.hpp>
-
-#ifdef NVK_VERBOSE_EXTRA
-#include <iostream>
-#endif
-
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -37,7 +32,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device->handle().createBuffer(&buffer_create_info, nullptr, &m_buffer);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create Buffer \"{}\" ({})", m_name, to_string(result));
+            throw make_exception("Failed to create Buffer \"{}\" ({})", m_name, to_string(result));
         }
 
         auto allocation_info = AllocationInfo()
@@ -52,12 +47,10 @@ namespace Nebula::nvk
 
         m_device->name_object(m_buffer, std::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::eBuffer);
 
-        #ifdef NVK_VERBOSE_EXTRA
-        if (m_type != BufferType::eStaging) {
-            std::cout << nlog::fmt_verbose("Created {} Buffer: {} with size {}",
-                                           to_string(m_type), m_name, size()) << std::endl;
+        if (m_type != BufferType::eStaging)
+        {
+            print_success("Created {} Buffer: {} [Size={}]", to_string(m_type), m_name, size());
         }
-        #endif
     }
 
     Buffer::~Buffer()
@@ -65,12 +58,10 @@ namespace Nebula::nvk
         m_device->handle().destroy(m_buffer);
         m_allocation->free();
 
-        #ifdef NVK_VERBOSE_EXTRA
-        if (m_type != BufferType::eStaging) {
-            std::cout << nlog::fmt_verbose("Destroyed {} Buffer: {}",
-                                           to_string(m_type), m_name) << std::endl;
+        if (m_type != BufferType::eStaging)
+        {
+            print_verbose("Destroyed {} Buffer: {}", to_string(m_type), m_name);
         }
-        #endif
     }
 
     void Buffer::copy_to_buffer(const Buffer& dst, const vk::CommandBuffer& command_buffer)
@@ -150,9 +141,7 @@ namespace Nebula::nvk
             }
             default:
                 break;
-                // throw nlog::make_exception<std::invalid_argument>("Invalid BufferType");
         }
         return result;
     }
 }
-

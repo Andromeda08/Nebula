@@ -1,6 +1,5 @@
 #include "Context.hpp"
-#include <iostream>
-#include <nlog/nlog.hpp>
+#include "Utilities.hpp"
 #include "DeviceExtensions.hpp"
 #include "Instance.hpp"
 
@@ -33,6 +32,8 @@ namespace Nebula::nvk
         VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device->handle());
 
         m_command_pool = std::make_shared<CommandPool>(m_device);
+
+        print_info("{} ready", Format::cyan("nvk::Context"));
     }
 
     void Context::create_debug_messenger()
@@ -51,11 +52,9 @@ namespace Nebula::nvk
         if (const vk::Result result = m_instance->handle().createDebugUtilsMessengerEXT(&create_info, nullptr, &m_debug_messenger);
             result != vk::Result::eSuccess)
         {
-            std::cerr << nlog::fmt_error("Failed to setup {} ({})", nlog::cyan("vk::DebugUtilsMessengerEXT"), to_string(result)) << std::endl;
+            print_error("Failed to setup {} ({})", Format::cyan("vk::DebugUtilsMessengerEXT"), to_string(result));
         }
 
-        #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Created {}", nlog::cyan("vk::DebugUtilsMessengerEXT")) << std::endl;
-        #endif
+        print_verbose("Created {}", Format::cyan("vk::DebugUtilsMessengerEXT"));
     }
 }

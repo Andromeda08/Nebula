@@ -2,11 +2,7 @@
 #include <format>
 #include <stdexcept>
 #include <vector>
-#include <nlog/nlog.hpp>
-
-#if defined(NVK_VERBOSE) || defined(NVK_VERBOSE_EXTRA)
-#include <iostream>
-#endif
+#include "Utilities.hpp"
 
 namespace Nebula::nvk
 {
@@ -32,7 +28,7 @@ namespace Nebula::nvk
             m_device.bindImageMemory(image, memory, offset);
             return;
         }
-        throw nlog::make_exception("Failed to bind memory");
+        throw make_exception("Failed to bind memory");
     }
 
     void* Allocation::map()
@@ -41,7 +37,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device.mapMemory(memory, offset, size, {}, &mapped_memory);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to map memory for Allocation ID: {}", m_id);
+            throw make_exception("Failed to map memory for Allocation ID: {}", m_id);
         }
         return mapped_memory;
     }
@@ -95,12 +91,10 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device.allocateMemory(&allocate_info, nullptr, &allocation->memory);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to allocate memory");
+            throw make_exception("Failed to allocate memory");
         }
 
-        #ifdef NVK_VERBOSE_EXTRA
-        std::cout << nlog::fmt_verbose("Allocated memory of size {}", allocation->size) << std::endl;
-        #endif
+        print_verbose("Allocated memory of size {}", allocation->size);
 
         m_allocations.push_back(allocation);
         return m_allocations.back();
@@ -117,10 +111,7 @@ namespace Nebula::nvk
         if (const vk::Result result = m_device.setDebugUtilsObjectNameEXT(&name_info);
             result != vk::Result::eSuccess)
         {
-            #ifdef NVK_VERBOSE
-            throw nlog::make_exception("Failed to name Vulkan Object {} of type {} as \"{}\"",
-                                       handle, to_string(type), name);
-            #endif
+            print_error("Failed to name Vulkan Object {} of type {} as \"{}\"", handle, to_string(type), name);
         }
     }
 
@@ -153,15 +144,13 @@ namespace Nebula::nvk
 
         if (candidate == std::end(devices))
         {
-            throw nlog::make_exception("Failed to find a suitable {}", nlog::cyan("vk::PhysicalDevice"));
+            throw make_exception("Failed to find a suitable {}", Format::cyan("vk::PhysicalDevice"));
         }
 
         m_physical_device = *candidate;
         m_physical_device_properties = m_physical_device.getProperties();
 
-        #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Selected {} : {}", nlog::cyan("vk::PhysicalDevice"), m_physical_device_properties.deviceName.data()) << std::endl;
-        #endif
+        print_info("Selected {}: {}", Format::cyan("vk::PhysicalDevice"), m_physical_device_properties.deviceName.data());
     }
 
     void Device::create_device()
@@ -195,12 +184,10 @@ namespace Nebula::nvk
         if (const vk::Result result = m_physical_device.createDevice(&create_info, nullptr, &m_device);
             result != vk::Result::eSuccess)
         {
-            throw nlog::make_exception("Failed to create {} ({})", nlog::cyan("vk::Device"), nlog::red(to_string(result)));
+            throw make_exception("Failed to create {} ({})", Format::cyan("vk::Device"), Format::red(to_string(result)));
         }
 
-        #ifdef NVK_VERBOSE
-        std::cout << nlog::fmt_info("Created {}", nlog::cyan("vk::Device")) << std::endl;
-        #endif
+        print_success("Created {}", Format::cyan("vk::Device"));
 
         auto q0 = QueueCreateInfo()
             .set_queue_family_index(q_cg.family_index)
@@ -228,7 +215,7 @@ namespace Nebula::nvk
             }
         }
 
-        throw nlog::make_exception("Failed to find suitable memory heap");
+        throw make_exception("Failed to find suitable memory heap");
     }
 
     MemoryUsage Device::get_memory_usage() const
@@ -276,6 +263,7 @@ namespace Nebula::nvk
         }
         else if (memory < gigabyte_coefficient)
         {
+            result = { memory / megabyte_coefficient, "MB" };
             result = { memory / megabyte_coefficient, "MB" };
         }
         else
