@@ -6,7 +6,7 @@
 #include <string>
 #include <type_traits>
 
-#pragma region "Configuration"
+#pragma region Configuration
 // Log levels
 #define NVK_LOG_LEVEL_SILENT  0
 #define NVK_LOG_LEVEL_INFO    1
@@ -27,7 +27,7 @@
 #define NVK_PRINT_EXCEPTIONS
 #endif
 
-#pragma region "NVK_DEFINE_FMT_METHOD"
+#pragma region NVK_DEFINE_FMT_METHOD
 #ifdef NVK_LOG_COLORS
 #define NVK_DEFINE_FMT_METHOD(NAME, COLOR)                 \
 inline static std::string NAME(const std::string& str) {   \
@@ -50,7 +50,7 @@ static std::string NAME(const std::string& str) {   \
  * @param COLOR Msg level prefix color
  * @param PREFIX Msg level prefix
  */
-#pragma region "NVK_DEFINE_FMT_STR_METHODS"
+#pragma region NVK_DEFINE_FMT_STR_METHODS
 #define NVK_DEFINE_FMT_STR_METHODS(NAME, COLOR, PREFIX)                         \
 template <typename... Args>                                                     \
 inline std::string fmt_##NAME(std::format_string<Args...> fmt, Args&& ...args)  \
@@ -80,7 +80,7 @@ inline std::string str_##NAME(const std::string& str)                           
  * @param COLOR Log level prefix color
  * @param LEVEL Log level
  */
-#pragma region "NVK_DEFINE_FMT_PRINT_METHODS"
+#pragma region NVK_DEFINE_FMT_PRINT_METHODS
 #define NVK_DEFINE_FMT_PRINT_METHODS(NAME, COLOR, LEVEL)                        \
 template <typename... Args>                                                     \
 inline void print_##NAME(std::format_string<Args...> fmt, Args&& ...args)       \
@@ -112,7 +112,7 @@ namespace Nebula::nvk
         NVK_DEFINE_FMT_METHOD(white,   "\x1b[37m");
     };
 
-    #pragma region "String formatter methods"
+    #pragma region String formatter methods
 
     NVK_DEFINE_FMT_STR_METHODS(info,    blue,    "Info");
     NVK_DEFINE_FMT_STR_METHODS(success, green,   "Ok");
@@ -122,7 +122,7 @@ namespace Nebula::nvk
 
     #pragma endregion
 
-    #pragma region "Print methods"
+    #pragma region Print methods
 
     NVK_DEFINE_FMT_PRINT_METHODS(info,    blue,    NVK_LOG_LEVEL_INFO);
     NVK_DEFINE_FMT_PRINT_METHODS(success, green,   NVK_LOG_LEVEL_SUCCESS);
@@ -132,7 +132,7 @@ namespace Nebula::nvk
 
     #pragma endregion
 
-    #pragma region "Exceptions"
+    #pragma region Exceptions
 
     template <typename E = std::runtime_error, typename... Args>
     inline E make_exception(std::format_string<Args...> fmt, Args&& ...args)
