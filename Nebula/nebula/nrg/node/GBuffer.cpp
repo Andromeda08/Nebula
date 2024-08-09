@@ -26,7 +26,7 @@ namespace Nebula::nrg
         auto motion_vec = get_resource<ImageResource>(s_motion_vec).get_image();
 
         auto descriptor_create_info = nvk::DescriptorCreateInfo()
-            .add(Nebula::nvk::DescriptorType::eUniformBuffer, 0, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment)
+            .add(nvk::DescriptorType::eUniformBuffer, 0, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment)
             .set_count(2)
             .set_name("G-Buffer");
         m_descriptor = std::make_shared<nvk::Descriptor>(descriptor_create_info, m_device);
@@ -55,7 +55,7 @@ namespace Nebula::nrg
 
         auto pipeline_create_info = nvk::PipelineCreateInfo()
             .set_pipeline_type(nvk::PipelineType::eGraphics)
-            .add_push_constant({ vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(ns::ObjectPushConstant) })
+            .add_push_constant({ vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(PushConstant) })
             .add_descriptor_set_layout(m_descriptor->layout())
             .add_attribute_descriptions<ns::Vertex>()
             .add_binding_description<ns::Vertex>()
@@ -74,29 +74,33 @@ namespace Nebula::nrg
             buf_create_info
                 .set_buffer_type(nvk::BufferType::eUniform)
                 .set_name(std::format("G-Buffer Uniform #{}", i))
-                .set_size(sizeof(ns::CameraData));
+                .set_size(sizeof(CameraUniform));
 
             m_uniform_buffer[i] = std::make_shared<nvk::Buffer>(buf_create_info, m_device);
 
-            vk::DescriptorBufferInfo buffer_info = { m_uniform_buffer[i]->buffer(), 0, sizeof(ns::CameraData)};
+            vk::DescriptorBufferInfo buffer_info = { m_uniform_buffer[i]->buffer(), 0, sizeof(CameraUniform)};
             auto write_info = nvk::DescriptorWriteInfo()
                 .set_set_index(i)
                 .add_uniform_buffer(0, buffer_info);
             m_descriptor->write(write_info);
         }
+
+        const auto& camera = get_resource<SceneResource>(s_scene_data).ref_scene().active_camera();
+        m_camera_previous_frame = camera->uniform_data();
     }
 
     void GBuffer::execute(const vk::CommandBuffer& command_buffer)
     {
         auto scene = get_resource<SceneResource>(s_scene_data).get_scene();
+
         m_render_pass->execute(command_buffer, m_framebuffers->get(m_current_frame), [&](const vk::CommandBuffer& cmd) {
             m_pipeline->bind(cmd);
             cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipeline->layout(), 0, 1, &m_descriptor->set(m_current_frame), 0, nullptr);
             for (const auto& object : scene->objects())
             {
                 using enum vk::ShaderStageFlagBits;
-                auto push_constant = object.get_push_constants();
-                cmd.pushConstants(m_pipeline->layout(), eVertex | eFragment, 0, sizeof(ns::ObjectPushConstant), &push_constant);
+                auto push_constant = PushConstant(object.get_push_constants());
+                cmd.pushConstants(m_pipeline->layout(), eVertex | eFragment, 0, sizeof(PushConstant), &push_constant);
                 object.mesh->draw(cmd);
             }
         });
@@ -104,8 +108,16 @@ namespace Nebula::nrg
 
     void GBuffer::update()
     {
-        auto scene = get_resource<SceneResource>(s_scene_data).get_scene();
-        auto uniform_data = scene->active_camera()->uniform_data();
+        auto scene = get_resource<SceneResource>(s_scene_data).ref_scene();
+        auto camera_data = scene.active_camera()->uniform_data();
+
+        CameraUniform uniform_data {
+            .current  = camera_data,
+            .previous = m_camera_previous_frame,
+        };
+
         m_uniform_buffer[m_current_frame]->set_data(&uniform_data);
+
+        m_camera_previous_frame = camera_data;
     }
 }

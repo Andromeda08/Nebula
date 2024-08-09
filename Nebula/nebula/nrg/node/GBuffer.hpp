@@ -20,12 +20,37 @@ namespace Nebula::nrg
 {
     class GBuffer : public Node
     {
+        struct PushConstant
+        {
+            ns::ObjectPushConstant object;
+
+            PushConstant() = default;
+
+            PushConstant(const ns::ObjectPushConstant& obj)
+            : object(obj)
+            {
+            }
+
+            PushConstant(const glm::mat4& M, const glm::vec4& C)
+            : object(M, C)
+            {
+            }
+        };
+
+        struct alignas(glm::vec4) CameraUniform
+        {
+            ns::CameraData current;
+            ns::CameraData previous;
+        };
+
     public:
         explicit GBuffer(const std::shared_ptr<Context>& context)
         : Node("G-Buffer Pass", NodeType::eGBuffer)
         , m_context(context)
         , m_device(context->m_device)
-        , m_current_frame(context->m_current_frame) {}
+        , m_current_frame(context->m_current_frame)
+        {
+        }
 
         ~GBuffer() override = default;
 
@@ -45,6 +70,8 @@ namespace Nebula::nrg
         std::shared_ptr<nvk::Framebuffer>           m_framebuffers;
         std::shared_ptr<nvk::Descriptor>            m_descriptor;
         std::vector<std::shared_ptr<nvk::Buffer>>   m_uniform_buffer;
+
+        ns::CameraData                              m_camera_previous_frame {};
 
         static constexpr const char* s_scene_data = "Scene Data";
         static constexpr const char* s_position   = "Position Buffer";
