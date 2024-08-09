@@ -14,6 +14,9 @@ namespace Nebula::nrg
             case NodeType::eGBuffer: {
                 return std::make_shared<GBuffer>(m_context);
             }
+            case NodeType::ePresent: {
+                return std::make_shared<Present>(m_context);
+            }
             default:
                 std::cout << std::format("Creation of NodeType \"{}\" not implemented", to_string(editor_node->type())) << std::endl;
                 return nullptr;
