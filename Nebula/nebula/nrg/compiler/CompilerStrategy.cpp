@@ -73,6 +73,12 @@ namespace Nebula::nrg
             const auto present_node = std::ranges::find_if(result, [](const auto& n){
                 return n->type() == NodeType::ePresent;
             });
+
+            if (present_node == std::end(result))
+            {
+                throw std::runtime_error("No present node was found, perhaps it wasn't connected to anything");
+            }
+
             std::rotate(present_node, present_node + 1, std::end(result));
         }
 
