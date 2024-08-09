@@ -205,6 +205,14 @@ namespace Nebula::nrg
             std::cout << msg << std::endl;
         }
 
+        if (!result.success)
+        {
+            m_logger->error("RenderGraph compilation failed: {}", result.failure_message);
+            return;
+        }
+
+        m_logger->info("RenderGraph compiled successfully");
+
         m_context->m_render_path = result.render_path;
         for (auto& node : m_context->m_render_path->nodes)
         {
