@@ -37,7 +37,8 @@ namespace Nebula::nrg
                     .set_name(create_info.name)
                     .set_sample_count(vk::SampleCountFlagBits::e1)
                     .set_usage_flags((is_depth_image ? eSampled | eDepthStencilAttachment : create_info.usage_flags | eColorAttachment))
-                    .set_tiling(vk::ImageTiling::eOptimal);
+                    .set_tiling(vk::ImageTiling::eOptimal)
+                    .set_with_sampler(true);
                 return std::make_shared<ImageResource>(nvk::Image::create(image_info, m_context->m_device),
                                                        create_info.name);
             }
