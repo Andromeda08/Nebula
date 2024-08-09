@@ -93,6 +93,7 @@ add_library(${Nebula_main}
     nscene/DefaultScene.hpp
         render/basic/Material.hpp
         render/basic/Texture.hpp
+    render/basic/Texture.cpp
 )
 
 target_link_libraries(${Nebula_main} PUBLIC ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)

@@ -8,7 +8,7 @@ shaders = []
 shader_dirs = ["glsl", "hair"]
 bin_dir = "bin"
 target_env = "vulkan1.3"
-target_dirs = ["Nebula/nebula", "Projects/hair", "Projects/raytracer"]
+target_dirs = ["Nebula/nebula", "Projects/hair", "Projects/raytracer", "Projects/rendergraph"]
 
 
 def collect_shaders():
