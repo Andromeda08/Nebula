@@ -44,6 +44,10 @@ namespace Nebula
 
         virtual void render_ui() {}
 
+        void request_shutdown();
+
+        void set_has_rendered();
+
     private:
         void init_render_context();
 
@@ -56,6 +60,7 @@ namespace Nebula
     protected:
         std::shared_ptr<wsi::Window>            m_window;
         std::shared_ptr<nvk::Context>           m_context;
+        std::shared_ptr<nvk::CommandPool>       m_command_pool;
         std::shared_ptr<nvk::CommandRing>       m_command_ring;
         std::shared_ptr<nvk::Swapchain>         m_swapchain;
         std::shared_ptr<ngui::GUI>              m_gui;
@@ -71,5 +76,7 @@ namespace Nebula
 
     private:
         std::chrono::high_resolution_clock::time_point  m_last_time;
+        bool                                            m_shutdown_requested = false;
+        bool                                            m_has_rendered = false;
     };
 }

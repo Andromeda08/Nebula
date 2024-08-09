@@ -26,7 +26,8 @@ namespace Nebula::ngui
         ~GUI() = default;
 
         void render(const vk::CommandBuffer& command_buffer,
-                    const std::function<void()>& lambda);
+                    const std::function<void()>& lambda,
+                    bool rendering_ui_only = false);
 
         bool want_capture_mouse() const;
 
@@ -42,6 +43,7 @@ namespace Nebula::ngui
         vk::DescriptorPool                m_descriptor_pool;
         vk::PipelineCache                 m_pipeline_cache;
         std::shared_ptr<nvk::RenderPass>  m_render_pass;
+        std::shared_ptr<nvk::RenderPass>  m_render_pass_only_ui;
         std::shared_ptr<nvk::Framebuffer> m_framebuffers;
         uint32_t                          m_next_framebuffer {0};
         std::shared_ptr<wsi::Window>      m_window;

@@ -34,7 +34,7 @@ namespace Nebula
 
         if (m_params.render_graph)
         {
-            m_rg_context = std::make_shared<nrg::Context>(m_scenes, m_context->device(), m_context->command_pool(), m_swapchain);
+            m_rg_context = std::make_shared<nrg::Context>(m_scenes, m_context->device(), m_context->command_pool(), m_swapchain, s_current_frame);
             m_rg_editor  = std::make_shared<nrg::GraphEditor>(m_rg_context);
         }
     }
@@ -42,7 +42,11 @@ namespace Nebula
     void Application::run()
     {
         try {
-           while (!m_window->will_close()) { loop(); }
+           while (!m_window->will_close())
+           {
+               loop();
+               if (m_shutdown_requested) break;
+           }
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
         }
@@ -50,6 +54,8 @@ namespace Nebula
 
     void Application::loop()
     {
+        m_has_rendered = false;
+
         if (!m_gui->want_capture_mouse())
         {
             m_active_scene->mouse_handler(*m_window);
@@ -78,13 +84,14 @@ namespace Nebula
                     m_rg_editor->render();
                 }
                 render_ui();
-            });
+            }, !m_has_rendered);
         }
 
         command_buffer.end();
         m_swapchain->submit_and_present(s_current_frame, acquired_frame, command_buffer);
         s_current_frame = (s_current_frame + 1) % s_max_frames_in_flight;
         m_context->device()->wait_idle();
+        m_has_rendered = false;
     }
 
     void Application::init_render_context()
@@ -120,5 +127,15 @@ namespace Nebula
         std::chrono::duration<float, std::milli> dt = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - m_last_time);
         m_last_time = current_time;
         return dt.count();
+    }
+
+    void Application::request_shutdown()
+    {
+        m_shutdown_requested = true;
+    }
+
+    void Application::set_has_rendered()
+    {
+        m_has_rendered = true;
     }
 }

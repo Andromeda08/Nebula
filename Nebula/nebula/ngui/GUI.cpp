@@ -17,14 +17,17 @@ namespace Nebula::ngui
         init_imgui(font_path);
     }
 
-    void GUI::render(const vk::CommandBuffer& command_buffer, const std::function<void()>& lambda)
+    void GUI::render(const vk::CommandBuffer& command_buffer, const std::function<void()>& lambda, bool rendering_ui_only)
     {
         auto marker = vk::DebugUtilsLabelEXT()
             .setColor(std::array{ 0.8235f, 0.0588f, 0.2235f, 1.0f })
             .setPLabelName("ImGui");
         command_buffer.beginDebugUtilsLabelEXT(&marker);
 
-        m_render_pass->execute(command_buffer, m_framebuffers->get(m_next_framebuffer), [&](const vk::CommandBuffer& cmd){
+        (rendering_ui_only
+            ? m_render_pass_only_ui
+            : m_render_pass
+        )->execute(command_buffer, m_framebuffers->get(m_next_framebuffer), [&](const vk::CommandBuffer& cmd){
             nvk::MemoryUsage mem_usage = m_context->device()->get_memory_usage();
             const ImGuiIO& io = ImGui::GetIO();
             ImGui_ImplVulkan_NewFrame();
@@ -62,6 +65,16 @@ namespace Nebula::ngui
             .set_render_area({{0, 0}, m_swapchain->extent()})
             .set_name("ImGui");
         m_render_pass = std::make_shared<nvk::RenderPass>(render_pass_create_info, m_context->device());
+
+        auto render_pass_exclusive_create_info = nvk::RenderPassCreateInfo()
+            .add_color_attachment(m_swapchain->format(),
+                                  vk::ImageLayout::ePresentSrcKHR,
+                                  vk::SampleCountFlagBits::e1,
+                                  { 0.f, 0.f, 0.f, 0.f },
+                                  vk::AttachmentLoadOp::eClear)
+            .set_render_area({{0, 0}, m_swapchain->extent()})
+            .set_name("ImGui Exclusive");
+        m_render_pass_only_ui = std::make_shared<nvk::RenderPass>(render_pass_exclusive_create_info, m_context->device());
 
         auto framebuffer_create_info = nvk::FramebufferCreateInfo()
             .set_framebuffer_count(m_swapchain->image_count())
