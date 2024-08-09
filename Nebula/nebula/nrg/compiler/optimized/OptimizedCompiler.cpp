@@ -134,6 +134,7 @@ namespace Nebula::nrg
 
         // 8. Fill & Finalize result --------------------------------
         result.render_path = render_path;
+        result.success = true;
 
         return result;
     }
