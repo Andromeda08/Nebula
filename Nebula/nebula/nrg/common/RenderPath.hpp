@@ -44,6 +44,11 @@ namespace Nebula::nrg
 
             for (const auto& node : nodes)
             {
+                if (node->type() == NodeType::eSceneDataProvider)
+                {
+                    continue;
+                }
+
                 auto node_marker = vk::DebugUtilsLabelEXT()
                     .setColor(node->marker_color())
                     .setPLabelName(node->name().c_str());
@@ -65,6 +70,7 @@ namespace Nebula::nrg
                     {
                         if (resource->type() != ResourceType::eImage) continue;
                         auto r_image = resource->as<ImageResource>();
+                        if (r_image.get_image()->state().layout == vk::ImageLayout::eDepthAttachmentOptimal) continue;
 
                         auto fnd = std::ranges::find_if(res_reqs, [&](const auto& rr){ return rr->name == id; });
                         if (fnd == std::end(res_reqs))
