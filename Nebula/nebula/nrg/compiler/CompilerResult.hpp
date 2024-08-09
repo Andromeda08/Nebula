@@ -19,7 +19,7 @@ namespace Nebula::nrg
 
         // Result -------------------------------------------------------------
         bool                        success {false};
-        std::optional<std::string>  failure_message {};
+        std::string                 failure_message {};
         std::shared_ptr<RenderPath> render_path;
     };
 }
