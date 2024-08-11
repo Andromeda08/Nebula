@@ -13,8 +13,8 @@ namespace Nebula
         {
             m_swapchain->set_viewport_scissor(command_buffer);
             m_rg_context->m_render_path->execute(command_buffer);
-            // request_shutdown();
             set_has_rendered();
+            // request_shutdown();
         }
     }
 }
