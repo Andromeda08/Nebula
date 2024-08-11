@@ -1,5 +1,6 @@
 #include "Present.hpp"
-#include <nrg/common/ResourceTraits.hpp>
+#include "nrg/common/ResourceTraits.hpp"
+#include "nrg/resource/Resources.hpp"
 
 namespace Nebula::nrg
 {
