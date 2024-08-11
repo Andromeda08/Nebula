@@ -4,12 +4,18 @@
 #include <string>
 #include <vector>
 #include <vulkan/vulkan.hpp>
+#include <nrg/common/Context.hpp>
 #include <nrg/common/Node.hpp>
 #include <nrg/common/NodeConfiguration.hpp>
 #include <nrg/common/NodeTraits.hpp>
 #include <nrg/common/ResourceClaim.hpp>
 #include <nrg/resource/Requirement.hpp>
+#include <nvk/Buffer.hpp>
 #include <nvk/Device.hpp>
+#include <nvk/Descriptor.hpp>
+#include <nvk/render/Framebuffer.hpp>
+#include <nvk/render/Pipeline.hpp>
+#include <nvk/render/RenderPass.hpp>
 
 namespace Nebula::nrg
 {
@@ -60,21 +66,35 @@ namespace Nebula::nrg
             };
         };
 
-        DeferredLighting(const std::shared_ptr<Configuration>& configuration, const std::shared_ptr<nvk::Device>& device)
-        : Node("DeferredLighting", NodeType::eDeferredLighting)
-        , m_configuration(*configuration), m_device(device) {}
+        struct PushConstant
+        {
+            glm::ivec4 params;
+
+            PushConstant() = default;
+
+            explicit PushConstant(int32_t n_lights): params(n_lights, 0, 0, 0) {}
+        };
+
+        DeferredLighting(const std::shared_ptr<Configuration>& configuration, const std::shared_ptr<Context>& context);
 
         ~DeferredLighting() override = default;
 
-        void initialize() override {}
+        void initialize() override;
 
-        void execute(const vk::CommandBuffer& command_buffer) override {}
+        void execute(const vk::CommandBuffer& command_buffer) override;
 
-        void update() override {}
+        void update() override;
 
     private:
-        const Configuration          m_configuration;
-        std::shared_ptr<nvk::Device> m_device;
+        const Configuration                         m_configuration;
+        std::shared_ptr<Context>                    m_context;
+        std::shared_ptr<nvk::Device>                m_device;
+
+        uint32_t&                                   m_current_frame;
+        std::shared_ptr<nvk::RenderPass>            m_render_pass;
+        std::shared_ptr<nvk::Pipeline>              m_pipeline;
+        std::shared_ptr<nvk::Framebuffer>           m_framebuffers;
+        std::shared_ptr<nvk::Descriptor>            m_descriptor;
 
         static constexpr const char* s_output     = "Output Image";
         static constexpr const char* s_position   = "Position Buffer";

@@ -34,6 +34,8 @@ namespace Nebula::nrg
 
         NodeType type() const { return m_type; }
 
+        const std::shared_ptr<NodeConfiguration>& node_configuration() const { return m_config; }
+
     private:
         NodeColors                         m_colors {};
         std::shared_ptr<NodeConfiguration> m_config;

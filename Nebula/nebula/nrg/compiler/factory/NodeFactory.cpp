@@ -14,6 +14,10 @@ namespace Nebula::nrg
             case NodeType::eGBuffer: {
                 return std::make_shared<GBuffer>(m_context);
             }
+            case NodeType::eDeferredLighting: {
+                auto config = std::dynamic_pointer_cast<DeferredLighting::Configuration>(editor_node->node_configuration());
+                return std::make_shared<DeferredLighting>(config, m_context);
+            }
             case NodeType::ePresent: {
                 return std::make_shared<Present>(m_context);
             }
