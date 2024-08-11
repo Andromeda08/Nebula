@@ -54,6 +54,11 @@ namespace Nebula
 
     void Application::loop()
     {
+        if (m_params.render_graph)
+        {
+            m_rg_context->check_next_render_path();
+        }
+
         m_has_rendered = false;
 
         if (!m_gui->want_capture_mouse())

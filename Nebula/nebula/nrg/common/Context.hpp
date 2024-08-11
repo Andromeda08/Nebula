@@ -9,6 +9,10 @@
 #include <nvk/Device.hpp>
 #include <nvk/Swapchain.hpp>
 
+#ifdef NBL_DEBUG
+#include <fmt/printf.h>
+#endif
+
 namespace Nebula::nrg
 {
     struct Context
@@ -35,12 +39,30 @@ namespace Nebula::nrg
             return m_scene_list[m_selected_scene];
         }
 
+        void check_next_render_path()
+        {
+            if (!m_rpath_change_queued)
+            {
+                return;
+            }
+
+            m_render_path = m_next_render_path;
+            m_next_render_path = nullptr;
+            m_rpath_change_queued = false;
+
+            #ifdef NBL_DEBUG
+            fmt::println("RenderPath has changed");
+            #endif
+        }
+
         // Available Scenes -------------------------------------------------
         const std::vector<std::shared_ptr<ns::Scene>>& m_scene_list;
         int32_t                                        m_selected_scene {0};
 
         // Last compiled executable graph -----------------------------------
         std::shared_ptr<RenderPath>                     m_render_path;
+        std::shared_ptr<RenderPath>                     m_next_render_path;
+        bool                                            m_rpath_change_queued {false};
 
         // Rendering Context ------------------------------------------------
         Size2D                                          m_render_resolution;

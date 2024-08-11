@@ -213,8 +213,10 @@ namespace Nebula::nrg
 
         m_logger->info("RenderGraph compiled successfully");
 
-        m_context->m_render_path = result.render_path;
-        for (auto& node : m_context->m_render_path->m_nodes)
+        m_context->m_next_render_path = result.render_path;
+        m_context->m_rpath_change_queued = true;
+
+        for (auto& node : m_context->m_next_render_path->m_nodes)
         {
             auto c = m_node_colors[node->type()].title_bar_hovered;
             node->set_marker_color(std::array<float, 4>{c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, 1.0f});
