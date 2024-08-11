@@ -13,6 +13,8 @@ add_subdirectory(ThirdParty/json)
 
 add_subdirectory(ThirdParty/stduuid)
 
+add_subdirectory(ThirdParty/fmt)
+
 set(TINYGLTF_USE_CPP14 ON)
 set(TINYGLTF_HEADER_ONLY ON CACHE INTERNAL "" FORCE)
 set(TINYGLTF_INSTALL OFF CACHE INTERNAL "" FORCE)

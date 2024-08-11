@@ -91,16 +91,19 @@ add_library(${Nebula_main}
     nrender/Raytracer.hpp nrender/Raytracer.cpp
 
     nscene/DefaultScene.hpp
-        render/basic/Material.hpp
-        render/basic/Texture.hpp
+    render/basic/Material.hpp
+    render/basic/Texture.hpp
     render/basic/Texture.cpp
+    nrg/common/RenderPath.cpp
+    ncommon/Measure.hpp
 )
 
-target_link_libraries(${Nebula_main} PUBLIC ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid)
+target_link_libraries(${Nebula_main} PUBLIC ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid fmt::fmt)
 target_include_directories(${Nebula_main} PUBLIC
     ${Vulkan_INCLUDE_DIRS}
     "../nvk/include"
     "${3RD}/cy"
+    "${3RD}/fmt/include"
     "${3RD}/glm"
     "${3RD}/glfw"
     "${3RD}/json"
