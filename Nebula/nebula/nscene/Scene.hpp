@@ -75,12 +75,24 @@ namespace Nebula::ns
             return m_top_level_as;
         }
 
+        const std::shared_ptr<nvk::Buffer>& lights_uniform_buffer() const
+        {
+            return m_lights_buffer;
+        }
+
+        const std::array<std::shared_ptr<nvk::Buffer>, 2>& camera_uniform_buffer() const
+        {
+            return m_camera_uniform_buffer;
+        }
+
     protected:
         virtual void scene_init() {}
 
         void create_camera_uniform_buffers();
 
         void create_object_description_buffers();
+
+        void create_lights_buffer();
 
         void create_tlas();
 
@@ -96,6 +108,7 @@ namespace Nebula::ns
         std::vector<Object>                             m_objects;
         std::shared_ptr<nvk::Buffer>                    m_object_descriptions_buffer;
         std::shared_ptr<nvk::TLAS>                      m_top_level_as;
+        std::shared_ptr<nvk::Buffer>                    m_lights_buffer;
 
         std::array<std::shared_ptr<nvk::Buffer>, 2>     m_camera_uniform_buffer;
 

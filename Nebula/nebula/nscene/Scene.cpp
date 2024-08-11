@@ -26,6 +26,7 @@ namespace Nebula::ns
         }
 
         create_camera_uniform_buffers();
+        create_lights_buffer();
     }
 
     void Scene::update(float dt, uint32_t current_frame)
@@ -80,6 +81,16 @@ namespace Nebula::ns
         m_command_pool->exec_single_time_command([&](const vk::CommandBuffer& command_buffer){
             od_staging->copy_to_buffer(*m_object_descriptions_buffer, command_buffer);
         });
+    }
+
+    void Scene::create_lights_buffer()
+    {
+        auto name = std::format("[{} Scene] Lights", m_name);
+        auto create_info = nvk::BufferCreateInfo()
+            .set_buffer_type(nvk::BufferType::eStorage)
+            .set_name(name)
+            .set_size(sizeof(Light) * m_lights.size());
+        m_lights_buffer = nvk::Buffer::create_with_data(create_info, m_lights.data(), m_device, m_command_pool);
     }
 
     std::vector<nvk::TLASInstanceInfo> Scene::collect_tlas_instances() const
