@@ -26,7 +26,7 @@ namespace Nebula::nrg
 
             PushConstant() = default;
 
-            PushConstant(const ns::ObjectPushConstant& obj)
+            explicit PushConstant(const ns::ObjectPushConstant& obj)
             : object(obj)
             {
             }
