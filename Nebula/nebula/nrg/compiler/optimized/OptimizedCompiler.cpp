@@ -128,9 +128,7 @@ namespace Nebula::nrg
         }
 
         // 7. Create RenderPath -------------------------------------
-        auto render_path = std::make_shared<RenderPath>();
-        render_path->resources = resources;
-        render_path->nodes = rg_nodes;
+        auto render_path = std::make_shared<RenderPath>(std::move(rg_nodes), std::move(resources));
 
         // 8. Fill & Finalize result --------------------------------
         result.render_path = render_path;
