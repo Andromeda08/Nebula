@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.23)
-set(CMAKE_EXE_LINKER_FLAGS "-static")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+IF(WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "-static")
+ENDIF()
 
 find_package(Vulkan REQUIRED)
 
@@ -95,7 +99,15 @@ add_library(${Nebula_main}
     ncommon/Measure.hpp
 )
 
-target_link_libraries(${Nebula_main} PUBLIC ${Vulkan_LIBRARIES} nvk glm glfw nlohmann_json::nlohmann_json stduuid fmt::fmt)
+target_link_libraries(${Nebula_main} PUBLIC
+    ${Vulkan_LIBRARIES}
+    nvk
+    glm
+    glfw
+    nlohmann_json::nlohmann_json
+    stduuid
+    fmt::fmt
+)
 target_include_directories(${Nebula_main} PUBLIC
     ${Vulkan_INCLUDE_DIRS}
     "../nvk/include"
@@ -110,11 +122,14 @@ target_include_directories(${Nebula_main} PUBLIC
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
     "${IMNODES_DIR}"
-    "${NLOG}")
+    "${NLOG}"
+)
 target_compile_definitions (${Nebula_main} PUBLIC
     NBL_DEBUG
     -DImTextureID=ImU64
     IMGUI_DEFINE_MATH_OPERATORS
     GLFW_INCLUDE_VULKAN
     UUID_SYSTEM_GENERATOR
-    NLOG_COLORED NLOG_PRINT_EXCEPTIONS)
+    NLOG_COLORED
+    NLOG_PRINT_EXCEPTIONS
+)
