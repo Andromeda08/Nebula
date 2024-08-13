@@ -1,5 +1,5 @@
 #include "Scene.hpp"
-#include <format>
+#include <fmt/format.h>
 
 namespace Nebula::ns
 {
@@ -64,7 +64,7 @@ namespace Nebula::ns
             obj_descriptions.push_back(obj.get_description());
         }
 
-        auto name = std::format("[{} Scene] Object Descriptions", m_name);
+        auto name = fmt::format("[{} Scene] Object Descriptions", m_name);
         auto od_create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
             .set_name(name)
@@ -85,7 +85,7 @@ namespace Nebula::ns
 
     void Scene::create_lights_buffer()
     {
-        auto name = std::format("[{} Scene] Lights", m_name);
+        auto name = fmt::format("[{} Scene] Lights", m_name);
         auto create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
             .set_name(name)
@@ -124,7 +124,7 @@ namespace Nebula::ns
         {
             auto ub_create_info = nvk::BufferCreateInfo()
                 .set_buffer_type(nvk::BufferType::eUniform)
-                .set_name(std::format("{} Scene Camera UB #{}", m_name, i))
+                .set_name(fmt::format("{} Scene Camera UB #{}", m_name, i))
                 .set_size(sizeof(ns::CameraData));
             m_camera_uniform_buffer[i] = nvk::Buffer::create(ub_create_info, m_device);
 

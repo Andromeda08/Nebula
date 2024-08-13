@@ -1,6 +1,6 @@
 #pragma once
 
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <string>
 #include <glm/vec4.hpp>
@@ -78,7 +78,7 @@ namespace Nebula::nrg
         if (str == "StorageBuffer") return eStorageBuffer;
         if (str == "Unknown")       return eUnknown;
 
-        throw std::runtime_error(std::format(R"(Unknown ResourceType "{}")", str));
+        throw std::runtime_error(fmt::format(R"(Unknown ResourceType "{}")", str));
     }
 
     // Other enum based conversion methods --------------------

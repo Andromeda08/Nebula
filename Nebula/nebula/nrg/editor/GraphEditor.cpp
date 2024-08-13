@@ -1,7 +1,7 @@
 #include "GraphEditor.hpp"
 
 #include <algorithm>
-#include <format>
+#include <fmt/format.h>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -322,7 +322,7 @@ namespace Nebula::nrg
                 ImGui::EndMenu();
             }
 
-            std::string select_scene_text = std::format(
+            std::string select_scene_text = fmt::format(
                 "Select Scene (Active: \"{}\")",
                 m_context->get_selected_scene()->name());
 

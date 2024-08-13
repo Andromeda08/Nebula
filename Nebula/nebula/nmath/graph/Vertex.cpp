@@ -5,7 +5,7 @@ namespace Nebula::nmath::graph
     Vertex::Vertex(const std::string& name)
     {
         m_name = (name.empty())
-            ? std::format("Vertex {}", to_string(m_uuid))
+            ? fmt::format("Vertex {}", to_string(m_uuid))
             : name;
     }
 

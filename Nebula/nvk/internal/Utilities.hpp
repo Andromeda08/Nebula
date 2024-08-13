@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -31,7 +31,7 @@
 #ifdef NVK_LOG_COLORS
 #define NVK_DEFINE_FMT_METHOD(NAME, COLOR)                 \
 inline static std::string NAME(const std::string& str) {   \
-    return std::format(COLOR"{}\x1b[0m", str);             \
+    return fmt::format(COLOR"{}\x1b[0m", str);             \
 }
 #else
 #define NVK_DEFINE_FMT_METHOD(NAME, COLOR)          \
@@ -53,17 +53,17 @@ static std::string NAME(const std::string& str) {   \
 #pragma region NVK_DEFINE_FMT_STR_METHODS
 #define NVK_DEFINE_FMT_STR_METHODS(NAME, COLOR, PREFIX)                         \
 template <typename... Args>                                                     \
-inline std::string fmt_##NAME(std::format_string<Args...> fmt, Args&& ...args)  \
+inline std::string fmt_##NAME(fmt::format_string<Args...> fmt, Args&& ...args)  \
 {                                                                               \
-    return std::format(                                                         \
+    return fmt::format(                                                         \
         NVK_MSG_FORMAT,                                                         \
         Format::NVK_PREFIX_COLOR("nvk"), Format::COLOR(PREFIX),                 \
-        std::format(fmt, std::forward<Args>(args)...)                           \
+        fmt::format(fmt, std::forward<Args>(args)...)                           \
     );                                                                          \
 }                                                                               \
 inline std::string str_##NAME(const std::string& str)                           \
 {                                                                               \
-    return std::format(                                                         \
+    return fmt::format(                                                         \
         NVK_MSG_FORMAT,                                                         \
         Format::NVK_PREFIX_COLOR("nvk"), Format::COLOR(PREFIX), str);           \
                                                                                 \
@@ -83,7 +83,7 @@ inline std::string str_##NAME(const std::string& str)                           
 #pragma region NVK_DEFINE_FMT_PRINT_METHODS
 #define NVK_DEFINE_FMT_PRINT_METHODS(NAME, COLOR, LEVEL)                        \
 template <typename... Args>                                                     \
-inline void print_##NAME(std::format_string<Args...> fmt, Args&& ...args)       \
+inline void print_##NAME(fmt::format_string<Args...> fmt, Args&& ...args)       \
 {                                                                               \
     if (NVK_LOG_LEVEL >= LEVEL)                                                 \
     {                                                                           \
@@ -135,7 +135,7 @@ namespace Nebula::nvk
     #pragma region Exceptions
 
     template <typename E = std::runtime_error, typename... Args>
-    inline E make_exception(std::format_string<Args...> fmt, Args&& ...args)
+    inline E make_exception(fmt::format_string<Args...> fmt, Args&& ...args)
     {
         static_assert(std::is_base_of_v<std::exception, E>, "Template parameter E must be a type of std::exception");
         const std::string message = fmt_error(fmt, std::forward<Args>(args)...);

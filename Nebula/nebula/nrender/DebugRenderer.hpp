@@ -84,7 +84,7 @@ namespace Nebula::nrender
             {
                 auto ub_create_info = nvk::BufferCreateInfo()
                     .set_buffer_type(nvk::BufferType::eUniform)
-                    .set_name(std::format("Light Debug Camera #{}", i))
+                    .set_name(fmt::format("Light Debug Camera #{}", i))
                     .set_size(sizeof(ns::CameraData));
                 m_uniform_buffer[i] = nvk::Buffer::create(ub_create_info, m_device);
                 m_uniform_buffer[i]->set_data(&uniform_data);

@@ -1,7 +1,7 @@
 #include "ResourceOptimizer.hpp"
 
 #include <bitset>
-#include <format>
+#include <fmt/format.h>
 #include <fstream>
 #include <queue>
 #include <nlohmann/json.hpp>
@@ -46,7 +46,7 @@ namespace Nebula::nrg
             if (!r.optimizable) {
                 gen_resources.push_back(resource);
                 non_optimizable_count++;
-                logs.push_back(std::format("New, non-optimizable resource with id {} of type {}",
+                logs.push_back(fmt::format("New, non-optimizable resource with id {} of type {}",
                                            resource.id, to_string(resource.type)));
                 continue;
             }
@@ -54,7 +54,7 @@ namespace Nebula::nrg
             // Case: No generated resources yet
             if (gen_resources.empty()) {
                 gen_resources.push_back(resource);
-                logs.push_back(std::format("New resource with id {} of type {}",
+                logs.push_back(fmt::format("New resource with id {} of type {}",
                                            resource.id, to_string(resource.type)));
                 continue;
             }
@@ -84,7 +84,7 @@ namespace Nebula::nrg
                     was_inserted = timeline.insert_usage_points(usage_points);
                     if (was_inserted) {
                         logs.push_back(
-                            std::format(
+                            fmt::format(
                                 "Resource with id {} of type {} was reused in range [{}, {}], {} new usage points were added",
                                 timeline.id, to_string(timeline.type),
                                 std::min_element(std::begin(usage_points), std::end(usage_points))->point,
@@ -99,7 +99,7 @@ namespace Nebula::nrg
             // Case: Failed to Insert
             if (!was_inserted) {
                 gen_resources.push_back(resource);
-                logs.push_back(std::format("New resource with id {} of type {}",
+                logs.push_back(fmt::format("New resource with id {} of type {}",
                                            resource.id, to_string(resource.type)));
             }
         }
@@ -128,21 +128,21 @@ namespace Nebula::nrg
 
     void ResourceOptimizer::export_result(const ResourceOptimizerResult& result)
     {
-        std::string file_name = std::format("resource_optimizer_{:%Y-%m-%d_%H-%M}.csv", result.start_time);
+        std::string file_name = fmt::format("resource_optimizer_{:%Y-%m-%d_%H-%M}.csv", result.start_time);
 
         std::vector<std::string> csv;
         std::stringstream sstr;
         sstr << "Optimized Resources,\n"
-             << std::format("Reduction: {},", result.original_resource_count - result.optimized_resource_count)
-             << std::format("Non-optimizable: {},", result.non_optimizable_count)
-             << std::format("Time: {} microseconds", result.optimization_time.count());
+             << fmt::format("Reduction: {},", result.original_resource_count - result.optimized_resource_count)
+             << fmt::format("Non-optimizable: {},", result.non_optimizable_count)
+             << fmt::format("Time: {} microseconds", result.optimization_time.count());
         csv.push_back(sstr.str());
         sstr.str(std::string());
 
         sstr << ",";
         for (int32_t i = 0; i <= result.timeline_range.end; i++)
         {
-            sstr << std::format("Node #{},", i);
+            sstr << fmt::format("Node #{},", i);
         }
         csv.push_back(sstr.str());
         sstr.str(std::string());
@@ -151,14 +151,14 @@ namespace Nebula::nrg
             auto& resource = result.resources[i];
             auto range = resource.get_usage_range();
 
-            sstr << std::format("Resource #{},", i);
+            sstr << fmt::format("Resource #{},", i);
             for (int32_t j = 0; j <= result.timeline_range.end; j++) {
                 auto usage_point = resource.get_usage_point(j);
                 if (usage_point.has_value()) {
                     auto point = usage_point.value();
-                    sstr << ((range.start == range.end) ? std::format("[{}]", point.used_as)
-                        : (j == range.start) ? std::format("[{}", point.used_as)
-                        : (j == range.end) ? std::format("{}]", point.used_as)
+                    sstr << ((range.start == range.end) ? fmt::format("[{}]", point.used_as)
+                        : (j == range.start) ? fmt::format("[{}", point.used_as)
+                        : (j == range.end) ? fmt::format("{}]", point.used_as)
                         : point.used_as);
                 }
                 sstr << ",";
@@ -288,7 +288,7 @@ namespace Nebula::nrg
             });
         }
 
-        std::string file_name = std::format("resource_optimizer_{:%Y-%m-%d_%H-%M}.json", result.start_time);
+        std::string file_name = fmt::format("resource_optimizer_{:%Y-%m-%d_%H-%M}.json", result.start_time);
         std::ofstream file(file_name);
         file << std::setw(4) << out << std::endl;
         file.close();

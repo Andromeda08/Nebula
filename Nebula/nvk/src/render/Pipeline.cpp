@@ -1,7 +1,7 @@
 #include "render/Pipeline.hpp"
 #include "rt/ShaderBindingTable.hpp"
 #include "Utilities.hpp"
-#include <format>
+#include <fmt/format.h>
 
 namespace Nebula::nvk
 {
@@ -35,7 +35,7 @@ namespace Nebula::nvk
                 throw make_exception("Failed to create Pipeline {}: Pipeline type not specified", m_name);
         }
 
-        m_device->name_object(m_pipeline, std::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::ePipeline);
+        m_device->name_object(m_pipeline, fmt::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::ePipeline);
 
         m_device->name_object(m_pipeline_layout, m_name, vk::ObjectType::ePipelineLayout);
 
@@ -160,7 +160,7 @@ namespace Nebula::nvk
     {
         m_rt_depth = create_info.m_ray_depth;
         auto sbt_create_info = ShaderBindingTableCreateInfo()
-            .set_name(std::format("{} Pipeline SBT", m_name));
+            .set_name(fmt::format("{} Pipeline SBT", m_name));
 
         bool has_ray_gen = false;
 

@@ -112,7 +112,7 @@ namespace Nebula::nvk
         }
 
         m_device->name_object(
-            std::format("{}: DescriptorPool", m_name),
+            fmt::format("{}: DescriptorPool", m_name),
             (uint64_t) m_pool.operator VkDescriptorPool(),
             vk::ObjectType::eDescriptorPool);
     }
@@ -131,7 +131,7 @@ namespace Nebula::nvk
         }
 
         m_device->name_object(
-            std::format("{}: DescriptorLayout", m_name),
+            fmt::format("{}: DescriptorLayout", m_name),
             (uint64_t) m_layout.operator VkDescriptorSetLayout(),
             vk::ObjectType::eDescriptorSetLayout);
     }
@@ -156,7 +156,7 @@ namespace Nebula::nvk
         for (size_t i = 0; i < m_sets.size(); i++)
         {
             m_device->name_object(
-                std::format("{} Set #{}", m_name, i),
+                fmt::format("{} Set #{}", m_name, i),
                 (uint64_t) m_sets[i].operator VkDescriptorSet(),
                 vk::ObjectType::eDescriptorSet);
         }

@@ -1,5 +1,5 @@
 #include "HairModel.hpp"
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 
 namespace Nebula::nhair
@@ -89,7 +89,7 @@ namespace Nebula::nhair
 
     void HairModel::create_buffers()
     {
-        auto name = std::format("[Hair] {}", m_file_path);
+        auto name = fmt::format("[Hair] {}", m_file_path);
         auto vb_create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eStorage)
             .set_name(name)
@@ -121,7 +121,7 @@ namespace Nebula::nhair
         int32_t i = -1;
         for (auto& buffer : m_position_buffers)
         {
-            auto name = std::format("[Hair | {}] Position Buffer #{}", m_file_path, i++);
+            auto name = fmt::format("[Hair | {}] Position Buffer #{}", m_file_path, i++);
             create_info.set_name(name);
             buffer = nvk::Buffer::create_with_data(create_info, m_vertices.data(), m_device, m_command_pool);
         }

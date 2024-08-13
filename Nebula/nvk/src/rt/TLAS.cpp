@@ -11,7 +11,7 @@ namespace Nebula::nvk
     , m_name(create_info.name)
     {
         build(create_info.instance_info);
-        m_device->name_object(m_tlas, std::format("{} [Top-Level]", m_name), vk::ObjectType::eAccelerationStructureKHR);
+        m_device->name_object(m_tlas, fmt::format("{} [Top-Level]", m_name), vk::ObjectType::eAccelerationStructureKHR);
 
         print_verbose("Created Top-Level AS: {}", create_info.name);
     }
@@ -37,7 +37,7 @@ namespace Nebula::nvk
         vk::DeviceSize instances_size = instances.size() * sizeof(vk::AccelerationStructureInstanceKHR);
         auto staging_create_info = BufferCreateInfo()
             .set_buffer_type(BufferType::eStorage)
-            .set_name(std::format("{} TLAS Instance Data", m_name))
+            .set_name(fmt::format("{} TLAS Instance Data", m_name))
             .set_size(instances_size);
         auto staging_buffer = Buffer::create(staging_create_info, m_device);
 
@@ -48,7 +48,7 @@ namespace Nebula::nvk
             .add_usage_flags(eTransferDst | eShaderDeviceAddress | eAccelerationStructureBuildInputReadOnlyKHR)
             .set_buffer_type(BufferType::eCustom)
             .set_size(instances_size)
-            .set_name(std::format("{} TLAS Instance Data", m_name));
+            .set_name(fmt::format("{} TLAS Instance Data", m_name));
         m_instance_data = Buffer::create(instance_create_info, m_device);
 
         staging_buffer->set_data(instances.data());
@@ -79,7 +79,7 @@ namespace Nebula::nvk
 
         auto tlas_buffer_create_info = BufferCreateInfo()
             .set_buffer_type(BufferType::eAccelerationStructureStorage)
-            .set_name(std::format("{} TLAS", m_name))
+            .set_name(fmt::format("{} TLAS", m_name))
             .set_size(build_sizes_info.accelerationStructureSize);
         m_buffer = Buffer::create(tlas_buffer_create_info, m_device);
 
@@ -97,7 +97,7 @@ namespace Nebula::nvk
 
         auto as_staging_create_info = BufferCreateInfo()
             .set_buffer_type(BufferType::eStorage)
-            .set_name(std::format("{} TLAS", m_name))
+            .set_name(fmt::format("{} TLAS", m_name))
             .set_size(build_sizes_info.buildScratchSize);
         auto as_staging_buffer = Buffer::create(as_staging_create_info, m_device);
 

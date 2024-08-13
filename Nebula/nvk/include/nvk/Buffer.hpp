@@ -107,7 +107,7 @@ namespace Nebula::nvk
             {
                 std::string message = "Tried to copy data of greater size than the memory of buffer";
                 #ifdef NVK_VERBOSE
-                message = std::format("Tried to copy data of greater size ({} > {}) than the memory of buffer \"{}\"",
+                message = fmt::format("Tried to copy data of greater size ({} > {}) than the memory of buffer \"{}\"",
                                       sizeof(T), size(), m_name);
                 #endif
                 throw std::runtime_error(message);

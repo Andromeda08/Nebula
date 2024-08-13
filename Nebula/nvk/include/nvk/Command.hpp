@@ -10,7 +10,7 @@
 #include "Utility.hpp"
 
 #ifdef NVK_VERBOSE
-#include <format>
+#include <fmt/format.h>
 #include <iostream>
 #endif
 
@@ -31,7 +31,7 @@ namespace Nebula::nvk
             const vk::Result result = device.allocateCommandBuffers(&allocate_info, this->underlying_data());
 
             #ifdef NVK_VERBOSE
-            std::cout << std::format("[V] Created a CommandRing of size {} on Queue Family {}", this->size(), m_queue->family_index) << std::endl;
+            std::cout << fmt::format("[V] Created a CommandRing of size {} on Queue Family {}", this->size(), m_queue->family_index) << std::endl;
             #endif
         }
 
@@ -40,7 +40,7 @@ namespace Nebula::nvk
             m_device.freeCommandBuffers(m_pool, this->size(), this->underlying_data());
 
             #ifdef NVK_VERBOSE
-            std::cout << std::format("[V] Destroyed a CommandRing of size {} on Queue Family {}", this->size(), m_queue->family_index) << std::endl;
+            std::cout << fmt::format("[V] Destroyed a CommandRing of size {} on Queue Family {}", this->size(), m_queue->family_index) << std::endl;
             #endif
         }
 

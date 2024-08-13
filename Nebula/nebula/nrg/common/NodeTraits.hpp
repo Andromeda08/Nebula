@@ -1,6 +1,6 @@
 #pragma once
 
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -56,7 +56,7 @@ namespace Nebula::nrg
         if (str == "SceneDataProvider")     return eSceneDataProvider;
         if (str == "Unknown")               return eUnknown;
 
-        throw std::runtime_error(std::format(R"(Unknown NodeType "{}")", str));
+        throw std::runtime_error(fmt::format(R"(Unknown NodeType "{}")", str));
     }
 
     inline std::string to_string(const NodeType node_type)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <format>
+#include <fmt/format.h>
 #include <functional>
 #include <stdexcept>
 
@@ -47,7 +47,7 @@ namespace Nebula
                 return m_vector[index];
             }
 
-            throw std::out_of_range(std::format("Index {} is out of bounds for Ring of size {}", index, m_vector.size()));
+            throw std::out_of_range(fmt::format("Index {} is out of bounds for Ring of size {}", index, m_vector.size()));
         }
 
         constexpr size_t size() const { return m_vector.size(); }
@@ -96,7 +96,7 @@ namespace Nebula
                 return m_array[index];
             }
 
-            throw std::out_of_range(std::format("Index {} is out of bounds for RingArray of size {}", index, S));
+            throw std::out_of_range(fmt::format("Index {} is out of bounds for RingArray of size {}", index, S));
         }
 
         constexpr size_t size() const { return S; }

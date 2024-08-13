@@ -1,6 +1,6 @@
 #include "EditorNode.hpp"
 
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <utility>
 #include <imgui.h>
@@ -73,7 +73,7 @@ namespace Nebula::nrg
         {
             if (resource.id == id) return resource;
         }
-        throw std::runtime_error(std::format("No Resource found with ID {}", id));
+        throw std::runtime_error(fmt::format("No Resource found with ID {}", id));
     }
 
     ResourceClaim& EditorNode::get_resource(const std::string& name)
@@ -82,6 +82,6 @@ namespace Nebula::nrg
         {
             if (resource.name() == name) return resource;
         }
-        throw std::runtime_error(std::format("No Resource found with the name {}", name));
+        throw std::runtime_error(fmt::format("No Resource found with the name {}", name));
     }
 }

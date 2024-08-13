@@ -73,7 +73,7 @@ namespace Nebula::nrg
             nvk::BufferCreateInfo buf_create_info{};
             buf_create_info
                 .set_buffer_type(nvk::BufferType::eUniform)
-                .set_name(std::format("G-Buffer Uniform #{}", i))
+                .set_name(fmt::format("G-Buffer Uniform #{}", i))
                 .set_size(sizeof(CameraUniform));
 
             m_uniform_buffer[i] = std::make_shared<nvk::Buffer>(buf_create_info, m_device);

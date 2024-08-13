@@ -1,6 +1,6 @@
 #include "EditorNodeFactory.hpp"
 
-#include <format>
+#include <fmt/format.h>
 #include <iostream>
 #include <vector>
 #include <nrg/common/ResourceClaim.hpp>
@@ -40,7 +40,7 @@ namespace Nebula::nrg
             nrg_case_RC(ePresent, Present);
             nrg_case_RC(eSceneDataProvider, SceneDataProvider);
             default:
-                throw std::runtime_error(std::format("EditorNode creation for {} node type not supported", to_string(node_type)));
+                throw std::runtime_error(fmt::format("EditorNode creation for {} node type not supported", to_string(node_type)));
         }
 
         return std::make_shared<EditorNode>(node_type, to_string(node_type), node_colors,

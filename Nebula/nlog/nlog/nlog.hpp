@@ -2,7 +2,7 @@
 
 #include <exception>
 #include <iostream>
-#include <format>
+#include <fmt/format.h>
 #include <regex>
 #include <stdexcept>
 #include <string>
@@ -28,8 +28,8 @@ inline std::string COLOR(const std::string& str) {      \
 #ifndef LOGGER_FMT_METHOD
 #define LOGGER_FMT_METHOD(level)                                                                                    \
 template <typename... Args>                                                                                         \
-inline std::string fmt_##level(std::format_string<Args...> fmt, Args&& ...args) {                                   \
-    return std::format("{}{}{} {}", p_open, p_##level, p_close, std::format(fmt, std::forward<Args>(args)...));     \
+inline std::string fmt_##level(fmt::format_string<Args...> fmt, Args&& ...args) {                                   \
+    return fmt::format("{}{}{} {}", p_open, p_##level, p_close, fmt::format(fmt, std::forward<Args>(args)...));     \
 }
 #endif
 
@@ -99,9 +99,9 @@ namespace Nebula::nlog
     // Formatter methods ----------------------------------------------
     #pragma region
     template <typename... Args>
-    inline std::string fmt_prefixed(const std::string& prefix, std::format_string<Args...> fmt, Args&& ...args)
+    inline std::string fmt_prefixed(const std::string& prefix, fmt::format_string<Args...> fmt, Args&& ...args)
     {
-        return std::format("[{}] {}", prefix, std::format(fmt, std::forward<Args>(args)...));
+        return fmt::format("[{}] {}", prefix, fmt::format(fmt, std::forward<Args>(args)...));
     }
     #pragma endregion
 
@@ -142,12 +142,12 @@ namespace Nebula::nlog
     // Exceptions -----------------------------------------------------
     #pragma region
     template <typename E = std::runtime_error, typename... Args>
-    inline E make_exception(std::format_string<Args...> fmt, Args&& ...args)
+    inline E make_exception(fmt::format_string<Args...> fmt, Args&& ...args)
     {
         static_assert(std::is_base_of_v<std::exception, E>, "Template parameter E must be a type of std::exception");
-        const std::string message = std::format(fmt, std::forward<Args>(args)...);
+        const std::string message = fmt::format(fmt, std::forward<Args>(args)...);
         #ifdef NLOG_PRINT_EXCEPTIONS
-        std::cout << std::format("{}{}{} {}", p_open, red("Exception"), p_close, message) << std::endl;
+        std::cout << fmt::format("{}{}{} {}", p_open, red("Exception"), p_close, message) << std::endl;
         #endif
         return E(message);
     }
@@ -161,7 +161,7 @@ namespace Nebula::nlog
         : m_print(print), m_store(store), m_prefix_color(to_code(prefix_color)), m_prefix(std::move(prefix)) {}
 
         template <typename... Args>
-        void info(std::format_string<Args...> fmt, Args&& ...args)
+        void info(fmt::format_string<Args...> fmt, Args&& ...args)
         {
             log(p_info, fmt, std::forward<Args>(args)...);
         }
@@ -172,7 +172,7 @@ namespace Nebula::nlog
         }
 
         template <typename... Args>
-        void warning(std::format_string<Args...> fmt, Args&& ...args)
+        void warning(fmt::format_string<Args...> fmt, Args&& ...args)
         {
             log(p_warning, fmt, std::forward<Args>(args)...);
         }
@@ -183,7 +183,7 @@ namespace Nebula::nlog
         }
 
         template <typename... Args>
-        void error(std::format_string<Args...> fmt, Args&& ...args)
+        void error(fmt::format_string<Args...> fmt, Args&& ...args)
         {
             log(p_error, fmt, std::forward<Args>(args)...);
         }
@@ -194,7 +194,7 @@ namespace Nebula::nlog
         }
 
         template <typename... Args>
-        void verbose(std::format_string<Args...> fmt, Args&& ...args)
+        void verbose(fmt::format_string<Args...> fmt, Args&& ...args)
         {
             log(p_verbose, fmt, std::forward<Args>(args)...);
         }
@@ -206,9 +206,9 @@ namespace Nebula::nlog
 
     private:
         template <typename... Args>
-        void log(const std::string& level, std::format_string<Args...> fmt, Args&& ...args) {
-            std::string message = std::format("[{}{}\x1b[0m | {}] {}", m_prefix_color, m_prefix, level,
-                                              std::format(fmt, std::forward<Args>(args)...));
+        void log(const std::string& level, fmt::format_string<Args...> fmt, Args&& ...args) {
+            std::string message = fmt::format("[{}{}\x1b[0m | {}] {}", m_prefix_color, m_prefix, level,
+                                              fmt::format(fmt, std::forward<Args>(args)...));
 
             if (m_print) std::cout << message << std::endl;
             if (m_store) m_logs.push_back(message);

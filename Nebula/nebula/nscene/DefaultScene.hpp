@@ -1,6 +1,6 @@
 #pragma once
 
-#include <format>
+#include <fmt/format.h>
 #include <random>
 #include <nmath/Utility.hpp>
 #include <nscene/Scene.hpp>
@@ -47,13 +47,13 @@ namespace Nebula::ns
 
             Object plane {};
             plane.mesh = m_meshes["cube"];
-            plane.name = std::format("Object {}", m_objects.size() + 1);
+            plane.name = fmt::format("Object {}", m_objects.size() + 1);
             plane.transform.scale = { 192.0f, 0.05f, 192.0f};
             m_objects.push_back(plane);
 
             Object plane1 {};
             plane1.mesh = m_meshes["cube"];
-            plane1.name = std::format("Object {}", m_objects.size() + 1);
+            plane1.name = fmt::format("Object {}", m_objects.size() + 1);
             plane1.transform.scale = { 192.0f, 0.05f, 192.0f};
             plane1.transform.translate = { 96.0f, 32.0f, 0.0f };
             plane1.transform.euler.z = glm::pi<float>() / 2.0f;
@@ -62,7 +62,7 @@ namespace Nebula::ns
 
             Object plane2 {};
             plane2.mesh = m_meshes["cube"];
-            plane2.name = std::format("Object {}", m_objects.size() + 1);
+            plane2.name = fmt::format("Object {}", m_objects.size() + 1);
             plane2.transform.scale = { 192.0f, 0.05f, 192.0f};
             plane2.transform.translate = { 0.0f, 32.0f, -96.0f };
             plane2.transform.euler.x = glm::pi<float>() / 2.0f;
@@ -71,7 +71,7 @@ namespace Nebula::ns
 
             Object plane3 {};
             plane3.mesh = m_meshes["cube"];
-            plane3.name = std::format("Object {}", m_objects.size() + 1);
+            plane3.name = fmt::format("Object {}", m_objects.size() + 1);
             plane3.transform.scale = { 192.0f, 0.05f, 192.0f};
             plane3.transform.translate = { 0.0f, 32.0f, 96.0f };
             plane3.transform.euler.x = glm::pi<float>() / 2.0f;
@@ -104,7 +104,7 @@ namespace Nebula::ns
 
                 Object object {
                     .mesh         = m_meshes["cube"],
-                    .name         = std::format("Object {}", m_objects.size() + 1),
+                    .name         = fmt::format("Object {}", m_objects.size() + 1),
                     .rt_hit_group = static_cast<uint32_t>(nmath::rand() % 3),
                     .solid_color  = color_pool[dist(random)],
                     .transform    = transform,

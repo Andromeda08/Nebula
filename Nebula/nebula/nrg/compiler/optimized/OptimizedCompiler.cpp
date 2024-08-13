@@ -1,6 +1,6 @@
 #include "OptimizedCompiler.hpp"
 
-#include <format>
+#include <fmt/format.h>
 #include <sstream>
 #include <iostream>
 #include "ResourceOptimizer.hpp"
@@ -21,8 +21,8 @@ namespace Nebula::nrg
         std::vector<std::string>& logs = result.internal_logs;
 
         result.start_timestamp = std::chrono::utc_clock::now();
-        logs.push_back(std::format("Compiling started at {:%Y-%m-%d %H:%M}", result.start_timestamp));
-        logs.push_back(fmt_nodes_str(std::format("Input Nodes ({}):", nodes.size()), nodes));
+        logs.push_back(fmt::format("Compiling started at {:%Y-%m-%d %H:%M}", result.start_timestamp));
+        logs.push_back(fmt_nodes_str(fmt::format("Input Nodes ({}):", nodes.size()), nodes));
 
         // 1. Cull unreachable nodes --------------------------------
         std::vector<node_ptr> connected_nodes;
@@ -32,13 +32,13 @@ namespace Nebula::nrg
             std::size_t culled_node_cnt = nodes.size() - connected_nodes.size();
             if (culled_node_cnt != 0)
             {
-                logs.push_back(std::format("Found and culled {} unreachable node(s).", culled_node_cnt));
+                logs.push_back(fmt::format("Found and culled {} unreachable node(s).", culled_node_cnt));
             }
             else
             {
                 logs.emplace_back("No unreachable nodes were found.");
             }
-            logs.push_back(fmt_nodes_str(std::format("Remaining Nodes ({}):", connected_nodes.size()), connected_nodes));
+            logs.push_back(fmt_nodes_str(fmt::format("Remaining Nodes ({}):", connected_nodes.size()), connected_nodes));
         }
         catch (const std::runtime_error& ex) {
             make_failed_result(result, ex.what());
@@ -49,7 +49,7 @@ namespace Nebula::nrg
         std::vector<node_ptr> execution_order;
         try {
             execution_order = get_execution_order(connected_nodes);
-            logs.push_back(fmt_nodes_str(std::format("Execution order: ({}):", execution_order.size()), execution_order));
+            logs.push_back(fmt_nodes_str(fmt::format("Execution order: ({}):", execution_order.size()), execution_order));
         }
         catch (const std::runtime_error& ex) {
             make_failed_result(result, ex.what());
@@ -73,7 +73,7 @@ namespace Nebula::nrg
         std::map<std::string, std::shared_ptr<Resource>> resources;
         for (const auto& gen_res : optimizer_result.resources)
         {
-            auto name = std::format("({:%Y-%m-%d %H:%M}) Resource {}", result.start_timestamp, gen_res.id);
+            auto name = fmt::format("({:%Y-%m-%d %H:%M}) Resource {}", result.start_timestamp, gen_res.id);
 
             ResourceCreateInfo create_info = {
                 .claim       = gen_res.original_info.claim,
@@ -87,11 +87,11 @@ namespace Nebula::nrg
 
             if (!resource)
             {
-                logs.push_back(std::format("Failed to create {} resource: {}", to_string(gen_res.type), name));
+                logs.push_back(fmt::format("Failed to create {} resource: {}", to_string(gen_res.type), name));
                 continue;
             }
 
-            logs.push_back(std::format("Created {} resource: {}", to_string(gen_res.type), name));
+            logs.push_back(fmt::format("Created {} resource: {}", to_string(gen_res.type), name));
             resources.insert({ std::to_string(gen_res.id), resource });
         }
 
@@ -143,7 +143,7 @@ namespace Nebula::nrg
         input_nodes_str << prefix;
         for (const auto& node : nodes)
         {
-            input_nodes_str << std::format(" [{}]", node->name());
+            input_nodes_str << fmt::format(" [{}]", node->name());
         }
         return input_nodes_str.str();
     }

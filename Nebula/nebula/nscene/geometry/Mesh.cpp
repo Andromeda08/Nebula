@@ -14,7 +14,7 @@ namespace Nebula::ns
     , m_vertex_count(create_info.p_geometry->vertex_count())
     , m_index_count(create_info.p_geometry->index_count())
     {
-        auto name = std::format("[Mesh] {}", m_name);
+        auto name = fmt::format("[Mesh] {}", m_name);
 
         auto vb_create_info = nvk::BufferCreateInfo()
             .set_buffer_type(nvk::BufferType::eVertex)

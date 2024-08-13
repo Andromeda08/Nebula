@@ -2,7 +2,7 @@
 #include "Utilities.hpp"
 
 #include <iostream>
-#include <format>
+#include <fmt/format.h>
 #include <sstream>
 
 namespace Nebula::nvk
@@ -95,11 +95,11 @@ namespace Nebula::nvk
             {
             #ifdef NVK_DEBUG
                 std::stringstream out;
-                out << std::format("[Framebuffer #{}]", id);
+                out << fmt::format("[Framebuffer #{}]", id);
                 int32_t idx = -1;
                 for (const auto& b : vec)
                 {
-                    out << std::format(" [{} : {}]", idx++, b ? "ok" : "missing");
+                    out << fmt::format(" [{} : {}]", idx++, b ? "ok" : "missing");
                 }
                 std::cerr << out.str() << std::endl;
             #endif
@@ -137,7 +137,7 @@ namespace Nebula::nvk
             {
                 throw make_exception("Failed to create Framebuffer #{}", i);
             }
-            m_device->name_object(m_framebuffers[i], std::format("{} #{}", create_info.name, i), vk::ObjectType::eFramebuffer);
+            m_device->name_object(m_framebuffers[i], fmt::format("{} #{}", create_info.name, i), vk::ObjectType::eFramebuffer);
         }
     }
 

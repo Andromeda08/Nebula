@@ -1,5 +1,5 @@
 #include "Window.hpp"
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 #include <vulkan/vk_enum_string_helper.h>
 
@@ -69,7 +69,7 @@ namespace Nebula::wsi
         const VkResult result = glfwCreateWindowSurface(instance, m_window, nullptr, reinterpret_cast<VkSurfaceKHR*>(p_surface));
         if (result != VK_SUCCESS)
         {
-            throw std::runtime_error(std::format("Failed to create Surface for Window \"{}\": {}", m_title,
+            throw std::runtime_error(fmt::format("Failed to create Surface for Window \"{}\": {}", m_title,
                                                  string_VkResult(result)));
         }
         return true;

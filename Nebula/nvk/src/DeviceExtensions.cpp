@@ -1,6 +1,6 @@
 #include "DeviceExtensions.hpp"
 
-#include <format>
+#include <fmt/format.h>
 #include <iostream>
 
 namespace Nebula::nvk
@@ -118,7 +118,7 @@ namespace Nebula::nvk
                     reinterpret_cast<vk::PhysicalDeviceMeshShaderFeaturesEXT*>(sPtr)->setPNext(p_next);
                     break;
                 default:
-                    throw std::runtime_error(std::format("Unhandled structure type: {}", to_string(sType)));
+                    throw std::runtime_error(fmt::format("Unhandled structure type: {}", to_string(sType)));
             }
 
             s_type = sType;

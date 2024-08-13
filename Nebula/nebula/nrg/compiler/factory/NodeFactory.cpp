@@ -22,7 +22,7 @@ namespace Nebula::nrg
                 return std::make_shared<Present>(m_context);
             }
             default:
-                std::cout << std::format("Creation of NodeType \"{}\" not implemented", to_string(editor_node->type())) << std::endl;
+                std::cout << fmt::format("Creation of NodeType \"{}\" not implemented", to_string(editor_node->type())) << std::endl;
                 return nullptr;
         }
     }

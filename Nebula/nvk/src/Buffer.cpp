@@ -45,7 +45,7 @@ namespace Nebula::nvk
         auto address_info = vk::BufferDeviceAddressInfo().setBuffer(m_buffer);
         m_address = m_device->handle().getBufferAddress(&address_info);
 
-        m_device->name_object(m_buffer, std::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::eBuffer);
+        m_device->name_object(m_buffer, fmt::format("{} [{}]", m_name, to_string(m_type)), vk::ObjectType::eBuffer);
 
         if (m_type != BufferType::eStaging)
         {

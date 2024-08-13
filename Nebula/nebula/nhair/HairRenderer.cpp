@@ -106,7 +106,7 @@ namespace Nebula::nhair
             nvk::BufferCreateInfo buf_create_info{};
             buf_create_info
                 .set_buffer_type(nvk::BufferType::eUniform)
-                .set_name(std::format("Camera #{}", i))
+                .set_name(fmt::format("Camera #{}", i))
                 .set_size(sizeof(ns::CameraData));
 
             m_uniform_buffers[i] = std::make_shared<nvk::Buffer>(buf_create_info, device);

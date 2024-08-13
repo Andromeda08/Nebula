@@ -130,7 +130,7 @@ namespace Nebula::nrg
         {
             if (start > end)
             {
-                throw std::runtime_error(std::format("[Error] Range starting point {} is greater than the end point {}", start, end));
+                throw std::runtime_error(fmt::format("[Error] Range starting point {} is greater than the end point {}", start, end));
             }
         }
     };
