@@ -30,11 +30,6 @@ namespace Nebula::nrg
             : object(obj)
             {
             }
-
-            PushConstant(const glm::mat4& M, const glm::vec4& C)
-            : object(M, C)
-            {
-            }
         };
 
         struct alignas(glm::vec4) CameraUniform
