@@ -18,7 +18,7 @@ namespace Nebula::nrg
     {
         std::vector<std::string> logs;
 
-        const auto start_time = std::chrono::utc_clock::now();
+        const auto start_time = std::chrono::system_clock::now();
         const auto R = evaluate_required_resources();
 
         std::vector<OptimizerResource> gen_resources;
@@ -104,7 +104,7 @@ namespace Nebula::nrg
             }
         }
 
-        const auto end_time = std::chrono::utc_clock::now();
+        const auto end_time = std::chrono::system_clock::now();
 
         ResourceOptimizerResult result = {
             .resources = gen_resources,

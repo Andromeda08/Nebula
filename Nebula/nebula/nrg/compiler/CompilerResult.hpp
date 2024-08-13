@@ -13,8 +13,8 @@ namespace Nebula::nrg
         std::vector<std::string>      internal_logs;
 
         // Compile Time Stats -------------------------------------------------
-        std::chrono::time_point<std::chrono::utc_clock> start_timestamp;
-        std::chrono::time_point<std::chrono::utc_clock> end_timestamp;
+        std::chrono::time_point<std::chrono::system_clock> start_timestamp;
+        std::chrono::time_point<std::chrono::system_clock> end_timestamp;
         std::chrono::milliseconds                       compile_time;
 
         // Result -------------------------------------------------------------

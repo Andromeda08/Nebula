@@ -20,7 +20,7 @@ namespace Nebula::nrg
         CompilerResult result = {};
         std::vector<std::string>& logs = result.internal_logs;
 
-        result.start_timestamp = std::chrono::utc_clock::now();
+        result.start_timestamp = std::chrono::system_clock::now();
         logs.push_back(fmt::format("Compiling started at {:%Y-%m-%d %H:%M}", result.start_timestamp));
         logs.push_back(fmt_nodes_str(fmt::format("Input Nodes ({}):", nodes.size()), nodes));
 
