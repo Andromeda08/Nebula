@@ -1,10 +1,9 @@
 #pragma once
 
 #include <functional>
-#include <iostream>
-#include <string>
 #include <vector>
 #include <vulkan/vulkan.hpp>
+#include <fmt/format.h>
 
 #define NVK_DISABLE_COPY(type)          \
 type(const type&) = delete;             \

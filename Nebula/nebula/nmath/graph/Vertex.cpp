@@ -1,4 +1,5 @@
 #include "Vertex.hpp"
+#include <fmt/format.h>
 
 namespace Nebula::nmath::graph
 {
