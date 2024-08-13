@@ -3,7 +3,7 @@
 namespace Nebula
 {
     RenderGraphApp::RenderGraphApp()
-    : Application(std::make_optional<AppParameters>({ false, false, true, true }))
+    : Application(std::make_optional<AppParameters>(false, false, true, true))
     {
     }
 
