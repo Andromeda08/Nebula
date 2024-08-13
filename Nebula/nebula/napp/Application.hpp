@@ -25,6 +25,8 @@ namespace Nebula
         bool render_graph {false};
         bool default_scene {true};
 
+        AppParameters() = default;
+
         AppParameters(const bool rt, const bool msh, const bool rg, const bool ds)
         : ray_tracing(rt), mesh_shaders(msh), render_graph(rg), default_scene(ds)
         {
