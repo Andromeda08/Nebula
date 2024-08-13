@@ -91,9 +91,6 @@ add_library(${Nebula_main}
     nrender/Raytracer.hpp nrender/Raytracer.cpp
 
     nscene/DefaultScene.hpp
-    render/basic/Material.hpp
-    render/basic/Texture.hpp
-    render/basic/Texture.cpp
     nrg/common/RenderPath.cpp
     ncommon/Measure.hpp
 )
