@@ -33,12 +33,14 @@ add_library("nvk"
 
 target_link_libraries("nvk" PUBLIC
     ${Vulkan_LIBRARIES}
+    fmt::fmt
 )
 
 target_include_directories("nvk" PUBLIC
     ${Vulkan_INCLUDE_DIRS}
     "./include/nvk"
     "./internal"
+    "../../ThirdParty/fmt/include"
 )
 
 target_compile_definitions ("nvk" PUBLIC
