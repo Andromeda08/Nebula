@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <fmt/format.h>
+#include <fmt/chrono.h>
 #include <fstream>
 #include <queue>
 #include <nlohmann/json.hpp>

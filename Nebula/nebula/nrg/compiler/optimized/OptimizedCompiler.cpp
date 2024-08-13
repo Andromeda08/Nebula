@@ -1,8 +1,8 @@
 #include "OptimizedCompiler.hpp"
 
 #include <fmt/format.h>
+#include <fmt/chrono.h>
 #include <sstream>
-#include <iostream>
 #include "ResourceOptimizer.hpp"
 
 namespace Nebula::nrg
