@@ -57,7 +57,7 @@ namespace Nebula::nrg
                 auto r_image = resource->as<ImageResource>();
                 if (r_image.get_image()->state().layout == vk::ImageLayout::eDepthAttachmentOptimal) continue;
 
-                auto fnd = std::ranges::find_if(res_reqs, [&](const auto& rr){ return rr->name == id; });
+                auto fnd = std::ranges::find_if(res_reqs, [&, id](const auto& rr){ return rr->name == id; });
                 if (fnd == std::end(res_reqs))
                 {
                     continue;
