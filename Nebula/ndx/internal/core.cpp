@@ -9,7 +9,7 @@ std::string to_string(const std::wstring& wstring)
     return result;
 }
 
-std::string to_string(D3D12_COMMAND_LIST_TYPE type)
+std::string to_string(const D3D12_COMMAND_LIST_TYPE type)
 {
     switch (type)
     {
@@ -46,7 +46,7 @@ namespace Nebula::ndx
         return fmt::format("[{} | {}]", _ndx_pfx(), fmt::styled("Fail", fmt::fg(fmt::color::crimson)));
     }
 
-    fmt::color to_color(D3D12_COMMAND_LIST_TYPE type)
+    fmt::color to_color(const D3D12_COMMAND_LIST_TYPE type)
     {
         switch (type)
         {
@@ -60,18 +60,18 @@ namespace Nebula::ndx
 
 namespace Nebula
 {
-    Size2D::Size2D(uint32_t w, uint32_t h)
+    Size2D::Size2D(const uint32_t w, const uint32_t h)
     : width(w), height(h)
     {
     }
 
-    auto& Size2D::setWidth(uint32_t value)
+    auto& Size2D::setWidth(const uint32_t value)
     {
         width = value;
         return *this;
     }
 
-    auto& Size2D::setHeight(uint32_t value)
+    auto& Size2D::setHeight(const uint32_t value)
     {
         height = value;
         return *this;

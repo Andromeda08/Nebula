@@ -112,9 +112,16 @@ static std::shared_ptr<TYPE> create##TYPE(__VA_ARGS__);
  */
 #ifdef _DEBUG
     #define NDX_DEBUG
+
     #define NDX_IF_DEBUG(X) X
+
+    #define NDX_CHECK_IF_DEBUG(FN, ERROR_MSG)                           \
+    if (auto result = FN; FAILED(result)) {                             \
+        throw std::runtime_error(fmt::format(NDX_FAIL(ERROR_MSG)));     \
+    }
 #else
     #define NDX_LOG_DEBUG(X)
+    #define NDX_CHECK(FN, ERROR_MSG) FN
 #endif
 
 namespace Nebula

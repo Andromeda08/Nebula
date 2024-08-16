@@ -21,8 +21,8 @@ namespace Nebula::ndx
         if (mType == D3D12_COMMAND_LIST_TYPE_DIRECT)
         {
             ComPtr<ID3D12GraphicsCommandList> graphicsCommandList;
-            mCommandList.As(&graphicsCommandList);
-            graphicsCommandList->Close();
+            NDX_CHECK_IF_DEBUG(mCommandList.As(&graphicsCommandList), "Failed to cast CommandList to GraphicsCommandList");
+            NDX_CHECK(graphicsCommandList->Close(), "Failed to close GraphicsCommandList");
         }
 
         NDX_IF_DEBUG(fmt::println(NDX_OK(
@@ -37,17 +37,22 @@ namespace Nebula::ndx
 
     ComPtr<ID3D12CommandList>& DX12CommandList::beginCommandList(const size_t frameIndex)
     {
+        if (frameIndex > mCommandAllocators.size())
+        {
+            NDX_THROW(fmt::format("Index {} is out of bounds for container of size {}", frameIndex, mCommandAllocators.size()));
+        }
+
         NDX_CHECK(mCommandAllocators[frameIndex]->Reset(), "Failed to reset CommandAllocator");
 
         if (mType == D3D12_COMMAND_LIST_TYPE_DIRECT)
         {
             ComPtr<ID3D12GraphicsCommandList> graphicsCommandList;
-            NDX_CHECK(mCommandList.As(&graphicsCommandList), "?");
+            NDX_CHECK_IF_DEBUG(mCommandList.As(&graphicsCommandList), "Failed to cast CommandList to GraphicsCommandList");
             NDX_CHECK(graphicsCommandList->Reset(mCommandAllocators[frameIndex].Get(), nullptr), "Failed to reset GraphicsCommandList");
             return mCommandList;
         }
 
-        NDX_THROW("");
+        NDX_THROW("Unexpected error");
     }
 
     ComPtr<ID3D12CommandList>& DX12CommandList::getCommandList()

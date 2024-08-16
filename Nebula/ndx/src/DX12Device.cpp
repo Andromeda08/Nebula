@@ -66,7 +66,7 @@ namespace Nebula::ndx
              ++i)
         {
             DXGI_ADAPTER_DESC1 desc;
-            adapter->GetDesc1(&desc);
+            NDX_CHECK_IF_DEBUG(adapter->GetDesc1(&desc), "Failed to get adapter description");
 
             if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
             {
@@ -84,7 +84,7 @@ namespace Nebula::ndx
             for (uint32_t i = 0; SUCCEEDED(pFactory->EnumAdapters1(i, &adapter)); ++i)
             {
                 DXGI_ADAPTER_DESC1 desc;
-                adapter->GetDesc1(&desc);
+                NDX_CHECK_IF_DEBUG(adapter->GetDesc1(&desc), "Failed to get adapter description");
 
                 if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
                 {
@@ -103,7 +103,7 @@ namespace Nebula::ndx
             NDX_THROW("Failed to find a suitable Adapter");
         }
 
-        mAdapter->GetDesc1(&mDesc1);
+        NDX_CHECK_IF_DEBUG(mAdapter->GetDesc1(&mDesc1), "Failed to get adapter description");
         mName = to_string(mDesc1.Description);
 
         NDX_IF_DEBUG(fmt::println(NDX_OK(fmt::format("Selected Adapter: {}", mName))));
@@ -113,7 +113,7 @@ namespace Nebula::ndx
     {
         NDX_CHECK(D3D12CreateDevice(mAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&mDevice)), "Failed to create D3D12Device");
         NDX_IF_DEBUG(fmt::println(NDX_OK("Created D3D12Device")));
-        NDX_CHECK(mDevice->SetName(NDX_TO_LPCWSTR(mName)), "Failed to name D3D12Device");
+        NDX_CHECK_IF_DEBUG(mDevice->SetName(NDX_TO_LPCWSTR(mName)), "Failed to name D3D12Device");
     }
 
     void DX12Device::createQueues(const DX12DeviceInfo& deviceInfo)
