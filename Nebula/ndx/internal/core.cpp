@@ -38,7 +38,7 @@ namespace Nebula::ndx
 
     std::string _ndx_warn()
     {
-        return fmt::format("[{} | {}]", _ndx_pfx(), fmt::styled("Warm", fmt::fg(fmt::color::light_golden_rod_yellow)));
+        return fmt::format("[{} | {}]", _ndx_pfx(), fmt::styled("Warn", fmt::fg(fmt::color::orange)));
     }
 
     std::string _ndx_fail()
