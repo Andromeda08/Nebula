@@ -118,6 +118,8 @@ namespace Nebula::ndx
     void DX12Context::createFrameSynchronizationObjects()
     {
         mDevice->createFence(0, D3D12_FENCE_FLAG_NONE, mFence);
+        NDX_CHECK(mFence->SetName(L"Frame Synchronization Fence"), "Failed to name ID3D12Fence");
+
         mFenceEvent = CreateEvent(nullptr, false, false, nullptr);
 
         mFenceValues.resize(mSwapchain->getBackBufferCount());

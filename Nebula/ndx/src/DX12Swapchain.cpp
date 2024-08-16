@@ -29,6 +29,7 @@ namespace Nebula::ndx
         rtvDesc.Flags           = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         NDX_CHECK(pDevice->handle()->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&mRTVHeap)),
                   "Failed to create Descriptor Heap for Swapchain");
+        NDX_CHECK(mRTVHeap->SetName(L"Swapchain Descriptor Heap"), "Failed to name ID3D12DescriptorHeap");
 
         mRTVSize = pDevice->handle()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
         CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRTVHeap->GetCPUDescriptorHandleForHeapStart());

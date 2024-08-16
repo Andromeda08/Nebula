@@ -10,6 +10,9 @@ namespace Nebula::ndx
         const auto rootSignatureFlags = getRootSignatureFlags(pipelineInfo.inputElements.empty());
         mDevice->makeRootSignature(&mRootSignature, rootSignatureFlags);
 
+        const auto rootSignatureName = fmt::format("{} RootSignature", mName);
+        NDX_CHECK(mRootSignature->SetName(NDX_TO_LPCWSTR(rootSignatureName)), "Failed to name ID3D12RootSignature");
+
         auto rasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         rasterizerState.CullMode = pipelineInfo.cullMode;
         rasterizerState.FillMode = pipelineInfo.fillMode;
@@ -39,6 +42,7 @@ namespace Nebula::ndx
         psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
         mDevice->createGraphicsPipelineState(psoDesc, mPSO);
+        NDX_CHECK(mPSO->SetName(NDX_TO_LPCWSTR(mName)), "Failed to name ID3D12PipelineState");
 
         NDX_IF_DEBUG(fmt::println(NDX_OK(fmt::format("Created {} Pipeline ({})", fmt::styled(toString(mType), fmt::fg(toColor(mType))), mName))));
     }

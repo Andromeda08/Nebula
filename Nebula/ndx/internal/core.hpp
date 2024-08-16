@@ -29,6 +29,8 @@ using Microsoft::WRL::WeakRef;
  */
 #define NDX_TO_WSTR(STRING) std::wstring(std::begin(STRING), std::end(STRING))
 
+#define NDX_TO_LPCWSTR(STRING) NDX_TO_WSTR(STRING).c_str()
+
 std::string to_string(const std::wstring& wstring);
 
 std::string to_string(D3D12_COMMAND_LIST_TYPE type);
