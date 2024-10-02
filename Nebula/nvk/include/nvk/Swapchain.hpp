@@ -65,6 +65,8 @@ namespace Nebula::nvk
 
         explicit Swapchain(const SwapchainCreateInfo& create_info);
 
+        static std::shared_ptr<Swapchain> create(const SwapchainCreateInfo& create_info);
+
         ~Swapchain();
 
         uint32_t acquire_next_image(uint32_t current_frame) const;

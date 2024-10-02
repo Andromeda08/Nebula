@@ -20,6 +20,11 @@ namespace Nebula::nvk
                       to_string(m_color_space), to_string(m_present_mode));
     }
 
+    std::shared_ptr<Swapchain> Swapchain::create(const SwapchainCreateInfo& create_info)
+    {
+        return std::make_shared<Swapchain>(create_info);
+    }
+
     Swapchain::~Swapchain()
     {
         destroy();

@@ -13,6 +13,7 @@ add_library("ndx"
     src/DX12CommandList.cpp
     src/DX12Pipeline.cpp
     src/DX12Shader.cpp
+    include/ndx/DX12Descriptor.hpp
 )
 
 target_link_libraries("ndx" PUBLIC

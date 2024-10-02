@@ -30,7 +30,7 @@ namespace Nebula::nrg
 
         T(const std::shared_ptr<Configuration>& configuration, const std::shared_ptr<nvk::Device>& device)
         : Node("Unknown Node", NodeType::eUnknown)
-        , m_configuration(*configuration), m_device(device) {}
+        , m_configuration(*configuration), mDevice(device) {}
 
         ~T() override = default;
         
@@ -42,7 +42,7 @@ namespace Nebula::nrg
 
     private:
         const Configuration          m_configuration;   // Optional
-        std::shared_ptr<nvk::Device> m_device;
+        std::shared_ptr<nvk::Device> mDevice;
 
         nrg_decl_resource_requirements();
         nrg_def_get_resource_claims();
@@ -82,7 +82,7 @@ namespace Nebula::nrg
     public:
         explicit ${NAME}(const std::shared_ptr<nvk::Device>& device)
         : Node("${NAME}", NodeType::eUnknown)
-        , m_device(device) {}
+        , mDevice(device) {}
 
         ~${NAME}() override = default;
 
@@ -93,7 +93,7 @@ namespace Nebula::nrg
         void update() override {}
 
     private:
-        std::shared_ptr<nvk::Device> m_device;
+        std::shared_ptr<nvk::Device> mDevice;
 
         nrg_decl_resource_requirements();
         nrg_def_get_resource_claims();
